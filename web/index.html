@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>愈见卡牌 · 艺术疗愈占卜</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --purple:#8b7bc8; --purple-deep:#6d5ba6; --purple-soft:#c9bde8;
+    --pink:#e7c7dd; --blue:#b9c8e8; --cream:#faf6f0; --ink:#4a4358;
+    --ink-soft:#8d85a0; --gold:#c9a86a;
+  }
+  html,body{ height:100%; }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+    color:var(--ink);
+    background:linear-gradient(160deg,#e9e2f4 0%,#f3e7f1 45%,#e3eaf7 100%);
+    display:flex; justify-content:center;
+    overflow-y:auto;
+  }
+  #app{
+    width:100%; max-width:480px; min-height:100vh; position:relative;
+    background:linear-gradient(170deg,#f6f1fa 0%,#faf3f6 50%,#f0f4fb 100%);
+    box-shadow:0 0 40px rgba(109,91,166,.18);
+    overflow-x:hidden;
+  }
+  .view{ display:none; animation:fadeIn .55s ease both; min-height:100vh; }
+  .view.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
+
+  /* ===== 开屏 ===== */
+  #view-splash{ position:fixed; inset:0; z-index:50; background:#000; max-width:480px; margin:0 auto; }
+  #splashVideo{ width:100%; height:100%; object-fit:cover; display:block; }
+  .skip-btn{
+    position:absolute; top:20px; right:18px; z-index:5;
+    padding:8px 18px; border-radius:999px; border:1px solid rgba(255,255,255,.55);
+    color:#fff; font-size:13px; letter-spacing:2px;
+    background:rgba(60,45,90,.32); backdrop-filter:blur(6px); cursor:pointer;
+  }
+  .splash-fallback{
+    position:absolute; inset:0; display:none; flex-direction:column;
+    align-items:center; justify-content:center; gap:26px;
+    background:linear-gradient(170deg,#b7a7dd,#d9c2e2 55%,#aebfe4); color:#fff; text-align:center; padding:30px;
+  }
+  .splash-fallback h1{ font-size:34px; letter-spacing:10px; font-weight:500; text-indent:10px; }
+  .splash-fallback p{ font-size:13px; letter-spacing:4px; opacity:.85; }
+  .splash-fallback button{
+    margin-top:10px; padding:13px 44px; border-radius:999px; border:none;
+    background:rgba(255,255,255,.85); color:var(--purple-deep);
+    font-size:15px; letter-spacing:4px; cursor:pointer; box-shadow:0 8px 24px rgba(90,70,140,.25);
+  }
+
+  /* ===== 通用头部 ===== */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 22px 8px;
+  }
+  .back-btn{
+    width:36px; height:36px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.7); color:var(--purple-deep); font-size:17px;
+    box-shadow:0 3px 10px rgba(109,91,166,.12);
+  }
+  .topbar-title{ font-size:15px; letter-spacing:4px; color:var(--ink-soft); }
+
+  /* ===== 首页 ===== */
+  #view-home{ text-align:center; padding:64px 30px 40px; min-height:100vh; }
+  #view-home.active{ display:flex; flex-direction:column; align-items:center; }
+  .home-badge{ font-size:11px; letter-spacing:6px; color:var(--purple); opacity:.75; margin-bottom:14px; }
+  .home-title{
+    font-size:42px; font-weight:500; letter-spacing:14px; text-indent:14px;
+    background:linear-gradient(120deg,var(--purple-deep),#b087c2 60%,var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .home-en{ margin-top:8px; font-size:11px; letter-spacing:5px; color:var(--ink-soft); }
+  .home-card-wrap{
+    margin:40px auto 34px; width:218px; height:340px; position:relative;
+    animation:floaty 4.5s ease-in-out infinite;
+  }
+  @keyframes floaty{ 0%,100%{transform:translateY(0) rotate(-1.2deg);} 50%{transform:translateY(-12px) rotate(1.2deg);} }
+  .home-card-wrap::before{
+    content:""; position:absolute; inset:-16px; border-radius:26px;
+    background:radial-gradient(circle at 50% 40%, rgba(201,189,232,.65), transparent 70%);
+    filter:blur(6px);
+  }
+  .home-card{
+    width:100%; height:100%; object-fit:cover; border-radius:20px; position:relative;
+    box-shadow:0 22px 44px rgba(109,91,166,.33), 0 0 0 7px rgba(255,255,255,.85);
+  }
+  .sparkle{ position:absolute; color:#fff; text-shadow:0 0 10px #e8d9a8, 0 0 3px #fff; animation:twinkle 2.6s ease-in-out infinite; }
+  .sparkle.s1{ top:-8px; right:6px; font-size:20px; }
+  .sparkle.s2{ bottom:34px; left:-14px; font-size:15px; animation-delay:.8s; }
+  .sparkle.s3{ top:52px; left:-20px; font-size:12px; animation-delay:1.5s; }
+  @keyframes twinkle{ 0%,100%{opacity:.25; transform:scale(.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .home-desc{ font-size:13.5px; line-height:2; color:var(--ink-soft); letter-spacing:2px; margin-bottom:36px; }
+  .btn-primary{
+    width:100%; max-width:300px; padding:16px 0; border:none; border-radius:999px; cursor:pointer;
+    font-size:16px; letter-spacing:8px; text-indent:8px; color:#fff;
+    background:linear-gradient(120deg,#9d8bd4,#b794cc 55%,#d3a9c6);
+    box-shadow:0 14px 30px rgba(125,100,180,.35);
+    transition:transform .2s;
+  }
+  .btn-primary:active{ transform:scale(.96); }
+  .home-links{ margin-top:26px; display:flex; gap:34px; }
+  .home-links button{
+    border:none; background:none; cursor:pointer; font-size:13px; letter-spacing:4px; color:var(--ink-soft);
+  }
+  .home-links button::after{ content:""; display:block; width:18px; height:1px; background:var(--purple-soft); margin:5px auto 0; }
+
+  /* ===== 篇章选择 ===== */
+  .page-head{ padding:26px 26px 14px; text-align:center; }
+  .page-head h2{ font-size:24px; letter-spacing:8px; text-indent:8px; font-weight:500; color:var(--purple-deep); }
+  .page-head p{ margin-top:8px; font-size:12px; letter-spacing:3px; color:var(--ink-soft); }
+  .group-list{ padding:14px 24px 60px; display:flex; flex-direction:column; gap:16px; }
+  .group-card{
+    display:flex; align-items:center; gap:16px; padding:14px; border:none; cursor:pointer;
+    border-radius:20px; background:rgba(255,255,255,.78); text-align:left;
+    box-shadow:0 8px 22px rgba(125,100,170,.12); transition:transform .2s;
+  }
+  .group-card:active{ transform:scale(.97); }
+  .group-card img{ width:74px; height:104px; object-fit:cover; border-radius:12px; box-shadow:0 4px 12px rgba(109,91,166,.2); flex:none; background:#eee3f5; }
+  .group-meta{ flex:1; min-width:0; }
+  .group-meta .g-name{ font-size:17px; letter-spacing:3px; color:var(--ink); }
+  .group-meta .g-en{ font-size:10px; letter-spacing:2px; color:var(--purple); margin-top:3px; opacity:.8; }
+  .group-meta .g-desc{ font-size:12px; color:var(--ink-soft); margin-top:7px; line-height:1.6; }
+  .group-meta .g-count{ display:inline-block; margin-top:8px; font-size:11px; color:var(--purple-deep);
+    background:rgba(201,189,232,.35); border-radius:999px; padding:2px 10px; letter-spacing:1px; }
+  .group-go{ color:var(--purple-soft); font-size:20px; flex:none; }
+
+  /* ===== 抽卡仪式 ===== */
+  #view-draw{ min-height:100vh; padding-bottom:50px; }
+  .d-header{ padding:14px 30px 0; text-align:center; }
+  .d-phase-desc{ font-size:13px; letter-spacing:2px; color:var(--ink-soft); margin-top:12px; min-height:20px; line-height:1.8; }
+  .w-stage{ display:flex; flex-direction:column; align-items:center; padding:6px 24px 0; }
+  .w-start{ margin-top:34px; width:100%; max-width:320px; }
+
+  /* 模式选择 */
+  .w-modes{ display:flex; flex-direction:column; gap:16px; width:100%; max-width:340px; margin-top:26px; }
+  .w-mode{
+    position:relative; text-align:left; padding:22px 24px 20px; border-radius:22px; cursor:pointer;
+    background:rgba(255,255,255,.72); border:1.5px solid rgba(201,189,232,.55);
+    box-shadow:0 6px 18px rgba(125,100,170,.08);
+    transition:transform .3s cubic-bezier(.34,1.4,.5,1), box-shadow .3s, border-color .3s;
+  }
+  .w-mode:hover{ transform:translateY(-3px); }
+  .w-mode.on{
+    border-color:var(--purple-soft); background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(243,232,251,.9));
+    box-shadow:0 14px 34px rgba(125,100,170,.22), 0 0 0 4px rgba(201,189,232,.22);
+  }
+  .w-mode.on::after{
+    content:'✦'; position:absolute; top:16px; right:20px; color:#c9a2e0; font-size:15px;
+    animation:twinkle 2s ease-in-out infinite;
+  }
+  .wm-icon{ font-size:24px; color:#a98fd0; margin-bottom:10px; }
+  .wm-name{ font-size:17px; letter-spacing:4px; color:var(--purple-deep); font-weight:500; }
+  .wm-desc{ margin-top:7px; font-size:12px; line-height:1.8; color:var(--ink-soft); letter-spacing:1px; }
+
+  /* 洗牌 */
+  #drawShuffle{ padding-top:60px; }
+  .w-shuffle{ position:relative; width:230px; height:340px; }
+  .ws-card{
+    position:absolute; left:50%; top:50%; width:130px; height:196px; margin:-98px 0 0 -65px;
+    border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-size:34px; color:#f3d9ea; text-shadow:0 0 14px rgba(255,255,255,.6);
+    background:radial-gradient(circle at 50% 38%, rgba(255,255,255,.18), transparent 58%),
+      linear-gradient(155deg,#9d8bd4,#7d68b5 55%,#6a57a3);
+    border:1.5px solid rgba(255,255,255,.5);
+    box-shadow:0 14px 30px rgba(109,91,166,.3);
+  }
+  .ws-card.a{ animation:shufA 1.3s ease-in-out infinite; }
+  .ws-card.b{ animation:shufB 1.3s ease-in-out infinite; }
+  .ws-card.c{ animation:shufC 1.3s ease-in-out infinite; }
+  .ws-card.d{ animation:shufD 1.3s ease-in-out infinite; }
+  @keyframes shufA{ 0%,100%{transform:translate(0,0) rotate(-4deg)} 50%{transform:translate(-46px,-10px) rotate(-16deg)} }
+  @keyframes shufB{ 0%,100%{transform:translate(0,0) rotate(3deg)} 50%{transform:translate(46px,-6px) rotate(14deg)} }
+  @keyframes shufC{ 0%,100%{transform:translate(0,0) rotate(-1deg)} 50%{transform:translate(-16px,12px) rotate(6deg)} }
+  @keyframes shufD{ 0%,100%{transform:translate(0,0) rotate(2deg)} 50%{transform:translate(18px,10px) rotate(-8deg)} }
+  .w-rune{ margin-top:36px; font-size:15px; letter-spacing:8px; text-indent:8px; color:#a98fd0; animation:twinkle 1.8s ease-in-out infinite; }
+
+  /* 扇形选牌 */
+  .w-fan-stage{ padding-top:10px; overflow:visible; }
+  .w-fan{ position:relative; height:330px; width:100%; display:flex; justify-content:center; align-items:flex-end; padding-bottom:26px; }
+  .fan-card{
+    position:absolute; bottom:26px; width:118px; height:178px; border:none; padding:0; cursor:pointer;
+    border-radius:14px; transform-origin:50% 130%;
+    transform:translateX(var(--fx)) rotate(var(--fr));
+    transition:transform .45s cubic-bezier(.34,1.5,.5,1), opacity .4s;
+    background:transparent;
+  }
+  .fan-card .fc-back{
+    position:absolute; inset:0; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+    font-size:26px; color:#f3d9ea;
+    background:radial-gradient(circle at 50% 38%, rgba(255,255,255,.18), transparent 58%),
+      linear-gradient(155deg,#9d8bd4,#7d68b5 55%,#6a57a3);
+    border:1.5px solid rgba(255,255,255,.55);
+    box-shadow:0 10px 24px rgba(109,91,166,.3);
+  }
+  .fan-card .fc-glow{
+    position:absolute; inset:-8px; border-radius:20px; opacity:0;
+    pointer-events:none;
+    background:radial-gradient(circle, rgba(255,223,160,.75), transparent 70%);
+    transition:opacity .4s;
+  }
+  .fan-card:hover{ transform:translateX(var(--fx)) translateY(-16px) rotate(var(--fr)); z-index:5; }
+  .fan-card:hover .fc-glow{ opacity:.6; }
+  .fan-card.picked{ z-index:8; pointer-events:none;
+    transform:translateX(var(--fx)) translateY(-74px) scale(1.14) rotate(0deg); }
+  .fan-card.picked .fc-glow{ opacity:1; animation:glowPulse 1.2s ease-in-out infinite; }
+  .fan-card.picked .fc-back{ border-color:rgba(255,236,190,.95); }
+  @keyframes glowPulse{ 0%,100%{opacity:.7} 50%{opacity:1} }
+
+  /* 粒子 */
+  .w-particles{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:3; }
+  .w-p{ position:absolute; bottom:-4%; color:#d8b8ec; text-shadow:0 0 10px rgba(230,200,250,.9); animation:rise linear forwards; opacity:0; }
+  @keyframes rise{ 0%{transform:translateY(0) scale(.6); opacity:0} 12%{opacity:.95} 100%{transform:translateY(-92vh) scale(1.15); opacity:0} }
+
+  /* 单张揭晓 */
+  #resultSingle{ display:flex; flex-direction:column; align-items:center; width:100%; }
+  .w-cardflip{ width:230px; height:358px; margin-top:26px; perspective:1200px; position:relative; }
+  .w-face{
+    position:absolute; inset:0; border-radius:22px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    box-shadow:0 20px 44px rgba(109,91,166,.32);
+    transition:transform .9s cubic-bezier(.4,.15,.3,1);
+  }
+  .w-back{
+    background:radial-gradient(circle at 50% 38%, rgba(255,255,255,.18), transparent 58%),
+      linear-gradient(155deg,#9d8bd4,#7d68b5 55%,#6a57a3);
+    border:1.5px solid rgba(255,255,255,.5);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  }
+  .wb-heart{ font-size:44px; color:#f3d9ea; text-shadow:0 0 18px rgba(255,255,255,.6); animation:twinkle 2.4s ease-in-out infinite; }
+  .wb-zi{ color:rgba(255,255,255,.92); letter-spacing:8px; text-indent:8px; font-size:15px; }
+  .w-front{ transform:rotateY(180deg); background:#fff; }
+  .w-cardflip.flipped .w-back{ transform:rotateY(180deg); }
+  .w-cardflip.flipped .w-front{ transform:rotateY(360deg); }
+  .w-front img{ width:100%; height:100%; object-fit:cover; }
+  .is-rev{ transform:rotate(180deg); }
+  .w-result-meta{ margin-top:24px; text-align:center; }
+  .w-result-meta h3{ font-size:23px; letter-spacing:6px; text-indent:6px; font-weight:500; color:var(--purple-deep); margin-top:10px; }
+  .w-en{ font-size:11px; letter-spacing:2px; color:var(--ink-soft); margin-top:5px; }
+  .w-orient{
+    display:inline-block; font-size:11px; letter-spacing:3px; text-indent:3px; padding:4px 14px; border-radius:999px;
+  }
+  .w-orient.up{ background:rgba(201,189,232,.4); color:var(--purple-deep); }
+  .w-orient.rev{ background:rgba(240,214,170,.55); color:#a5793d; border:1px solid rgba(216,182,132,.6); }
+
+  /* 三张牌阵 */
+  #resultSpread{ width:100%; }
+  .w-spread{ display:flex; justify-content:center; gap:14px; margin-top:30px; padding:0 6px; }
+  .sp-item{ flex:1; max-width:128px; text-align:center; }
+  .sp-pos{ font-size:15px; letter-spacing:4px; text-indent:4px; color:var(--purple-deep); font-weight:500; }
+  .sp-hint{ font-size:10px; letter-spacing:1px; color:var(--ink-soft); margin-top:4px; }
+  .sp-card{ position:relative; margin-top:12px; aspect-ratio:3/4.4; perspective:800px; cursor:pointer; }
+  .sp-inner{ position:absolute; inset:0; transform-style:preserve-3d; transition:transform .8s cubic-bezier(.4,.15,.3,1); }
+  .sp-inner.flipped{ transform:rotateY(180deg); }
+  .sp-face{
+    position:absolute; inset:0; border-radius:12px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    box-shadow:0 10px 24px rgba(109,91,166,.28);
+  }
+  .sp-back{
+    display:flex; align-items:center; justify-content:center; font-size:22px; color:#f3d9ea;
+    background:linear-gradient(155deg,#9d8bd4,#7d68b5 55%,#6a57a3);
+    border:1.5px solid rgba(255,255,255,.5);
+  }
+  .sp-front{ transform:rotateY(180deg); background:#fff; }
+  .sp-front img{ width:100%; height:100%; object-fit:cover; }
+  .sp-badge{
+    position:absolute; top:6px; right:6px; z-index:2; font-size:10px; padding:2px 8px; border-radius:999px; letter-spacing:1px;
+    background:rgba(255,255,255,.85); backdrop-filter:blur(4px);
+  }
+  .sp-badge.up{ color:var(--purple-deep); }
+  .sp-badge.rev{ color:#a5793d; border:1px solid rgba(216,182,132,.7); }
+  .sp-detail{
+    margin-top:12px; border:none; background:none; cursor:pointer;
+    font-size:11.5px; letter-spacing:2px; color:#a98fd0;
+  }
+  .sp-detail:active{ opacity:.6; }
+
+  /* 综合解读 */
+  .sp-summary{
+    margin:26px auto 0; max-width:400px; padding:22px 24px; border-radius:20px;
+    background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(246,238,250,.88));
+    border:1px solid rgba(184,148,212,.4);
+    box-shadow:0 10px 26px rgba(125,100,170,.12);
+    animation:fadeIn .8s ease both;
+  }
+  .sp-summary .ss-title{ font-size:14px; letter-spacing:4px; color:#8e6fb5; text-align:center; margin-bottom:12px; }
+  .sp-summary .ss-text{ font-size:13.5px; line-height:2; color:#5c4c70; letter-spacing:1px; text-align:justify; }
+
+  .draw-actions{ margin-top:34px; padding:0 30px; display:flex; flex-direction:column; gap:13px; width:100%; max-width:380px; }
+  .draw-actions button{
+    padding:14px 0; border-radius:999px; font-size:14.5px; letter-spacing:5px; text-indent:5px; cursor:pointer;
+  }
+  .btn-line{ background:none; border:1px solid var(--purple-soft); color:var(--purple-deep); }
+  .btn-line:active{ background:rgba(201,189,232,.2); }
+
+  /* ===== 详情增补 ===== */
+  .detail-pos{
+    margin:14px 30px 0; display:flex; align-items:baseline; justify-content:center; gap:12px;
+    padding:12px 0; border-radius:16px;
+    background:linear-gradient(120deg, rgba(201,189,232,.28), rgba(240,214,170,.22));
+    border:1px solid rgba(201,189,232,.5);
+  }
+  .dp-name{ font-size:16px; letter-spacing:5px; text-indent:5px; color:var(--purple-deep); font-weight:500; }
+  .dp-hint{ font-size:11px; letter-spacing:1.5px; color:var(--ink-soft); }
+  .detail-hero{ position:relative; }
+  .dh-wrap{ position:relative; display:inline-block; }
+  .d-orient{
+    position:absolute; top:12px; right:-8px; z-index:2;
+    font-size:11px; letter-spacing:2px; text-indent:2px; padding:5px 13px; border-radius:999px;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(4px); box-shadow:0 4px 12px rgba(109,91,166,.2);
+  }
+  .d-orient.up{ color:var(--purple-deep); }
+  .d-orient.rev{ color:#a5793d; border:1px solid rgba(216,182,132,.7); }
+  .d-orient-note{
+    margin:12px 0 0; font-size:12px; letter-spacing:1.5px; line-height:1.8; padding:10px 16px; border-radius:14px;
+  }
+  .d-orient-note.up{ background:rgba(201,189,232,.22); color:#6a5890; }
+  .d-orient-note.rev{ background:rgba(240,214,170,.28); color:#8f6a35; }
+  .d-poster-btn{ margin-top:22px; width:100%; }
+  #detailImg{ transition:transform .5s; }
+
+  /* ===== 海报弹窗 ===== */
+  .pm-mask{
+    position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+    background:rgba(60,44,84,.55); backdrop-filter:blur(8px); padding:20px;
+  }
+  .pm-mask.show{ display:flex; }
+  .pm-box{
+    display:flex; flex-direction:column; align-items:center; gap:18px; max-height:100%;
+    animation:posterIn .45s cubic-bezier(.34,1.3,.5,1);
+  }
+  @keyframes posterIn{ from{ transform:translateY(30px) scale(.94); opacity:0 } to{ transform:none; opacity:1 } }
+  #posterCanvas{
+    width:min(78vw, 320px); height:auto; border-radius:16px;
+    box-shadow:0 24px 60px rgba(30,18,50,.5);
+  }
+  .pm-actions{ display:flex; flex-direction:column; gap:10px; width:min(78vw, 320px); }
+  .pm-actions button{ width:100%; padding:13px 0; border-radius:999px; font-size:14px; letter-spacing:4px; text-indent:4px; cursor:pointer; }
+  .pm-actions a{ display:block; }
+  .pm-actions a button{ width:100%; }
+
+  /* ===== 祈愿 · 写下心事 ===== */
+  #view-wish{ padding-bottom:60px; }
+  .wish-wrap{ padding:8px 34px 0; text-align:center; }
+  .wish-sparkle{ font-size:26px; color:#d7bce6; text-shadow:0 0 12px #ecdcf5; margin-bottom:14px; animation:twinkle 2.6s ease-in-out infinite; }
+  .wish-wrap h2{ font-size:24px; letter-spacing:6px; font-weight:500; color:var(--purple-deep); }
+  .wish-wrap .wish-lead{ margin:12px auto 26px; font-size:13px; line-height:2; color:var(--ink-soft); letter-spacing:1.5px; }
+  .wish-box{
+    position:relative; text-align:left; padding:20px; border-radius:20px;
+    background:rgba(255,255,255,.88); border:1px solid rgba(201,189,232,.7);
+    box-shadow:0 8px 22px rgba(125,100,170,.1);
+  }
+  .wish-box textarea{
+    width:100%; min-height:128px; border:none; outline:none; resize:none; background:transparent;
+    font:inherit; font-size:14.5px; line-height:1.9; color:var(--ink); letter-spacing:1px;
+  }
+  .wish-box textarea::placeholder{ color:#c3b6d4; }
+  .wish-count{ text-align:right; font-size:11px; color:var(--ink-soft); opacity:.7; }
+  .wish-sugs{ margin:22px 0 30px; }
+  .wish-sugs .ws-label{ font-size:11px; letter-spacing:3px; color:#b7a8c8; margin-bottom:12px; }
+  .ws-list{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+  .ws-list button{
+    border:1px solid var(--purple-soft); background:rgba(255,255,255,.72);
+    color:#7d6aa0; font-size:12px; letter-spacing:1px; padding:8px 16px;
+    border-radius:999px; cursor:pointer; transition:transform .2s;
+  }
+  .ws-list button:active{ transform:scale(.95); }
+  .wish-wrap .btn-primary{ margin-bottom:14px; }
+  .wish-skip{
+    width:100%; max-width:300px; padding:10px 0; border:none; background:none;
+    color:var(--ink-soft); font-size:13px; letter-spacing:3px; cursor:pointer;
+  }
+  .draw-worry{
+    display:flex; align-items:center; gap:8px; max-width:300px; margin:4px auto 0;
+    padding:9px 18px; border-radius:999px; background:rgba(255,255,255,.88);
+    border:1px solid rgba(201,166,224,.55); box-shadow:0 3px 10px rgba(155,126,200,.1);
+  }
+  .draw-worry .dw-icon{ color:#c79ed6; flex:none; }
+  .draw-worry .dw-text{
+    font-size:12.5px; color:#6f5e84; letter-spacing:.5px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .detail-wish{
+    margin:0 auto 22px; max-width:340px; padding:18px 22px; border-radius:16px;
+    background:rgba(255,255,255,.88); border:1px dashed rgba(184,148,212,.6);
+    box-shadow:0 4px 14px rgba(155,126,180,.1);
+  }
+  .detail-wish .dw2-title{ font-size:12px; letter-spacing:3px; color:#9c8fae; text-align:center; margin-bottom:8px; }
+  .detail-wish .dw2-text{ font-size:14px; line-height:1.9; color:#5c4c70; text-align:center; letter-spacing:1px; }
+
+  /* ===== 详情 ===== */
+  #view-detail{ padding-bottom:60px; }
+  .detail-hero{ position:relative; padding:10px 40px 0; text-align:center; }
+  .detail-hero img{
+    width:100%; max-width:300px; border-radius:18px; object-fit:cover;
+    box-shadow:0 18px 40px rgba(109,91,166,.28), 0 0 0 6px rgba(255,255,255,.9);
+  }
+  .detail-body{ padding:26px 30px 0; text-align:center; }
+  .d-tag{ display:inline-block; font-size:11px; letter-spacing:2px; color:var(--purple-deep);
+    background:rgba(201,189,232,.4); border-radius:999px; padding:3px 14px; }
+  .detail-body h2{ margin-top:14px; font-size:27px; letter-spacing:8px; text-indent:8px; font-weight:500; color:var(--ink); }
+  .d-en{ margin-top:6px; font-size:11px; letter-spacing:3px; color:var(--purple); }
+  .d-keywords{ margin-top:16px; display:flex; justify-content:center; gap:9px; flex-wrap:wrap; }
+  .d-keywords span{ font-size:12px; color:var(--ink-soft); border:1px solid var(--purple-soft);
+    border-radius:999px; padding:4px 13px; letter-spacing:2px; }
+  .d-heal{
+    margin:28px 6px 0; padding:26px 24px; border-radius:18px; position:relative;
+    background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(244,238,250,.9));
+    box-shadow:0 8px 22px rgba(125,100,170,.1);
+    font-size:15px; line-height:2.1; letter-spacing:1px; color:var(--ink);
+  }
+  .d-heal::before{ content:"“"; position:absolute; top:-6px; left:16px; font-size:44px; color:var(--purple-soft); font-family:Georgia,serif; }
+  .d-action{
+    margin:20px 6px 0; padding:22px 24px; border-radius:18px; text-align:left;
+    background:linear-gradient(125deg,#b3a3dd,#c8a9d6 60%,#dcb9cf);
+    color:#fff; box-shadow:0 10px 24px rgba(125,100,180,.25);
+  }
+  .d-action .da-title{ font-size:12px; letter-spacing:4px; opacity:.92; }
+  .d-action .da-text{ margin-top:9px; font-size:14px; line-height:1.9; letter-spacing:1px; }
+  .d-disclaimer{ margin:30px 30px 0; font-size:10.5px; line-height:1.9; color:var(--ink-soft); opacity:.8; text-align:center; letter-spacing:.5px; }
+
+  /* ===== 图鉴 ===== */
+  .filter-row{ display:flex; gap:10px; padding:10px 20px 18px; overflow-x:auto; }
+  .filter-row::-webkit-scrollbar{ display:none; }
+  .filter-row button{
+    flex:none; border:none; cursor:pointer; font-size:13px; letter-spacing:2px; padding:8px 18px;
+    border-radius:999px; background:rgba(255,255,255,.75); color:var(--ink-soft);
+    box-shadow:0 3px 8px rgba(125,100,170,.08);
+  }
+  .filter-row button.on{ background:linear-gradient(120deg,#9d8bd4,#b794cc); color:#fff; box-shadow:0 6px 14px rgba(125,100,180,.3); }
+  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:0 18px 50px; }
+  .g-item{ border:none; background:none; cursor:pointer; padding:0; }
+  .g-item .g-img{
+    width:100%; aspect-ratio:3/4.1; object-fit:cover; border-radius:12px;
+    box-shadow:0 6px 14px rgba(109,91,166,.18), 0 0 0 3px rgba(255,255,255,.85);
+    transition:transform .2s;
+  }
+  .g-item:active .g-img{ transform:scale(.94); }
+  .g-item .g-name{ margin-top:7px; font-size:11.5px; color:var(--ink); letter-spacing:1px; text-align:center;
+    overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .g-item .g-no{ font-size:9px; color:var(--purple-soft); text-align:center; letter-spacing:1px; }
+
+  /* ===== 关于 ===== */
+  #view-about{ padding-bottom:60px; }
+  .about-sec{ margin:18px 26px 0; padding:24px 22px; border-radius:18px;
+    background:rgba(255,255,255,.78); box-shadow:0 8px 20px rgba(125,100,170,.1); }
+  .about-sec h3{ font-size:15px; letter-spacing:4px; color:var(--purple-deep); font-weight:500; margin-bottom:12px; }
+  .about-sec p, .about-sec li{ font-size:13px; line-height:2; color:var(--ink); letter-spacing:.5px; }
+  .about-sec ul{ padding-left:18px; }
+  .about-disclaimer{ margin:18px 26px; font-size:11px; line-height:2; color:var(--ink-soft); letter-spacing:.5px;
+    padding:20px 22px; border-radius:18px; background:rgba(233,228,244,.55); }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 开屏 -->
+  <section id="view-splash" class="view active">
+    <video id="splashVideo" src="../media/intro.mp4" muted playsinline preload="auto"></video>
+    <button class="skip-btn" onclick="go('home')">跳过 ›</button>
+    <div class="splash-fallback" id="splashFallback">
+      <h1>愈见卡牌</h1>
+      <p>CARDS OF NATURE'S KISS</p>
+      <button onclick="go('home')">点击进入</button>
+    </div>
+  </section>
+
+  <!-- 首页 -->
+  <section id="view-home" class="view">
+    <div class="home-badge">艺术疗愈占卜</div>
+    <div class="home-title">愈见卡牌</div>
+    <div class="home-en">HEALING ORACLE · 26 CARDS</div>
+    <div class="home-card-wrap">
+      <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span><span class="sparkle s3">✦</span>
+      <img class="home-card" src="../images/card_01.jpg" alt="拥抱者">
+    </div>
+    <p class="home-desc">在星辰与繁花之间<br>抽一张牌，听见内心的声音</p>
+    <button class="btn-primary" onclick="go('groups')">开始抽卡</button>
+    <div class="home-links">
+      <button onclick="go('gallery')">卡牌图鉴</button>
+      <button onclick="go('about')">关于</button>
+    </div>
+  </section>
+
+  <!-- 篇章选择 -->
+  <section id="view-groups" class="view">
+    <div class="topbar"><span></span><span class="topbar-title">选择心境</span><span></span></div>
+    <div class="page-head"><h2>此刻，你在哪里</h2><p>跟随直觉，选择一个篇章</p></div>
+    <div class="group-list" id="groupList"></div>
+  </section>
+
+  <!-- 祈愿 · 写下心事 -->
+  <section id="view-wish" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('groups')">‹</button>
+      <span class="topbar-title">写下心事</span><span></span>
+    </div>
+    <div class="wish-wrap">
+      <div class="wish-sparkle">✦</div>
+      <h2>先把心事，轻轻放下</h2>
+      <p class="wish-lead">抽牌之前，写下此刻萦绕你的烦恼或疑问<br>卡牌会静静聆听，并给你温柔的回应</p>
+      <div class="wish-box">
+        <textarea id="wishInput" maxlength="100" rows="5" placeholder="例如：最近总是感到焦虑，不知道自己的选择对不对……"></textarea>
+        <div class="wish-count"><span id="wishCount">0</span>/100</div>
+      </div>
+      <div class="wish-sugs">
+        <div class="ws-label">或者，从这些开始</div>
+        <div class="ws-list" id="wishSugList"></div>
+      </div>
+      <button class="btn-primary" onclick="submitWish()">带着心事抽一张</button>
+      <button class="wish-skip" onclick="skipWish()">不必书写，直接抽牌 ›</button>
+    </div>
+  </section>
+
+  <!-- 抽卡 -->
+  <section id="view-draw" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('wish')">‹</button>
+      <span class="topbar-title" id="drawGroupName"></span>
+      <span></span>
+    </div>
+    <div class="d-header">
+      <div class="draw-worry" id="drawWorry" style="display:none">
+        <span class="dw-icon">♡</span><span class="dw-text" id="drawWorryText"></span>
+      </div>
+      <p class="d-phase-desc" id="drawPhaseDesc">选择一种占卜方式，让卡牌回应你的心事</p>
+    </div>
+
+    <!-- ① 选择方式 -->
+    <div class="w-stage" id="drawIdle">
+      <div class="w-modes">
+        <div class="w-mode on" data-mode="single" onclick="selectMode('single')">
+          <div class="wm-icon">✦</div>
+          <div class="wm-name">单张指引</div>
+          <div class="wm-desc">抽取一张牌，聆听此刻最需要的一句话</div>
+        </div>
+        <div class="w-mode" data-mode="spread" onclick="selectMode('spread')">
+          <div class="wm-icon">❖</div>
+          <div class="wm-name">三张牌阵</div>
+          <div class="wm-desc">过去 · 现在 · 未来，看清心事的来处与去向</div>
+        </div>
+      </div>
+      <button class="btn-primary w-start" onclick="startDraw()">开始洗牌</button>
+    </div>
+
+    <!-- ② 洗牌 -->
+    <div class="w-stage" id="drawShuffle" style="display:none">
+      <div class="w-shuffle">
+        <div class="ws-card a">♡</div>
+        <div class="ws-card b">♡</div>
+        <div class="ws-card c">♡</div>
+        <div class="ws-card d">♡</div>
+      </div>
+      <div class="w-rune">✧ 静心 ✧</div>
+    </div>
+
+    <!-- ③ 扇形选牌 -->
+    <div class="w-stage w-fan-stage" id="drawPicking" style="display:none">
+      <div class="w-fan" id="fanRow"></div>
+    </div>
+
+    <!-- ④ 揭晓 -->
+    <div class="w-stage" id="drawResult" style="display:none">
+      <div class="w-particles" id="particlesBox"></div>
+      <!-- 单张 -->
+      <div id="resultSingle" style="display:none">
+        <div class="w-cardflip" id="singleFlip">
+          <div class="w-face w-back"><div class="wb-heart">♡</div><div class="wb-zi">愈见</div></div>
+          <div class="w-face w-front"><img id="singleImg" src="" alt=""></div>
+        </div>
+        <div class="w-result-meta">
+          <span class="w-orient" id="singleOrient"></span>
+          <h3 id="singleName"></h3>
+          <div class="w-en" id="singleEn"></div>
+        </div>
+        <div class="draw-actions">
+          <button class="btn-primary" onclick="openDetail(state.drawnId,true)">查看牌意解读</button>
+          <button class="btn-line" onclick="resetDraw()">重新洗牌</button>
+        </div>
+      </div>
+      <!-- 三张牌阵 -->
+      <div id="resultSpread" style="display:none">
+        <div class="w-spread" id="spreadRow"></div>
+        <div class="sp-summary" id="spSummary" style="display:none"></div>
+        <div class="draw-actions">
+          <button class="btn-line" onclick="resetDraw()">重新洗牌</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 详情 -->
+  <section id="view-detail" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="backNav()">‹</button>
+      <span class="topbar-title">卡牌解读</span><span></span>
+    </div>
+    <div class="detail-pos" id="detailPos" style="display:none"></div>
+    <div class="detail-hero"><div class="dh-wrap"><img id="detailImg" src="" alt=""><span class="d-orient" id="detailOrient" style="display:none"></span></div></div>
+    <div class="detail-body">
+      <div class="detail-wish" id="detailWish" style="display:none">
+        <div class="dw2-title">♡ 你带来的心事</div>
+        <div class="dw2-text" id="detailWishText"></div>
+      </div>
+      <span class="d-tag" id="detailTag"></span>
+      <h2 id="detailName"></h2>
+      <div class="d-en" id="detailEn"></div>
+      <div class="d-orient-note" id="detailOrientNote" style="display:none"></div>
+      <div class="d-keywords" id="detailKeys"></div>
+      <div class="d-heal" id="detailHeal"></div>
+      <div class="d-action" id="detailAction">
+        <div class="da-title">✦ 今日行动指引</div>
+        <div class="da-text" id="detailActionText"></div>
+      </div>
+      <button class="btn-primary d-poster-btn" onclick="openPoster()">✦ 生成疗愈海报</button>
+    </div>
+    <div class="d-disclaimer">
+      本卡牌内容仅供艺术欣赏与情绪自助参考，不构成任何医疗、心理诊断或专业咨询建议。
+      如果你正经历持续的情绪困扰，请及时寻求专业心理工作者的帮助。请温柔地对待自己。
+    </div>
+  </section>
+
+  <!-- 图鉴 -->
+  <section id="view-gallery" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">卡牌图鉴</span><span></span>
+    </div>
+    <div class="filter-row" id="filterRow"></div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- 关于 -->
+  <section id="view-about" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">关于</span><span></span>
+    </div>
+    <div class="page-head"><h2>愈见卡牌</h2><p>一套献给内心小孩的艺术疗愈卡</p></div>
+    <div class="about-sec">
+      <h3>关于这套卡</h3>
+      <p>《愈见卡牌》以柔和梦幻的水彩美学，把情绪装进 26 张卡牌里：给予拥抱与栖于星光的紫色小熊、缓缓转动的命运之轮、十二位在神话与梦境中漫游的少女，以及十二个静静诉说的唯美意象。愿你在翻牌之间，与真实的自己温柔相遇。</p>
+    </div>
+    <div class="about-sec">
+      <h3>卡牌结构</h3>
+      <ul>
+        <li>核心主牌（3 张）：拥抱者、星栖小熊与命运之轮，被守护与照亮的时刻</li>
+        <li>少女与神话篇：跟随少女完成一场内心的冒险（11 张）</li>
+        <li>意象与物语篇：让自然万物给你答案（12 张）</li>
+      </ul>
+    </div>
+    <div class="about-sec">
+      <h3>如何使用</h3>
+      <ul>
+        <li>深呼吸三次，在心里默念你的问题</li>
+        <li>选择与当下心境共鸣的篇章</li>
+        <li>轻触卡牌，阅读讯息，并完成一个小小的行动指引</li>
+      </ul>
+    </div>
+    <div class="about-disclaimer">
+      <strong>免责声明</strong><br>
+      本卡牌所有文案与画面均为艺术创作与情绪表达，仅供休闲娱乐与自我关怀参考，不代表任何科学或医学结论，不能替代专业的心理咨询、诊断或治疗。若你正处于严重或持续的心理困扰中，请联系正规医疗机构或心理援助热线。请相信：你值得被爱，也值得被自己温柔以待。
+    </div>
+  </section>
+
+</div>
+
+<!-- 海报弹窗 -->
+<div class="pm-mask" id="posterModal" onclick="if(event.target===this)closePoster()">
+  <div class="pm-box">
+    <canvas id="posterCanvas" width="600" height="1100"></canvas>
+    <div class="pm-actions">
+      <a id="posterDownload" download="yujian-poster.png"><button class="btn-primary">保存图片</button></a>
+      <button class="btn-line" onclick="closePoster()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script src="cards-data.js"></script>
+<script>
+const GROUPS_META = {
+  core:   { cover: cards[0].image },
+  maiden: { cover: cards[1].image },
+  tale:   { cover: cards[12].image },
+  all:    { name:'随心抽', en:'Random Draw', desc:'不限篇章，让 26 张牌为你选择', cover: cards[20].image }
+};
+const state = { view:'splash', groupId:null, pool:[], drawnId:null, detailFrom:'home', filter:'all', worry:'',
+  mode:'single', phase:'idle', orient:null, pos:null };
+const routeStack = [];
+
+function $(id){ return document.getElementById(id); }
+
+function go(name, push=true){
+  if(push && state.view && state.view !== name) routeStack.push(state.view);
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+name).classList.add('active');
+  state.view = name;
+  window.scrollTo(0,0);
+  if(name==='groups') renderGroups();
+  if(name==='gallery') renderGallery();
+  if(name==='wish') initWish();
+  if(name==='draw') initDraw();
+}
+
+function backNav(){ const prev = routeStack.pop(); go(prev||'home',false); }
+
+// —— 开屏视频 ——
+const video = $('splashVideo');
+let videoDone = false;
+function enterHome(){ if(videoDone) return; videoDone=true; go('home',false); }
+video.addEventListener('ended', enterHome);
+video.addEventListener('error', ()=>{ $('splashFallback').style.display='flex'; });
+var pm = video.play();
+if(pm && pm.catch){ pm.catch(()=>{ /* 自动播放被拦截：显示点击进入 */ $('splashFallback').style.display='flex'; }); }
+// 静音自动播放通常成功；若 11 秒未结束也兜底
+setTimeout(()=>{ if(state.view==='splash') enterHome(); }, 11500);
+
+// —— 篇章 ——
+function renderGroups(){
+  const ids = ['core','maiden','tale','all'];
+  $('groupList').innerHTML = ids.map(id=>{
+    const g = id==='all' ? GROUPS_META.all : Object.assign({}, groups[id], GROUPS_META[id]);
+    const count = id==='all' ? cards.length : cards.filter(c=>c.group===id).length;
+    return `<button class="group-card" onclick="chooseGroup('${id}')">
+      <img src="${g.cover}" alt="">
+      <div class="group-meta">
+        <div class="g-name">${g.name}</div>
+        <div class="g-en">${g.en||''}</div>
+        <div class="g-desc">${g.desc}</div>
+        <span class="g-count">${count} 张牌</span>
+      </div>
+      <span class="group-go">›</span>
+    </button>`;
+  }).join('');
+}
+function chooseGroup(id){
+  state.groupId = id;
+  state.pool = id==='all' ? cards.slice() : cards.filter(c=>c.group===id);
+  go('wish');
+}
+
+// —— 祈愿 · 写下心事 ——
+const WISH_EXAMPLES = ['最近总觉得很累，提不起劲','在一段关系里感到不安','不知道眼前的选择对不对','想和自己好好相处'];
+function initWish(){
+  const list = $('wishSugList');
+  if(!list.children.length){
+    list.innerHTML = WISH_EXAMPLES.map(t=>
+      `<button onclick="setWish(${JSON.stringify(t).replace(/"/g,'&quot;')})">${t}</button>`).join('');
+  }
+  $('wishInput').value = state.worry || '';
+  updateWishCount();
+}
+function updateWishCount(){ $('wishCount').textContent = $('wishInput').value.length; }
+function setWish(t){ $('wishInput').value = t; updateWishCount(); }
+$('wishInput').addEventListener('input', updateWishCount);
+function submitWish(){
+  state.worry = $('wishInput').value.trim();
+  go('draw');
+}
+function skipWish(){
+  state.worry = '';
+  go('draw');
+}
+
+// —— 抽卡仪式 ——
+let fanCards = [], pickedCount = 0, spreadCards = [], drawTimers = [];
+
+function initDraw(){
+  const g = state.groupId==='all' ? GROUPS_META.all : groups[state.groupId];
+  $('drawGroupName').textContent = g ? g.name : '';
+  if(state.worry){
+    $('drawWorry').style.display = 'flex';
+    $('drawWorryText').textContent = state.worry;
+  }else{
+    $('drawWorry').style.display = 'none';
+  }
+  resetDraw(true);
+}
+
+function showPhase(phase){
+  state.phase = phase;
+  ['Idle','Shuffle','Picking','Result'].forEach(p=>{
+    $('draw'+p).style.display = p.toLowerCase()===phase ? 'flex' : 'none';
+  });
+  const desc = {
+    idle: '选择一种占卜方式，让卡牌回应你的心事',
+    shuffle: '正在静心洗牌……把注意力放回呼吸上',
+    picking: state.mode==='spread'
+      ? `凭直觉依次选择 ${POSITIONS.map(p=>p.name).join(' · ')} 三张牌（已选 ${pickedCount}/3）`
+      : '凭直觉，选择一张与你呼应的牌',
+    result: state.mode==='spread' ? '三张牌已经就位，逐一翻开吧' : '讯息已抵达 ✦'
+  };
+  $('drawPhaseDesc').textContent = desc[phase];
+}
+
+function selectMode(mode){
+  if(state.phase!=='idle') return;
+  state.mode = mode;
+  document.querySelectorAll('.w-mode').forEach(el=>{
+    el.classList.toggle('on', el.dataset.mode===mode);
+  });
+}
+
+function startDraw(){
+  showPhase('shuffle');
+  drawTimers.push(setTimeout(()=>{
+    const pool = state.pool.slice();
+    for(let i=pool.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+    fanCards = pool.slice(0,7).map(c=>({ card:c, orient: Math.random()<0.5?0:1 }));
+    pickedCount = 0;
+    spreadCards = [];
+    renderFan();
+    showPhase('picking');
+  }, 1300));
+}
+
+function renderFan(){
+  $('fanRow').innerHTML = fanCards.map((f,i)=>`
+    <button class="fan-card ${f.picked?'picked':''}" data-i="${i}" onclick="pickFan(${i})"
+      style="--fx:${(i-3)*46}px; --fr:${(i-3)*6}deg">
+      <div class="fc-back">♡</div>
+      <div class="fc-glow"></div>
+    </button>`).join('');
+}
+
+function pickFan(i){
+  if(state.phase!=='picking' || fanCards[i].picked) return;
+  fanCards[i].picked = true;
+  pickedCount++;
+  if(navigator.vibrate) navigator.vibrate(30);
+
+  if(state.mode==='single'){
+    renderFan();
+    const f = fanCards[i];
+    drawTimers.push(setTimeout(()=>revealSingle(f), 650));
+  }else{
+    const pos = POSITIONS[spreadCards.length];
+    spreadCards.push(Object.assign({}, fanCards[i], { pos }));
+    renderFan();
+    $('drawPhaseDesc').textContent =
+      `凭直觉依次选择 ${POSITIONS.map(p=>p.name).join(' · ')} 三张牌（已选 ${Math.min(pickedCount,3)}/3）`;
+    if(pickedCount>=3){
+      drawTimers.push(setTimeout(revealSpread, 750));
+    }
+  }
+}
+
+function revealSingle(f){
+  state.drawnId = f.card.id;
+  state.orient = f.orient;
+  state.pos = null;
+  showPhase('result');
+  $('resultSingle').style.display = 'flex';
+  $('resultSpread').style.display = 'none';
+  $('singleImg').src = f.card.image;
+  $('singleImg').classList.toggle('is-rev', f.orient===1);
+  const rev = reversed[f.card.id] || {};
+  $('singleOrient').textContent = f.orient===1 ? '逆位' : '正位';
+  $('singleOrient').className = 'w-orient ' + (f.orient===1?'rev':'up');
+  $('singleName').textContent = f.card.name;
+  $('singleEn').textContent = f.card.en;
+  burstParticles();
+  const flip = $('singleFlip');
+  flip.classList.remove('flipped');
+  void flip.offsetWidth;
+  drawTimers.push(setTimeout(()=>flip.classList.add('flipped'), 120));
+}
+
+function revealSpread(){
+  showPhase('result');
+  $('resultSingle').style.display = 'none';
+  $('resultSpread').style.display = 'block';
+  burstParticles();
+  $('spreadRow').innerHTML = spreadCards.map((f,i)=>`
+    <div class="sp-item">
+      <div class="sp-pos">${f.pos.name}</div>
+      <div class="sp-hint">${f.pos.hint}</div>
+      <div class="sp-card" onclick="flipSpread(this, ${i})">
+        <div class="sp-inner" id="spInner${i}">
+          <div class="sp-face sp-back"><span>♡</span></div>
+          <div class="sp-face sp-front">
+            <img src="${f.card.image}" alt="" class="${f.orient===1?'is-rev':''}">
+          </div>
+        </div>
+        <span class="sp-badge ${f.orient===1?'rev':'up'}">${f.orient===1?'逆':'正'}</span>
+      </div>
+      <button class="sp-detail" onclick="openSpreadDetail(${i})">查看解读 ›</button>
+    </div>`).join('');
+  drawTimers.push(setTimeout(()=>{
+    spreadCards.forEach((f,i)=>{
+      drawTimers.push(setTimeout(()=>{
+        const el = $('spInner'+i);
+        if(el) el.classList.add('flipped');
+      }, i*480));
+    });
+    drawTimers.push(setTimeout(showSpreadSummary, spreadCards.length*480+200));
+  }, 400));
+}
+
+const SS_SUMMARIES = [
+  '试着看见藏在脆弱背后，属于你的力量。',
+  '不必强求事事圆满，缺憾本就是生活的一部分。',
+  '守住内心边界，别持续消耗自己去成全他人。',
+  '不必畏惧告别，结束是为新生腾出空间。',
+  '请相信直觉，你的心底一直藏着答案。',
+  '放下对完美的幻想，去拥抱真实的自己。',
+  '不必急于奔赴目标，看清内心再做选择。',
+  '情绪没有好坏，允许感受自然流动。',
+  '卸下沉重的期待，你可以轻松一点前行。',
+  '停止反复自我怀疑，你的闪光点值得被看见。',
+  '学会区分幻想与现实，别被想象困住脚步。',
+  '成长常常伴随着离别，这是必经的旅程。',
+  '不必独自扛下所有，你也可以选择依靠。',
+  '把温柔优先留给自己，再去照亮别人。',
+  '旧的故事终会翻篇，新的风景正在等候。',
+  '不必追赶他人节奏，走属于自己的道路。',
+  '接纳此刻的迷茫，它也是成长的一部分。',
+  '勇敢表达真实想法，不必刻意迎合所有人。',
+  '那些沉淀的经历，终将化作你的底气。',
+  '不必执着于结果，好好感受当下就足够。',
+  '放下不属于你的执念，内心才能获得轻盈。',
+  '微小的微光汇聚起来，也足以照亮前路。',
+  '允许自己犯错，试错也是了解自我的方式。',
+  '向内安顿好自己，外界的纷扰便难以动摇你。',
+  '这组牌在提示你：你远比自己想象的，更有勇气跨过难关。',
+  '是内心在提醒你：停止反复内耗，允许事情自然流转。'
+];
+
+function showSpreadSummary(){
+  const kw = (it) => {
+    const list = it.orient === 1 && REVERSED[it.card.id] ? REVERSED[it.card.id].kw : it.card.keywords;
+    return list.slice(0,2).join('、');
+  };
+  const seg = (i, verb) => `「${spreadCards[i].pos.name}·${spreadCards[i].card.name}」${verb}${kw(spreadCards[i])}`;
+  const analysis = `${seg(0,'沉淀着')}，${seg(1,'映照着')}，${seg(2,'指向')}。`;
+  const links = ['三张牌交汇成一句话：','它们共同指向：','牌面轻声对你说：'];
+  const text = analysis + links[Math.floor(Math.random()*links.length)] + SS_SUMMARIES[Math.floor(Math.random()*SS_SUMMARIES.length)];
+  const el = $('spSummary');
+  el.innerHTML = `<div class="ss-title">✦ 综合解读</div><div class="ss-text">${text}</div>`;
+  el.style.display = 'block';
+}
+
+function flipSpread(el){
+  el.classList.add('flipped');
+}
+
+function openSpreadDetail(i){
+  const f = spreadCards[i];
+  state.drawnId = f.card.id;
+  state.orient = f.orient;
+  state.pos = f.pos.key;
+  openDetail(f.card.id, true);
+}
+
+function burstParticles(){
+  const box = $('particlesBox');
+  const chars = ['✦','✧','✷'];
+  box.innerHTML = Array.from({length:16},(_,i)=>{
+    const left = 6 + Math.random()*88;
+    const delay = (Math.random()*0.9).toFixed(2);
+    const dur = (2.2+Math.random()*1.6).toFixed(2);
+    const size = 10+Math.floor(Math.random()*12);
+    return `<span class="w-p" style="left:${left}%;animation-delay:${delay}s;animation-duration:${dur}s;font-size:${size}px">${chars[i%3]}</span>`;
+  }).join('');
+}
+
+function resetDraw(silent){
+  drawTimers.forEach(clearTimeout);
+  drawTimers = [];
+  fanCards = []; pickedCount = 0; spreadCards = [];
+  state.drawnId = null; state.orient = null; state.pos = null;
+  $('fanRow').innerHTML = '';
+  $('particlesBox').innerHTML = '';
+  const ss = $('spSummary');
+  if(ss){ ss.style.display='none'; ss.innerHTML=''; }
+  if(!silent) showPhase('idle');
+  else showPhase('idle');
+}
+
+// —— 详情 ——
+function openDetail(id, withWish){
+  const c = cards.find(x=>x.id===id);
+  if(!c) return;
+  const fromDraw = withWish !== false;
+  const isRev = fromDraw && state.orient===1;
+  const pos = fromDraw ? POSITIONS.find(p=>p.key===state.pos) : null;
+  const rev = reversed[id] || {};
+
+  $('detailImg').src = c.image;
+  $('detailImg').classList.toggle('is-rev', isRev);
+  const orientBadge = $('detailOrient');
+  orientBadge.style.display = fromDraw ? 'block' : 'none';
+  orientBadge.textContent = isRev ? '逆位' : '正位';
+  orientBadge.className = 'd-orient ' + (isRev?'rev':'up');
+
+  const posEl = $('detailPos');
+  if(pos){
+    posEl.style.display = 'flex';
+    posEl.innerHTML = `<span class="dp-name">${pos.name}</span><span class="dp-hint">${pos.hint}</span>`;
+  }else{
+    posEl.style.display = 'none';
+  }
+
+  if(withWish !== false && state.worry){
+    $('detailWish').style.display = 'block';
+    $('detailWishText').textContent = state.worry;
+  }else{
+    $('detailWish').style.display = 'none';
+  }
+  $('detailTag').textContent = groups[c.group].name;
+  $('detailName').textContent = c.name;
+  $('detailEn').textContent = c.en;
+  const note = $('detailOrientNote');
+  if(fromDraw){
+    note.style.display = 'block';
+    note.textContent = isRev
+      ? '逆位 · 能量暂时向内收回，这张牌邀请你看见被忽略的另一面'
+      : '正位 · 卡牌的能量正温柔地流向你';
+    note.className = 'd-orient-note ' + (isRev?'rev':'up');
+  }else{
+    note.style.display = 'none';
+  }
+  const kws = isRev && rev.kw ? rev.kw : c.keywords;
+  $('detailKeys').innerHTML = kws.map(k=>`<span>${k}</span>`).join('');
+  $('detailHeal').textContent = isRev && rev.heal ? rev.heal : c.healing;
+  if(c.action){
+    $('detailAction').style.display='block';
+    $('detailActionText').textContent = c.action;
+  }else{
+    $('detailAction').style.display='none';
+  }
+  go('detail');
+}
+
+// —— 海报 ——
+function posterRoundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function openPoster(){
+  const c = cards.find(x=>x.id===state.drawnId);
+  if(!c) return;
+  const isRev = state.orient===1;
+  const pos = POSITIONS.find(p=>p.key===state.pos);
+  const rev = reversed[c.id] || {};
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  const payload = {
+    card:c, isRev, pos, dateStr,
+    groupName: groups[c.group].name,
+    keywords: isRev&&rev.kw ? rev.kw : c.keywords,
+    healing: isRev&&rev.heal ? rev.heal : c.healing,
+    worry: state.worry || ''
+  };
+  $('posterModal').classList.add('show');
+  const canvas = $('posterCanvas');
+  const img = new Image();
+  img.onload = ()=> drawPoster(canvas, canvas.getContext('2d'), img, payload);
+  img.src = c.image;
+}
+
+function drawPoster(canvas, ctx, img, p){
+  const W=600, H=1100;
+  ctx.clearRect(0,0,W,H);
+  const bg = ctx.createLinearGradient(0,0,W,H);
+  bg.addColorStop(0,'#F3E8FB'); bg.addColorStop(0.55,'#F8ECF6'); bg.addColorStop(1,'#FCE4EF');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+
+  // 双层细边框
+  ctx.strokeStyle='rgba(184,148,212,0.5)'; ctx.lineWidth=1;
+  posterRoundRect(ctx,18,18,W-36,H-36,18); ctx.stroke();
+  ctx.strokeStyle='rgba(184,148,212,0.28)';
+  posterRoundRect(ctx,26,26,W-52,H-52,14); ctx.stroke();
+
+  // 星光
+  ctx.textAlign='center';
+  const stars=[[70,110,18,'✦'],[530,150,14,'✧'],[95,330,12,'✧'],[512,540,16,'✦'],[75,780,14,'✦'],[525,900,13,'✧']];
+  ctx.fillStyle='rgba(190,150,220,0.45)';
+  stars.forEach(s=>{ ctx.font=s[2]+'px sans-serif'; ctx.fillText(s[3],s[0],s[1]); });
+
+  // 品牌
+  ctx.fillStyle='#6E4E96'; ctx.font='40px "Songti SC", serif'; ctx.fillText('愈 见 卡 牌', W/2, 72);
+  ctx.fillStyle='rgba(140,110,170,0.75)'; ctx.font='13px Georgia, serif';
+  ctx.fillText('YU JIAN · HEALING ORACLE', W/2, 100);
+  ctx.strokeStyle='rgba(184,148,212,0.6)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W/2-70,120); ctx.lineTo(W/2+70,120); ctx.stroke();
+
+  let sub = `${p.dateStr}　·　${p.groupName}`;
+  if(p.pos) sub += `　·　${p.pos.name}`;
+  sub += `　·　${p.isRev?'逆位':'正位'}`;
+  ctx.fillStyle='rgba(122,96,150,0.85)'; ctx.font='20px sans-serif'; ctx.fillText(sub, W/2, 152);
+
+  // 卡面 + 投影
+  const cw=300, ch=400, cx=(W-cw)/2, cy=180;
+  ctx.save(); ctx.shadowColor='rgba(110,80,150,0.35)'; ctx.shadowBlur=28; ctx.shadowOffsetY=10;
+  ctx.fillStyle='#fff'; posterRoundRect(ctx,cx-6,cy-6,cw+12,ch+12,22); ctx.fill(); ctx.restore();
+  ctx.save(); posterRoundRect(ctx,cx,cy,cw,ch,18); ctx.clip();
+  if(p.isRev){
+    ctx.translate(cx+cw/2, cy+ch/2); ctx.rotate(Math.PI);
+    ctx.drawImage(img, -cw/2, -ch/2, cw, ch);
+  }else{
+    ctx.drawImage(img,cx,cy,cw,ch);
+  }
+  ctx.restore();
+  ctx.strokeStyle='rgba(255,255,255,0.9)'; ctx.lineWidth=2;
+  posterRoundRect(ctx,cx,cy,cw,ch,18); ctx.stroke();
+
+  ctx.fillStyle='#4C3D5C'; ctx.font='36px "Songti SC", "KaiTi", serif'; ctx.fillText(p.card.name, W/2, 640);
+  ctx.fillStyle='rgba(140,110,170,0.8)'; ctx.font='italic 15px Georgia, serif'; ctx.fillText(p.card.en, W/2, 668);
+
+  // 关键词胶囊
+  let chipX=0;
+  ctx.font='18px sans-serif';
+  const chips = p.keywords.map(k=>` ${k} `);
+  const gap=14;
+  const totalChip = chips.reduce((s,t)=>s+ctx.measureText(t).width+28,0)+gap*(chips.length-1);
+  chipX=(W-totalChip)/2;
+  const chipY=688;
+  chips.forEach(t=>{
+    const tw=ctx.measureText(t).width+28;
+    ctx.fillStyle='rgba(255,255,255,0.75)'; posterRoundRect(ctx,chipX,chipY,tw,36,18); ctx.fill();
+    ctx.strokeStyle='rgba(184,148,212,0.65)'; ctx.lineWidth=1; ctx.stroke();
+    ctx.fillStyle='#7D6AA0'; ctx.textBaseline='middle';
+    ctx.fillText(t, chipX+tw/2, chipY+18);
+    chipX += tw+gap;
+  });
+  ctx.textBaseline='alphabetic';
+
+  // 文案卡
+  const boxX=56, boxW=W-112;
+  ctx.font='23px "Songti SC", "KaiTi", serif';
+  const lines=[]; let line='';
+  for(const ch2 of p.healing){
+    if(ctx.measureText(line+ch2).width > boxW-72){ lines.push(line); line=ch2; } else line+=ch2;
+  }
+  lines.push(line);
+  let worryLines=[];
+  if(p.worry){
+    ctx.font='19px sans-serif';
+    let wl='';
+    for(const ch2 of p.worry){
+      if(ctx.measureText(wl+ch2).width > boxW-90){ worryLines.push(wl); wl=ch2; } else wl+=ch2;
+    }
+    worryLines.push(wl);
+  }
+  const extraH = p.worry ? 30+worryLines.length*30+20 : 0;
+  const boxY = p.worry ? 736 : 742;
+  const boxH = 44+lines.length*36+18+extraH;
+  ctx.save(); ctx.shadowColor='rgba(140,100,180,0.14)'; ctx.shadowBlur=20; ctx.shadowOffsetY=6;
+  ctx.fillStyle='rgba(255,255,255,0.86)'; posterRoundRect(ctx,boxX,boxY,boxW,boxH,24); ctx.fill(); ctx.restore();
+
+  ctx.textAlign='left';
+  ctx.font='30px Georgia, serif'; ctx.fillStyle='rgba(184,148,212,0.7)';
+  ctx.fillText('“', boxX+22, boxY+46);
+  ctx.fillStyle='#5C4C70'; ctx.font='23px "Songti SC", "KaiTi", serif';
+  let ty=boxY+50;
+  lines.forEach(l=>{ ctx.fillText(l, boxX+36, ty); ty+=36; });
+  ctx.textAlign='right'; ctx.font='30px Georgia, serif'; ctx.fillStyle='rgba(184,148,212,0.7)';
+  ctx.fillText('”', boxX+boxW-18, ty-4);
+
+  if(p.worry){
+    const wy=ty+10;
+    ctx.strokeStyle='rgba(200,160,220,0.7)'; ctx.setLineDash([6,5]);
+    posterRoundRect(ctx,boxX+20,wy,boxW-40,boxH-(wy-boxY)-16,16); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.textAlign='left';
+    ctx.font='18px sans-serif'; ctx.fillStyle='#A07FBF';
+    ctx.fillText('♡ 我的心事', boxX+38, wy+28);
+    ctx.fillStyle='#6F5E84'; ctx.font='19px sans-serif';
+    let wty=wy+58;
+    worryLines.forEach(l=>{ ctx.fillText(l, boxX+38, wty); wty+=30; });
+  }
+
+  ctx.textAlign='center';
+  ctx.font='20px sans-serif'; ctx.fillStyle='rgba(184,148,212,0.8)'; ctx.fillText('✦', W/2, H-64);
+  ctx.font='19px sans-serif'; ctx.fillStyle='rgba(140,110,170,0.8)';
+  ctx.fillText('保存图片 · 把这份温柔分享给重要的人', W/2, H-38);
+
+  $('posterDownload').href = canvas.toDataURL('image/png');
+}
+
+function closePoster(){ $('posterModal').classList.remove('show'); }
+
+// —— 图鉴 ——
+function renderGallery(){
+  const tabs = [['all','全部'],['core','核心主牌'],['maiden','少女与神话'],['tale','意象与物语']];
+  $('filterRow').innerHTML = tabs.map(([k,v])=>
+    `<button class="${state.filter===k?'on':''}" onclick="setFilter('${k}')">${v}</button>`).join('');
+  const list = state.filter==='all' ? cards : cards.filter(c=>c.group===state.filter);
+  $('galleryGrid').innerHTML = list.map(c=>
+    `<button class="g-item" onclick="openDetail(${c.id},false)">
+       <img class="g-img" src="${c.image}" alt="${c.name}" loading="lazy">
+       <div class="g-no">NO.${String(c.id).padStart(2,'0')}</div>
+       <div class="g-name">${c.name}</div>
+     </button>`).join('');
+}
+function setFilter(k){ state.filter=k; renderGallery(); }
+</script>
+</body>
+</html>
