@@ -1,0 +1,4245 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>愈见卡牌 · 艺术疗愈占卜</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=ZCOOL+QingKe+HuangYou&family=Long+Cang&family=Liu+Jian+Mao+Cao&family=Zhi+Mang+Xing&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  :root{
+    --purple:#8b7bc8; --purple-deep:#6d5ba6; --purple-soft:#c9bde8;
+    --pink:#e7c7dd; --blue:#b9c8e8; --cream:#faf6f0; --ink:#4a4358;
+    --ink-soft:#8d85a0; --gold:#c9a86a;
+    --font-art:'ZCOOL XiaoWei','STKaiti','KaiTi','KaiTi_GB2312','Songti SC',serif;
+    --font-brush:'Ma Shan Zheng','STKaiti','KaiTi','KaiTi_GB2312',cursive;
+    --font-serif:'Noto Serif SC','Songti SC','STSong','SimSun',serif;
+    --font-art-deep:'ZCOOL QingKe HuangYou','Ma Shan Zheng','STKaiti','KaiTi',sans-serif;
+    --font-art-bold:'ZCOOL QingKe HuangYou','STKaiti','KaiTi',sans-serif;
+    --font-art-flow:'Long Cang','Zhi Mang Xing','STKaiti','KaiTi',cursive;
+  }
+  html,body{ height:100%; }
+  body{
+    font-family:var(--font-serif);
+    color:var(--ink);
+    background:radial-gradient(ellipse at 18% 8%, rgba(196,170,232,.5), transparent 45%),
+      radial-gradient(ellipse at 85% 30%, rgba(232,199,221,.42), transparent 42%),
+      radial-gradient(ellipse at 50% 96%, rgba(185,200,232,.4), transparent 48%),
+      linear-gradient(160deg,#ded2ef 0%,#eadde9 45%,#d6e0f3 100%);
+    background-attachment:fixed;
+    display:flex; justify-content:center;
+    overflow-y:auto;
+  }
+  /* 桌面端两侧星尘 */
+  body::before{
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+    background-image:
+      radial-gradient(circle at 12% 22%, rgba(255,255,255,.9) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 26% 68%, rgba(255,255,255,.7) 0 1px, transparent 2px),
+      radial-gradient(circle at 8% 84%, rgba(255,255,255,.8) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 92% 18%, rgba(255,255,255,.8) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 78% 58%, rgba(255,255,255,.65) 0 1px, transparent 2px),
+      radial-gradient(circle at 95% 82%, rgba(255,255,255,.8) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 68% 8%, rgba(255,255,255,.6) 0 1px, transparent 2px);
+    animation:bgTwinkle 5s ease-in-out infinite;
+  }
+  @keyframes bgTwinkle{ 0%,100%{opacity:.55} 50%{opacity:1} }
+  #app{
+    width:100%; max-width:480px; min-height:100vh; position:relative; z-index:1;
+    background:linear-gradient(170deg,#f6f1fa 0%,#faf3f6 50%,#f0f4fb 100%);
+    box-shadow:0 0 60px rgba(109,91,166,.28);
+    overflow-x:hidden;
+  }
+  @media (min-width:900px){
+    #app{ border-radius:26px; margin:26px 0; min-height:calc(100vh - 52px); max-height:none; }
+  }
+  .view{ display:none; animation:fadeIn .55s ease both; min-height:100vh; }
+  .view.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:none;} }
+
+  /* ===== 开屏 · 自制星夜动画 ===== */
+  #view-splash{
+    position:fixed; inset:0; z-index:50; overflow:hidden; cursor:pointer;
+    max-width:480px; margin:0 auto;
+    background:
+      radial-gradient(ellipse at 25% 12%, rgba(255,196,222,.6) 0%, transparent 52%),
+      radial-gradient(ellipse at 82% 32%, rgba(216,178,255,.55) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 96%, rgba(255,214,170,.38) 0%, transparent 55%),
+      linear-gradient(165deg, #d4a5e0 0%, #a87cca 32%, #7a55b0 62%, #4d3288 100%);
+  }
+  @media (min-width:900px){ #view-splash{ border-radius:26px; } }
+  #splashStars{ position:absolute; inset:0; width:100%; height:100%; }
+  .splash-moon{
+    position:absolute; top:64px; right:42px; width:64px; height:64px; border-radius:50%;
+    background:radial-gradient(circle at 36% 34%, #fff8e0, #ffe6b0 55%, #f0c87a);
+    box-shadow:0 0 44px rgba(255,230,176,.75), 0 0 110px rgba(255,210,140,.4),
+      0 0 0 2px rgba(255,255,255,.5);
+    opacity:0; animation:smMoon 2.4s ease .3s forwards;
+  }
+  @keyframes smMoon{ from{opacity:0; transform:translateY(-14px) scale(.8)} to{opacity:.95; transform:none} }
+  .splash-meteor{
+    position:absolute; top:60px; left:-30%; width:160px; height:2px; border-radius:2px;
+    background:linear-gradient(90deg, rgba(255,255,255,0), rgba(255,230,180,.6) 40%, rgba(255,200,140,.95));
+    box-shadow:0 0 8px rgba(255,220,160,.7);
+    transform:rotate(18deg); opacity:0;
+    animation:smMeteor 3.4s ease-in 1.1s 1;
+  }
+  @keyframes smMeteor{ 0%{opacity:0; left:-30%} 6%{opacity:1} 26%{opacity:1; left:120%} 100%{opacity:0; left:120%} }
+  .splash-meteor{ animation:smMeteor 8s ease-in 1.1s infinite; }
+  .splash-meteor.m2{
+    top:170px; width:110px; transform:rotate(24deg);
+    animation:smMeteor 9.5s ease-in 4.8s infinite;
+  }
+  .splash-moon::after{
+    content:''; position:absolute; inset:-13px; border-radius:50%;
+    border:1px solid rgba(255,236,196,.4);
+    animation:smMoonRing 4.5s ease-in-out infinite;
+  }
+  @keyframes smMoonRing{ 0%,100%{opacity:.25; transform:scale(.96)} 50%{opacity:.7; transform:scale(1.06)} }
+  .splash-nebula{
+    position:absolute; border-radius:50%; pointer-events:none;
+  }
+  .splash-nebula.n1{
+    top:78px; left:-13%; width:250px; height:110px;
+    background:radial-gradient(ellipse, rgba(255,220,240,.34), rgba(230,190,255,.16) 55%, transparent 75%);
+    animation:smNebula 9s ease-in-out infinite alternate;
+  }
+  .splash-nebula.n2{
+    top:196px; right:-16%; width:290px; height:120px;
+    background:radial-gradient(ellipse, rgba(202,182,255,.3), rgba(255,200,230,.13) 55%, transparent 75%);
+    animation:smNebula 11s ease-in-out 1.6s infinite alternate;
+  }
+  @keyframes smNebula{ from{ transform:translateX(-16px) } to{ transform:translateX(20px) } }
+  .splash-const{
+    position:absolute; top:96px; left:9%; width:158px; height:auto; opacity:0;
+    animation:smConst 2.6s ease .9s forwards;
+    pointer-events:none;
+  }
+  @keyframes smConst{ to{ opacity:1 } }
+  .splash-const .cstar{ animation:smTwinkle 3s ease-in-out infinite; transform-origin:center; }
+  .splash-const .cstar:nth-child(odd){ animation-delay:1.4s; }
+  .splash-const line, .splash-const polyline{
+    stroke:rgba(255,242,214,.4); stroke-width:.8; stroke-dasharray:3 3;
+  }
+  .splash-stage{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:34px; padding-bottom:40px;
+  }
+  .sm-card-wrap{ position:relative; width:200px; height:292px; perspective:1000px; }
+  .sm-card-wrap::before{
+    content:''; position:absolute; inset:-26px; border-radius:34px;
+    background:radial-gradient(circle, rgba(255,230,180,.55), rgba(220,170,255,.3) 50%, rgba(180,140,220,.12) 72%, transparent 82%);
+    opacity:0; animation:smHalo 3.2s ease-in-out 1.1s infinite;
+  }
+  @keyframes smHalo{ 0%,100%{opacity:.35; transform:scale(.94)} 50%{opacity:.9; transform:scale(1.05)} }
+  .sm-card{
+    position:absolute; inset:0; border-radius:20px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:12px;
+    background:
+      radial-gradient(circle at 50% 28%, rgba(255,255,255,.3), transparent 52%),
+      radial-gradient(circle at 50% 110%, rgba(255,210,170,.38), transparent 55%),
+      linear-gradient(160deg, #e2c8f0 0%, #b894d4 38%, #8a6bc4 68%, #6d4a9e 100%);
+    border:1.5px solid rgba(255,255,255,.6);
+    box-shadow:0 24px 60px rgba(77,50,136,.5), inset 0 0 30px rgba(255,255,255,.12),
+      0 0 0 3px rgba(220,192,130,.85), 0 0 0 6px rgba(247,237,208,.35);
+    opacity:0; transform:translateY(46px) scale(.7) rotateY(-40deg);
+    animation:smCardIn 1.5s cubic-bezier(.22,1.05,.3,1) .35s forwards;
+  }
+  @keyframes smCardIn{
+    0%{opacity:0; transform:translateY(46px) scale(.7) rotateY(-40deg)}
+    55%{opacity:1}
+    100%{opacity:1; transform:translateY(0) scale(1) rotateY(0)}
+  }
+  .sm-card::before{
+    content:''; position:absolute; inset:9px; border-radius:13px;
+    border:1px solid rgba(255,255,255,.4);
+    background:radial-gradient(circle at 50% 44%, rgba(255,255,255,.12), transparent 62%);
+  }
+  .sm-moon{
+    position:relative; z-index:1; font-size:52px; color:#f7eaff; line-height:1;
+    text-shadow:0 0 18px rgba(255,255,255,.9), 0 0 42px rgba(216,180,255,.7);
+    animation:smTwinkle 2.8s ease-in-out infinite;
+  }
+  .sm-zi{
+    position:relative; z-index:1; font-family:var(--font-art);
+    font-size:30px; letter-spacing:14px; text-indent:14px; color:#fff;
+    text-shadow:0 0 16px rgba(255,255,255,.5);
+  }
+  .sm-en{
+    position:relative; z-index:1; font-size:9px; letter-spacing:5px;
+    color:rgba(255,255,255,.65);
+  }
+  .sm-shine{
+    position:absolute; top:-20%; left:-90%; z-index:2; width:50%; height:150%;
+    background:linear-gradient(105deg, transparent, rgba(255,255,255,.65), transparent);
+    transform:rotate(8deg); opacity:0; pointer-events:none;
+    animation:smShine 1.6s ease 1.7s 1;
+  }
+  @keyframes smShine{ 0%{left:-90%; opacity:0} 25%{opacity:1} 100%{left:140%; opacity:0} }
+  .sm-float{ animation:smFloat 4s ease-in-out 2s infinite; }
+  @keyframes smFloat{ 0%,100%{transform:translateY(0) rotate(-.8deg)} 50%{transform:translateY(-12px) rotate(.8deg)} }
+  @keyframes smTwinkle{ 0%,100%{opacity:.6; transform:scale(.92)} 50%{opacity:1; transform:scale(1.08)} }
+  .sm-brand{ text-align:center; opacity:0; animation:smBrand 1.6s ease 1.9s forwards; }
+  .sm-title{
+    font-family:var(--font-art-deep);
+    font-size:72px; letter-spacing:14px; text-indent:14px; line-height:1.1;
+    background:linear-gradient(120deg,#fff6dc 10%,#ecd9a0 45%,#d9b974 60%,#f7ecc6 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 16px rgba(236,217,160,.5));
+  }
+  .sm-sub{ margin-top:10px; font-size:11px; letter-spacing:6px; text-indent:6px; color:rgba(255,240,250,.85); }
+  .sm-line{
+    margin:16px auto 0; width:120px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,230,180,.85), transparent);
+  }
+  .sm-enter{
+    position:absolute; bottom:54px; left:0; right:0; text-align:center;
+    font-size:13px; letter-spacing:6px; text-indent:6px; color:rgba(255,255,255,.82);
+    opacity:0; animation:smEnterFade 2.2s ease 3s forwards;
+  }
+  .sm-enter span{ animation:smBreath 2.4s ease-in-out 5.2s infinite; display:inline-block; }
+  @keyframes smBrand{ from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none} }
+  @keyframes smEnterFade{ from{opacity:0} to{opacity:.9} }
+  @keyframes smBreath{ 0%,100%{opacity:.5} 50%{opacity:1} }
+  .sm-skip{
+    position:absolute; top:20px; left:18px; z-index:6;
+    padding:8px 18px; border-radius:999px; border:1px solid rgba(255,255,255,.5);
+    color:#fff; font-size:12px; letter-spacing:3px;
+    background:rgba(255,255,255,.2); backdrop-filter:blur(8px); cursor:pointer;
+  }
+  /* 飘落花瓣 */
+  .petal{
+    position:absolute; top:-20px; z-index:4; pointer-events:none;
+    border-radius:50% 0 50% 50%;
+    animation:petalFall linear infinite;
+    filter:drop-shadow(0 2px 4px rgba(220,140,180,.3));
+  }
+  @keyframes petalFall{
+    0%{ transform:translateY(-20px) translateX(0) rotate(0deg); opacity:0; }
+    8%{ opacity:1; }
+    100%{ transform:translateY(105vh) translateX(var(--drift,40px)) rotate(720deg); opacity:.2; }
+  }
+
+  /* ===== 通用头部 ===== */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 22px 8px;
+  }
+  .back-btn{
+    width:36px; height:36px; border-radius:50%; border:none; cursor:pointer;
+    background:rgba(255,255,255,.7); color:var(--purple-deep); font-size:17px;
+    box-shadow:0 3px 10px rgba(109,91,166,.12);
+  }
+  .topbar-title{ font-size:15px; letter-spacing:4px; color:var(--ink-soft); }
+
+  /* ===== 首页 ===== */
+  #view-home{
+    text-align:center; padding:80px 32px 80px; min-height:100vh; position:relative;
+    background:
+      radial-gradient(ellipse at 18% 8%, rgba(216,190,244,.5) 0%, transparent 46%),
+      radial-gradient(ellipse at 86% 22%, rgba(250,222,180,.42) 0%, transparent 44%),
+      radial-gradient(ellipse at 50% 108%, rgba(226,196,240,.5) 0%, transparent 52%);
+  }
+  #view-home.active{ display:flex; flex-direction:column; align-items:center; }
+  .home-badge{ font-size:12px; letter-spacing:6px; color:var(--purple); opacity:.8; margin-bottom:18px; }
+  .home-title{
+    font-family:var(--font-art-deep);
+    font-size:54px; font-weight:400; letter-spacing:14px; text-indent:14px;
+    background:linear-gradient(120deg,var(--purple-deep),#b087c2 60%,var(--gold));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 3px 12px rgba(125,90,170,.35));
+  }
+  .home-en{ margin-top:8px; font-size:11px; letter-spacing:5px; color:var(--ink-soft); }
+  .luck-badge{
+    display:inline-flex; align-items:center; gap:7px; margin-top:14px;
+    padding:8px 18px; border-radius:999px; cursor:pointer;
+    font-size:12.5px; letter-spacing:2px; color:#8a6a35;
+    background:linear-gradient(120deg,rgba(250,242,222,.95),rgba(243,228,192,.9));
+    border:1px solid rgba(212,182,118,.65);
+    box-shadow:0 5px 16px rgba(190,150,80,.18);
+    transition:transform .25s;
+  }
+  .luck-badge:active{ transform:scale(.95); }
+  .luck-badge .lb-icon{ color:#d4a955; animation:twinkle 2.4s ease-in-out infinite; }
+  .luck-badge b{
+    font-family:var(--font-art); font-size:16px; font-weight:400;
+    color:#b3873a; min-width:18px; text-align:center;
+  }
+  .luck-badge .lb-go{ font-size:11px; color:#b99a5c; letter-spacing:1px; margin-left:2px; }
+  /* 运气 +1 飘字 */
+  .luck-float{
+    position:fixed; z-index:60; transform:translate(-50%,-50%);
+    font-family:var(--font-brush); font-size:30px; white-space:nowrap;
+    background:linear-gradient(120deg,#f7e9b8,#d9a94f 55%,#f7e9b8);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 10px rgba(220,170,80,.65));
+    animation:luckFloat 1.5s cubic-bezier(.25,.8,.35,1) forwards;
+    pointer-events:none;
+  }
+  .luck-float::before{ content:'✦ '; }
+  @keyframes luckFloat{
+    0%{ opacity:0; transform:translate(-50%,-30%) scale(.5); }
+    18%{ opacity:1; transform:translate(-50%,-52%) scale(1.15); }
+    32%{ transform:translate(-50%,-60%) scale(1); }
+    100%{ opacity:0; transform:translate(-50%,-190%) scale(1.05); }
+  }
+  .home-card-wrap{
+    margin:48px auto 40px; width:240px; height:374px; position:relative;
+    animation:floaty 4.5s ease-in-out infinite;
+  }
+  @keyframes floaty{ 0%,100%{transform:translateY(0) rotate(-1.2deg);} 50%{transform:translateY(-12px) rotate(1.2deg);} }
+  .home-card-wrap::before{
+    content:""; position:absolute; inset:-16px; border-radius:26px;
+    background:radial-gradient(circle at 50% 40%, rgba(201,189,232,.65), transparent 70%);
+    filter:blur(6px);
+  }
+  .home-card-wrap::after{
+    content:""; position:absolute; inset:0; z-index:1; border-radius:20px; pointer-events:none;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 66%, rgba(255,244,210,.16) 100%),
+      radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 56%, rgba(58,38,92,.26) 100%);
+  }
+  .home-card{
+    width:100%; height:100%; object-fit:cover; border-radius:20px; position:relative;
+    box-shadow:0 22px 44px rgba(109,91,166,.4),
+      0 0 0 2px #dcc082, 0 0 0 5px #f7edd0, 0 0 0 6px rgba(201,168,106,.6),
+      inset 0 0 30px rgba(90,60,30,.15);
+  }
+  /* 烫金内框 + 流光叠加层 */
+  .hc-frame{
+    position:absolute; inset:0; z-index:2; border-radius:20px; pointer-events:none;
+    box-shadow:inset 0 0 0 8px transparent, inset 0 0 0 9px rgba(220,192,130,.5), inset 0 0 0 11px rgba(247,237,208,.2);
+  }
+  .hc-frame::before{
+    content:''; position:absolute; inset:8px; border-radius:14px;
+    border:1px solid rgba(220,192,130,.45);
+  }
+  .hc-shine{
+    position:absolute; top:0; left:-90%; z-index:3; width:50%; height:100%;
+    background:linear-gradient(105deg, transparent, rgba(255,255,255,.35), transparent);
+    transform:rotate(8deg); pointer-events:none;
+    animation:hcShine 4s ease 1s infinite;
+  }
+  @keyframes hcShine{ 0%{left:-90%; opacity:0} 15%{opacity:1} 50%{left:140%; opacity:0} 100%{left:140%; opacity:0} }
+  .sparkle{ position:absolute; z-index:2; color:#fff; text-shadow:0 0 10px #e8d9a8, 0 0 3px #fff; animation:twinkle 2.6s ease-in-out infinite; }
+  .sparkle.s1{ top:-8px; right:6px; font-size:20px; }
+  .sparkle.s2{ bottom:34px; left:-14px; font-size:15px; animation-delay:.8s; }
+  .sparkle.s3{ top:52px; left:-20px; font-size:12px; animation-delay:1.5s; }
+  @keyframes twinkle{ 0%,100%{opacity:.25; transform:scale(.8);} 50%{opacity:1; transform:scale(1.15);} }
+  .home-desc{ font-size:13.5px; line-height:2; color:var(--ink-soft); letter-spacing:2px; margin-bottom:36px; }
+  .btn-primary{
+    width:100%; max-width:300px; padding:16px 0; border:none; border-radius:999px; cursor:pointer;
+    font-size:16px; letter-spacing:8px; text-indent:8px; color:#fff;
+    background:linear-gradient(120deg,#9d8bd4,#b794cc 55%,#d3a9c6);
+    box-shadow:0 14px 30px rgba(125,100,180,.35);
+    transition:transform .2s;
+  }
+  .btn-primary:active{ transform:scale(.96); }
+  .home-links{
+    margin-top:40px; display:grid; grid-template-columns:repeat(3,1fr); gap:14px 18px;
+    width:100%; max-width:380px;
+  }
+  .home-links button{
+    border:1px solid rgba(201,189,232,.55); background:rgba(255,255,255,.7); cursor:pointer;
+    font-size:14px; letter-spacing:4px; text-indent:4px; color:var(--purple-deep);
+    padding:14px 6px; border-radius:16px; box-shadow:0 6px 16px rgba(125,100,170,.1);
+    transition:transform .2s, box-shadow .2s;
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .home-links button:active{ transform:scale(.95); box-shadow:0 3px 8px rgba(125,100,170,.16); }
+  .home-links button .hl-ico{ font-size:20px; color:var(--gold); line-height:1; }
+  .home-links button::after{ content:""; display:block; width:24px; height:1px; background:linear-gradient(90deg,transparent,var(--gold),transparent); margin:4px auto 0; }
+
+  /* ===== 篇章选择 ===== */
+  .page-head{ padding:26px 26px 14px; text-align:center; }
+  .page-head h2{ font-family:var(--font-art-deep); font-size:28px; letter-spacing:8px; text-indent:8px; font-weight:400; color:var(--purple-deep); }
+  .page-head p{ margin-top:8px; font-size:12px; letter-spacing:3px; color:var(--ink-soft); }
+  .group-list{ padding:14px 24px 60px; display:flex; flex-direction:column; gap:16px; }
+  .group-card{
+    display:flex; align-items:center; gap:16px; padding:14px; border:none; cursor:pointer;
+    border-radius:20px; background:rgba(255,255,255,.78); text-align:left;
+    box-shadow:0 8px 22px rgba(125,100,170,.12); transition:transform .2s;
+  }
+  .group-card:active{ transform:scale(.97); }
+  .group-card img{ width:74px; height:104px; object-fit:cover; border-radius:12px; box-shadow:0 4px 12px rgba(109,91,166,.2); flex:none; background:#eee3f5; }
+  .group-meta{ flex:1; min-width:0; }
+  .group-meta .g-name{ font-size:17px; letter-spacing:3px; color:var(--ink); }
+  .group-meta .g-en{ font-size:10px; letter-spacing:2px; color:var(--purple); margin-top:3px; opacity:.8; }
+  .group-meta .g-desc{ font-size:12px; color:var(--ink-soft); margin-top:7px; line-height:1.6; }
+  .group-meta .g-count{ display:inline-block; margin-top:8px; font-size:11px; color:var(--purple-deep);
+    background:rgba(201,189,232,.35); border-radius:999px; padding:2px 10px; letter-spacing:1px; }
+  .group-go{ color:var(--purple-soft); font-size:20px; flex:none; }
+
+  /* ===== 抽卡仪式 ===== */
+  #view-draw{ min-height:100vh; padding-bottom:50px; }
+  .d-header{ padding:14px 30px 0; text-align:center; }
+  .d-phase-desc{ font-size:13px; letter-spacing:2px; color:var(--ink-soft); margin-top:12px; min-height:20px; line-height:1.8; }
+  .w-stage{ display:flex; flex-direction:column; align-items:center; padding:6px 24px 0; }
+  .w-start{ margin-top:34px; width:100%; max-width:320px; }
+
+  /* 模式选择 */
+  .w-modes{ display:flex; flex-direction:column; gap:16px; width:100%; max-width:340px; margin-top:26px; }
+  .w-mode{
+    position:relative; text-align:left; padding:22px 24px 20px; border-radius:22px; cursor:pointer;
+    background:rgba(255,255,255,.72); border:1.5px solid rgba(201,189,232,.55);
+    box-shadow:0 6px 18px rgba(125,100,170,.08);
+    transition:transform .3s cubic-bezier(.34,1.4,.5,1), box-shadow .3s, border-color .3s;
+  }
+  .w-mode:hover{ transform:translateY(-3px); }
+  .w-mode.on{
+    border-color:var(--purple-soft); background:linear-gradient(160deg,rgba(255,255,255,.95),rgba(243,232,251,.9));
+    box-shadow:0 14px 34px rgba(125,100,170,.22), 0 0 0 4px rgba(201,189,232,.22);
+  }
+  .w-mode.on::after{
+    content:'✦'; position:absolute; top:16px; right:20px; color:#c9a2e0; font-size:15px;
+    animation:twinkle 2s ease-in-out infinite;
+  }
+  .wm-icon{ font-size:24px; color:#a98fd0; margin-bottom:10px; }
+  .wm-name{ font-size:17px; letter-spacing:4px; color:var(--purple-deep); font-weight:500; }
+  .wm-desc{ margin-top:7px; font-size:12px; line-height:1.8; color:var(--ink-soft); letter-spacing:1px; }
+
+  /* 洗牌 */
+  #drawShuffle{ padding-top:60px; }
+  .w-shuffle{ position:relative; width:230px; height:340px; }
+  .ws-card{
+    position:absolute; left:50%; top:50%; width:130px; height:196px; margin:-98px 0 0 -65px;
+    border-radius:16px; display:flex; align-items:center; justify-content:center;
+    font-size:34px; color:#f3d9ea; text-shadow:0 0 14px rgba(255,255,255,.6);
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.24), transparent 52%),
+      radial-gradient(circle at 50% 118%, rgba(255,214,170,.3), transparent 55%),
+      linear-gradient(160deg,#ab9ade 0%,#8471bd 48%,#5d4b96 100%);
+    border:1.5px solid rgba(255,255,255,.55);
+    box-shadow:inset 0 0 22px rgba(255,255,255,.08), 0 14px 30px rgba(109,91,166,.35);
+  }
+  .ws-card.a{ animation:shufA 1.3s ease-in-out infinite; }
+  .ws-card.b{ animation:shufB 1.3s ease-in-out infinite; }
+  .ws-card.c{ animation:shufC 1.3s ease-in-out infinite; }
+  .ws-card.d{ animation:shufD 1.3s ease-in-out infinite; }
+  @keyframes shufA{ 0%,100%{transform:translate(0,0) rotate(-4deg)} 50%{transform:translate(-46px,-10px) rotate(-16deg)} }
+  @keyframes shufB{ 0%,100%{transform:translate(0,0) rotate(3deg)} 50%{transform:translate(46px,-6px) rotate(14deg)} }
+  @keyframes shufC{ 0%,100%{transform:translate(0,0) rotate(-1deg)} 50%{transform:translate(-16px,12px) rotate(6deg)} }
+  @keyframes shufD{ 0%,100%{transform:translate(0,0) rotate(2deg)} 50%{transform:translate(18px,10px) rotate(-8deg)} }
+  .w-rune{ margin-top:36px; font-size:15px; letter-spacing:8px; text-indent:8px; color:#a98fd0; animation:twinkle 1.8s ease-in-out infinite; }
+
+  /* 扇形选牌 */
+  .w-fan-stage{ padding-top:10px; overflow:visible; }
+  .w-fan{ position:relative; height:330px; width:100%; display:flex; justify-content:center; align-items:flex-end; padding-bottom:26px; }
+  .fan-card{
+    position:absolute; bottom:26px; width:118px; height:178px; border:none; padding:0; cursor:pointer;
+    border-radius:14px; transform-origin:50% 130%;
+    transform:translateX(var(--fx)) rotate(var(--fr));
+    transition:transform .45s cubic-bezier(.34,1.5,.5,1), opacity .4s;
+    background:transparent;
+  }
+  .fan-card .fc-back{
+    position:absolute; inset:0; border-radius:14px; display:flex; align-items:center; justify-content:center;
+    pointer-events:none;
+    font-size:26px; color:#f3d9ea;
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.24), transparent 52%),
+      radial-gradient(circle at 50% 118%, rgba(255,214,170,.3), transparent 55%),
+      linear-gradient(160deg,#ab9ade 0%,#8471bd 48%,#5d4b96 100%);
+    border:1.5px solid rgba(255,255,255,.55);
+    box-shadow:inset 0 0 16px rgba(255,255,255,.08), 0 10px 24px rgba(109,91,166,.32);
+  }
+  .fan-card .fc-glow{
+    position:absolute; inset:-8px; border-radius:20px; opacity:0;
+    pointer-events:none;
+    background:radial-gradient(circle, rgba(255,223,160,.75), transparent 70%);
+    transition:opacity .4s;
+  }
+  .fan-card:hover{ transform:translateX(var(--fx)) translateY(-16px) rotate(var(--fr)); z-index:5; }
+  .fan-card:hover .fc-glow{ opacity:.6; }
+  .fan-card.picked{ z-index:8; pointer-events:none;
+    transform:translateX(var(--fx)) translateY(-74px) scale(1.14) rotate(0deg); }
+  .fan-card.picked .fc-glow{ opacity:1; animation:glowPulse 1.2s ease-in-out infinite; }
+  .fan-card.picked .fc-back{ border-color:rgba(255,236,190,.95); }
+  @keyframes glowPulse{ 0%,100%{opacity:.7} 50%{opacity:1} }
+
+  /* 粒子 */
+  .w-particles{ position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:3; }
+  .w-p{ position:absolute; bottom:-4%; color:#d8b8ec; text-shadow:0 0 10px rgba(230,200,250,.9); animation:rise linear forwards; opacity:0; }
+  @keyframes rise{ 0%{transform:translateY(0) scale(.6); opacity:0} 12%{opacity:.95} 100%{transform:translateY(-92vh) scale(1.15); opacity:0} }
+
+  /* —— 卡背烫金纹样：双线框 + 四角卷草 + 中心星盘（共用） —— */
+  .ws-card::before,.fc-back::before,.w-back::before,.sp-back::before{
+    content:''; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 140'><g fill='none' stroke='%23ECD9A0' stroke-width='.55'><rect x='5' y='5' width='90' height='130' rx='7'/><rect x='9' y='9' width='82' height='122' rx='4.5'/></g><g fill='none' stroke='%23F3E3B5' stroke-width='.5' stroke-linecap='round'><path d='M15 29C15 20 19.5 15.5 29 15.5M15 24.5C20 24.5 24.5 24.5 24.5 19.5'/><path d='M15 29C15 20 19.5 15.5 29 15.5M15 24.5C20 24.5 24.5 24.5 24.5 19.5' transform='translate(100 0) scale(-1 1)'/><path d='M15 29C15 20 19.5 15.5 29 15.5M15 24.5C20 24.5 24.5 24.5 24.5 19.5' transform='translate(100 140) scale(-1 -1)'/><path d='M15 29C15 20 19.5 15.5 29 15.5M15 24.5C20 24.5 24.5 24.5 24.5 19.5' transform='translate(0 140) scale(1 -1)'/></g><g fill='%23F3E3B5'><path d='M29 10.5L30.4 13.5L33.5 15L30.4 16.4L29 19.5L27.6 16.4L24.5 15L27.6 13.5Z'/><path d='M29 10.5L30.4 13.5L33.5 15L30.4 16.4L29 19.5L27.6 16.4L24.5 15L27.6 13.5Z' transform='translate(100 0) scale(-1 1)'/><path d='M29 10.5L30.4 13.5L33.5 15L30.4 16.4L29 19.5L27.6 16.4L24.5 15L27.6 13.5Z' transform='translate(100 140) scale(-1 -1)'/><path d='M29 10.5L30.4 13.5L33.5 15L30.4 16.4L29 19.5L27.6 16.4L24.5 15L27.6 13.5Z' transform='translate(0 140) scale(1 -1)'/></g><g transform='translate(50 70)' fill='none' stroke='%23E8CF92' stroke-width='.4' opacity='.7'><circle r='25'/><circle r='21.5'/><path d='M0-28L0-25' transform='rotate(0)'/><path d='M0-28L0-25' transform='rotate(30)'/><path d='M0-28L0-25' transform='rotate(60)'/><path d='M0-28L0-25' transform='rotate(90)'/><path d='M0-28L0-25' transform='rotate(120)'/><path d='M0-28L0-25' transform='rotate(150)'/><path d='M0-28L0-25' transform='rotate(180)'/><path d='M0-28L0-25' transform='rotate(210)'/><path d='M0-28L0-25' transform='rotate(240)'/><path d='M0-28L0-25' transform='rotate(270)'/><path d='M0-28L0-25' transform='rotate(300)'/><path d='M0-28L0-25' transform='rotate(330)'/></g><g transform='translate(50 70)' fill='%23E8CF92' opacity='.65'><path d='M0-31.5L1.2-28.8L4-27.6L1.2-26.4L0-23.7L-1.2-26.4L-4-27.6L-1.2-28.8Z'/><path d='M0-31.5L1.2-28.8L4-27.6L1.2-26.4L0-23.7L-1.2-26.4L-4-27.6L-1.2-28.8Z' transform='rotate(90)'/><path d='M0-31.5L1.2-28.8L4-27.6L1.2-26.4L0-23.7L-1.2-26.4L-4-27.6L-1.2-28.8Z' transform='rotate(180)'/><path d='M0-31.5L1.2-28.8L4-27.6L1.2-26.4L0-23.7L-1.2-26.4L-4-27.6L-1.2-28.8Z' transform='rotate(270)'/></g></svg>") center/90% 93% no-repeat,
+      radial-gradient(circle at 50% 43%, rgba(255,255,255,.1), transparent 62%);
+  }
+  .cb-moon{
+    position:relative; z-index:1; line-height:1; color:#f7eaff;
+    text-shadow:0 0 14px rgba(255,255,255,.85), 0 0 30px rgba(216,180,255,.6);
+    animation:twinkle 2.6s ease-in-out infinite;
+  }
+  .cb-moon.lg{ font-size:32px; } .cb-moon.md{ font-size:24px; } .cb-moon.sm{ font-size:19px; }
+
+  /* —— 揭晓动效 —— */
+  .halo{
+    position:absolute; left:50%; top:50%; width:250px; height:250px; margin:-125px 0 0 -125px;
+    border-radius:50%; pointer-events:none; opacity:0; z-index:2;
+    background:radial-gradient(circle, rgba(255,230,175,.6) 0%, rgba(255,230,175,.2) 40%, transparent 68%);
+  }
+  .halo.go{ animation:haloBurst 1.15s ease-out forwards; }
+  @keyframes haloBurst{ 0%{transform:scale(.25); opacity:0} 16%{opacity:.95} 100%{transform:scale(2); opacity:0} }
+  /* 卡面金边包装 + 暗角 + 柔光衬底 */
+  .w-front{
+    border:2px solid transparent;
+    background:linear-gradient(135deg,#f1dfa8 0%,#c9a86a 36%,#f7eeca 62%,#ad8a47 100%) border-box;
+  }
+  .w-front::before{
+    content:''; position:absolute; inset:0; z-index:2; border-radius:20px; pointer-events:none;
+    box-shadow:inset 0 0 26px rgba(58,38,92,.3), inset 0 0 0 1px rgba(255,255,255,.28);
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.2) 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0) 70%, rgba(255,246,222,.16) 100%),
+      radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(58,38,92,.28) 100%);
+  }
+  .w-front::after{
+    content:''; position:absolute; top:-30%; left:-85%; width:55%; height:160%; z-index:3;
+    background:linear-gradient(105deg, transparent, rgba(255,255,255,.55), transparent);
+    transform:rotate(6deg); opacity:0; pointer-events:none;
+  }
+  .w-cardflip.flipped .w-front::after{ animation:shineSweep 1.05s ease .5s 1; }
+  @keyframes shineSweep{ 0%{left:-85%; opacity:0} 18%{opacity:.9} 100%{left:135%; opacity:0} }
+  .w-cardflip.floaty{ animation:cardFloaty 3.8s ease-in-out 1.15s infinite; }
+  @keyframes cardFloaty{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-9px)} }
+  .w-cardflip.poked{ animation:cardPoke .55s cubic-bezier(.34,1.56,.5,1); }
+  @keyframes cardPoke{ 0%{transform:scale(1)} 32%{transform:scale(1.06) rotate(.8deg)} 100%{transform:scale(1)} }
+  #resultSingle .w-result-meta{ animation:fadeInUp .7s ease .8s both; }
+  #resultSingle .w-quick{ animation:fadeInUp .7s ease .95s both; }
+  #resultSingle .tap-hint{ animation:fadeInUp .7s ease 1.2s both; }
+  #resultSingle .draw-actions{ animation:fadeInUp .7s ease 1.1s both; }
+  @keyframes fadeInUp{ from{opacity:0; transform:translateY(16px)} to{opacity:1; transform:none} }
+  .w-quick{ margin-top:10px; font-size:12.5px; letter-spacing:2px; color:#7d68a8; }
+  .tap-hint{ margin-top:12px; font-size:11px; letter-spacing:3px; color:#b49ad6; }
+  .sp-halo{
+    position:absolute; inset:-14px; border-radius:18px; pointer-events:none; opacity:0; z-index:3;
+    background:radial-gradient(circle, rgba(255,230,175,.55), transparent 68%);
+  }
+  .sp-halo.go{ animation:spHalo 1s ease-out forwards; }
+  @keyframes spHalo{ 0%{opacity:0; transform:scale(.72)} 22%{opacity:1} 100%{opacity:0; transform:scale(1.22)} }
+
+  /* 单张揭晓 */
+  #resultSingle{ display:flex; flex-direction:column; align-items:center; width:100%; }
+  .w-cardflip{ width:230px; height:358px; margin-top:26px; perspective:1200px; position:relative; }
+  .w-face{
+    position:absolute; inset:0; border-radius:22px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    box-shadow:0 20px 44px rgba(109,91,166,.32);
+    transition:transform .9s cubic-bezier(.4,.15,.3,1);
+  }
+  .w-back{
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.24), transparent 52%),
+      radial-gradient(circle at 50% 118%, rgba(255,214,170,.3), transparent 55%),
+      linear-gradient(160deg,#ab9ade 0%,#8471bd 48%,#5d4b96 100%);
+    border:1.5px solid rgba(255,255,255,.55);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px;
+  }
+  .wb-heart{ font-size:44px; color:#f3d9ea; text-shadow:0 0 18px rgba(255,255,255,.6); animation:twinkle 2.4s ease-in-out infinite; }
+  .wb-zi{ color:rgba(255,255,255,.92); letter-spacing:8px; text-indent:8px; font-size:15px; }
+  .w-front{ transform:rotateY(180deg); }
+  .w-cardflip.flipped .w-back{ transform:rotateY(180deg); }
+  .w-cardflip.flipped .w-front{ transform:rotateY(360deg); }
+  .w-front img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .is-rev{ transform:rotate(180deg); }
+  .w-result-meta{ margin-top:24px; text-align:center; }
+  .w-result-meta h3{ font-size:23px; letter-spacing:6px; text-indent:6px; font-weight:500; color:var(--purple-deep); margin-top:10px; }
+  .w-en{ font-size:11px; letter-spacing:2px; color:var(--ink-soft); margin-top:5px; }
+  .w-orient{
+    display:inline-block; font-size:11px; letter-spacing:3px; text-indent:3px; padding:4px 14px; border-radius:999px;
+  }
+  .w-orient.up{ background:rgba(201,189,232,.4); color:var(--purple-deep); }
+  .w-orient.rev{ background:rgba(240,214,170,.55); color:#a5793d; border:1px solid rgba(216,182,132,.6); }
+
+  /* 三张牌阵 */
+  #resultSpread{ width:100%; }
+  .w-spread{ display:flex; justify-content:center; gap:14px; margin-top:30px; padding:0 6px; }
+  .sp-item{ flex:1; max-width:128px; text-align:center; }
+  .sp-pos{ font-size:15px; letter-spacing:4px; text-indent:4px; color:var(--purple-deep); font-weight:500; }
+  .sp-hint{ font-size:10px; letter-spacing:1px; color:var(--ink-soft); margin-top:4px; }
+  .sp-card{ position:relative; margin-top:12px; aspect-ratio:3/4.4; perspective:800px; cursor:pointer; }
+  .sp-inner{ position:absolute; inset:0; transform-style:preserve-3d; transition:transform .8s cubic-bezier(.4,.15,.3,1); }
+  .sp-inner.flipped{ transform:rotateY(180deg); }
+  .sp-face{
+    position:absolute; inset:0; border-radius:12px; overflow:hidden; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    box-shadow:0 10px 24px rgba(109,91,166,.28);
+  }
+  .sp-back{
+    display:flex; align-items:center; justify-content:center; font-size:22px; color:#f3d9ea;
+    background:radial-gradient(circle at 50% 30%, rgba(255,255,255,.24), transparent 52%),
+      radial-gradient(circle at 50% 118%, rgba(255,214,170,.3), transparent 55%),
+      linear-gradient(160deg,#ab9ade 0%,#8471bd 48%,#5d4b96 100%);
+    border:1.5px solid rgba(255,255,255,.5);
+  }
+  .sp-front{
+    transform:rotateY(180deg);
+    border:1.5px solid transparent;
+    background:linear-gradient(135deg,#f1dfa8 0%,#c9a86a 38%,#f7eeca 64%,#ad8a47 100%) border-box;
+  }
+  .sp-front::before{
+    content:''; position:absolute; inset:0; z-index:2; border-radius:10px; pointer-events:none;
+    box-shadow:inset 0 0 16px rgba(58,38,92,.32), inset 0 0 0 1px rgba(255,255,255,.3);
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.2), rgba(255,255,255,0) 34%, rgba(255,255,255,0) 68%, rgba(255,246,222,.16)),
+      radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 55%, rgba(58,38,92,.3) 100%);
+  }
+  .sp-front img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .sp-badge{
+    position:absolute; top:6px; right:6px; z-index:2; font-size:10px; padding:2px 8px; border-radius:999px; letter-spacing:1px;
+    background:rgba(255,255,255,.85); backdrop-filter:blur(4px);
+  }
+  .sp-badge.up{ color:var(--purple-deep); }
+  .sp-badge.rev{ color:#a5793d; border:1px solid rgba(216,182,132,.7); }
+  .sp-detail{
+    margin-top:12px; border:none; background:none; cursor:pointer;
+    font-size:11.5px; letter-spacing:2px; color:#a98fd0;
+  }
+  .sp-detail:active{ opacity:.6; }
+
+  /* 综合解读 */
+  .sp-summary{
+    margin:26px auto 0; max-width:400px; padding:22px 24px; border-radius:20px;
+    background:linear-gradient(150deg, rgba(255,255,255,.92), rgba(246,238,250,.88));
+    border:1px solid rgba(184,148,212,.4);
+    box-shadow:0 10px 26px rgba(125,100,170,.12);
+    animation:fadeIn .8s ease both;
+  }
+  .sp-summary .ss-title{ font-size:14px; letter-spacing:4px; color:#8e6fb5; text-align:center; margin-bottom:12px; }
+  .sp-summary .ss-text{ font-size:13.5px; line-height:2; color:#5c4c70; letter-spacing:1px; text-align:justify; }
+
+  .draw-actions{ margin-top:34px; padding:0 30px; display:flex; flex-direction:column; gap:13px; width:100%; max-width:380px; }
+  .draw-actions button{
+    padding:14px 0; border-radius:999px; font-size:14.5px; letter-spacing:5px; text-indent:5px; cursor:pointer;
+  }
+  .btn-line{ background:none; border:1px solid var(--purple-soft); color:var(--purple-deep); }
+  .btn-line:active{ background:rgba(201,189,232,.2); }
+
+  /* ===== 详情增补 ===== */
+  .detail-pos{
+    margin:14px 30px 0; display:flex; align-items:baseline; justify-content:center; gap:12px;
+    padding:12px 0; border-radius:16px;
+    background:linear-gradient(120deg, rgba(201,189,232,.28), rgba(240,214,170,.22));
+    border:1px solid rgba(201,189,232,.5);
+  }
+  .dp-name{ font-size:16px; letter-spacing:5px; text-indent:5px; color:var(--purple-deep); font-weight:500; }
+  .dp-hint{ font-size:11px; letter-spacing:1.5px; color:var(--ink-soft); }
+  .detail-hero{ position:relative; }
+  .dh-wrap{ position:relative; display:inline-block; }
+  .dh-wrap::after{
+    content:''; position:absolute; inset:0; border-radius:18px; pointer-events:none;
+    background:
+      linear-gradient(115deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 68%, rgba(255,244,210,.14) 100%),
+      radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 56%, rgba(58,38,92,.25) 100%);
+  }
+  .d-orient{
+    position:absolute; top:12px; right:-8px; z-index:2;
+    font-size:11px; letter-spacing:2px; text-indent:2px; padding:5px 13px; border-radius:999px;
+    background:rgba(255,255,255,.9); backdrop-filter:blur(4px); box-shadow:0 4px 12px rgba(109,91,166,.2);
+  }
+  .d-orient.up{ color:var(--purple-deep); }
+  .d-orient.rev{ color:#a5793d; border:1px solid rgba(216,182,132,.7); }
+  .d-orient-note{
+    margin:12px 0 0; font-size:12px; letter-spacing:1.5px; line-height:1.8; padding:10px 16px; border-radius:14px;
+  }
+  .d-orient-note.up{ background:rgba(201,189,232,.22); color:#6a5890; }
+  .d-orient-note.rev{ background:rgba(240,214,170,.28); color:#8f6a35; }
+  .d-poster-btn{ margin-top:22px; width:100%; }
+  #detailImg{ transition:transform .5s; }
+
+  /* ===== 海报弹窗 ===== */
+  .pm-mask{
+    position:fixed; inset:0; z-index:60; display:none; align-items:center; justify-content:center;
+    background:rgba(60,44,84,.55); backdrop-filter:blur(8px); padding:20px;
+  }
+  .pm-mask.show{ display:flex; }
+  .pm-box{
+    display:flex; flex-direction:column; align-items:center; gap:18px; max-height:100%;
+    animation:posterIn .45s cubic-bezier(.34,1.3,.5,1);
+  }
+  @keyframes posterIn{ from{ transform:translateY(30px) scale(.94); opacity:0 } to{ transform:none; opacity:1 } }
+  #posterCanvas{
+    width:min(78vw, 320px); height:auto; border-radius:16px;
+    box-shadow:0 24px 60px rgba(30,18,50,.5);
+  }
+  .pm-actions{ display:flex; flex-direction:column; gap:10px; width:min(78vw, 320px); }
+  .pm-actions button{ width:100%; padding:13px 0; border-radius:999px; font-size:14px; letter-spacing:4px; text-indent:4px; cursor:pointer; }
+  .pm-actions a{ display:block; }
+  .pm-actions a button{ width:100%; }
+
+  /* ===== 祈愿 · 写下心事 ===== */
+  #view-wish{ padding-bottom:60px; }
+  .wish-wrap{ padding:8px 34px 0; text-align:center; }
+  .wish-sparkle{ font-size:26px; color:#d7bce6; text-shadow:0 0 12px #ecdcf5; margin-bottom:14px; animation:twinkle 2.6s ease-in-out infinite; }
+  .wish-wrap h2{ font-size:24px; letter-spacing:6px; font-weight:500; color:var(--purple-deep); }
+  .wish-wrap .wish-lead{ margin:12px auto 26px; font-size:13px; line-height:2; color:var(--ink-soft); letter-spacing:1.5px; }
+  .wish-box{
+    position:relative; text-align:left; padding:20px; border-radius:20px;
+    background:rgba(255,255,255,.88); border:1px solid rgba(201,189,232,.7);
+    box-shadow:0 8px 22px rgba(125,100,170,.1);
+  }
+  .wish-box textarea{
+    width:100%; min-height:128px; border:none; outline:none; resize:none; background:transparent;
+    font:inherit; font-size:14.5px; line-height:1.9; color:var(--ink); letter-spacing:1px;
+  }
+  .wish-box textarea::placeholder{ color:#c3b6d4; }
+  .wish-count{ text-align:right; font-size:11px; color:var(--ink-soft); opacity:.7; }
+  .wish-sugs{ margin:22px 0 30px; }
+  .wish-sugs .ws-label{ font-size:11px; letter-spacing:3px; color:#b7a8c8; margin-bottom:12px; }
+  .ws-list{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+  .ws-list button{
+    border:1px solid var(--purple-soft); background:rgba(255,255,255,.72);
+    color:#7d6aa0; font-size:12px; letter-spacing:1px; padding:8px 16px;
+    border-radius:999px; cursor:pointer; transition:transform .2s;
+  }
+  .ws-list button:active{ transform:scale(.95); }
+  .wish-wrap .btn-primary{ margin-bottom:14px; }
+  .wish-skip{
+    width:100%; max-width:300px; padding:10px 0; border:none; background:none;
+    color:var(--ink-soft); font-size:13px; letter-spacing:3px; cursor:pointer;
+  }
+  .draw-worry{
+    display:flex; align-items:center; gap:8px; max-width:300px; margin:4px auto 0;
+    padding:9px 18px; border-radius:999px; background:rgba(255,255,255,.88);
+    border:1px solid rgba(201,166,224,.55); box-shadow:0 3px 10px rgba(155,126,200,.1);
+  }
+  .draw-worry .dw-icon{ color:#c79ed6; flex:none; }
+  .draw-worry .dw-text{
+    font-size:12.5px; color:#6f5e84; letter-spacing:.5px;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .detail-wish{
+    margin:0 auto 22px; max-width:340px; padding:18px 22px; border-radius:16px;
+    background:rgba(255,255,255,.88); border:1px dashed rgba(184,148,212,.6);
+    box-shadow:0 4px 14px rgba(155,126,180,.1);
+  }
+  .detail-wish .dw2-title{ font-size:12px; letter-spacing:3px; color:#9c8fae; text-align:center; margin-bottom:8px; }
+  .detail-wish .dw2-text{ font-size:14px; line-height:1.9; color:#5c4c70; text-align:center; letter-spacing:1px; }
+
+  /* ===== 详情 ===== */
+  #view-detail{ padding-bottom:60px; }
+  .detail-hero{ position:relative; padding:10px 40px 0; text-align:center; }
+  .detail-hero img{
+    width:100%; max-width:300px; border-radius:18px; object-fit:cover;
+    box-shadow:0 18px 40px rgba(109,91,166,.28),
+      0 0 0 2px #dcc082, 0 0 0 5px #f7edd0, 0 0 0 6px rgba(201,168,106,.55);
+  }
+  .detail-body{ padding:26px 30px 0; text-align:center; }
+  .d-tag{ display:inline-block; font-size:11px; letter-spacing:2px; color:var(--purple-deep);
+    background:rgba(201,189,232,.4); border-radius:999px; padding:3px 14px; }
+  .detail-body h2{ margin-top:14px; font-size:27px; letter-spacing:8px; text-indent:8px; font-weight:500; color:var(--ink); }
+  .d-en{ margin-top:6px; font-size:11px; letter-spacing:3px; color:var(--purple); }
+  .d-keywords{ margin-top:16px; display:flex; justify-content:center; gap:9px; flex-wrap:wrap; }
+  .d-keywords span{ font-size:12px; color:var(--ink-soft); border:1px solid var(--purple-soft);
+    border-radius:999px; padding:4px 13px; letter-spacing:2px; }
+  .d-heal{
+    margin:28px 6px 0; padding:26px 24px; border-radius:18px; position:relative;
+    background:linear-gradient(160deg,rgba(255,255,255,.88),rgba(244,238,250,.9));
+    box-shadow:0 8px 22px rgba(125,100,170,.1);
+    font-size:15px; line-height:2.1; letter-spacing:1px; color:var(--ink);
+  }
+  .d-heal::before{ content:"“"; position:absolute; top:-6px; left:16px; font-size:44px; color:var(--purple-soft); font-family:Georgia,serif; }
+  .d-action{
+    margin:20px 6px 0; padding:22px 24px; border-radius:18px; text-align:left;
+    background:linear-gradient(125deg,#b3a3dd,#c8a9d6 60%,#dcb9cf);
+    color:#fff; box-shadow:0 10px 24px rgba(125,100,180,.25);
+  }
+  .d-action .da-title{ font-size:12px; letter-spacing:4px; opacity:.92; }
+  .d-action .da-text{ margin-top:9px; font-size:14px; line-height:1.9; letter-spacing:1px; }
+  .d-disclaimer{ margin:30px 30px 0; font-size:10.5px; line-height:1.9; color:var(--ink-soft); opacity:.8; text-align:center; letter-spacing:.5px; }
+
+  /* 抽卡后 · 下一步全屏弹窗 */
+  .next-overlay{
+    position:fixed; inset:0; z-index:80; display:none;
+    align-items:flex-end; justify-content:center;
+    background:rgba(28,18,46,.58); backdrop-filter:blur(6px);
+  }
+  .next-overlay.show{ display:flex; animation:nextFade .3s ease both; }
+  @keyframes nextFade{ from{opacity:0} to{opacity:1} }
+  .next-sheet{
+    width:100%; max-width:480px; max-height:86vh; overflow-y:auto;
+    border-radius:28px 28px 0 0; padding:22px 22px 32px;
+    background:linear-gradient(165deg,#f8f2fc 0%,#efe4f5 60%,#e8d9ee 100%);
+    box-shadow:0 -10px 40px rgba(40,25,70,.35);
+    animation:nextUp .42s cubic-bezier(.22,1,.36,1) both;
+  }
+  @keyframes nextUp{ from{ transform:translateY(60px); opacity:0 } to{ transform:none; opacity:1 } }
+  .next-sheet::before{
+    content:''; display:block; width:46px; height:4px; border-radius:99px;
+    background:rgba(125,100,170,.3); margin:0 auto 18px;
+  }
+  .next-head{ text-align:center; margin-bottom:18px; position:relative; }
+  .next-card-preview{
+    width:74px; height:74px; margin:0 auto 12px; border-radius:14px; overflow:hidden;
+    box-shadow:0 8px 18px rgba(109,91,166,.3), 0 0 0 2px #dcc082, 0 0 0 4px #f7edd0;
+  }
+  .next-card-preview img{ width:100%; height:100%; object-fit:cover; }
+  .next-title{ font-family:var(--font-art-bold); font-size:22px; letter-spacing:7px; text-indent:7px; color:var(--purple-deep); }
+  .next-sub{ margin-top:6px; font-size:11px; letter-spacing:3px; color:var(--ink-soft); }
+  .next-close{
+    position:absolute; top:-6px; right:0; width:34px; height:34px; border-radius:50%;
+    border:none; cursor:pointer; font-size:15px; color:var(--ink-soft);
+    background:rgba(255,255,255,.75); box-shadow:0 3px 8px rgba(109,91,166,.12);
+  }
+  .next-grid{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
+  .next-btn{
+    display:flex; flex-direction:column; align-items:center; gap:6px;
+    padding:16px 10px 14px; border:none; border-radius:16px; cursor:pointer;
+    background:linear-gradient(150deg, rgba(255,255,255,.96), rgba(240,232,248,.92));
+    border:1.5px solid rgba(201,189,232,.55);
+    box-shadow:0 5px 14px rgba(109,91,166,.1);
+    transition:transform .15s ease, box-shadow .15s ease;
+    font-family:var(--font-serif);
+  }
+  .next-btn:active{ transform:scale(.95); box-shadow:0 2px 6px rgba(109,91,166,.18); }
+  .next-btn .nb-ico{ font-size:26px; line-height:1; }
+  .next-btn .nb-name{ font-size:13px; letter-spacing:2px; color:var(--ink); font-weight:500; }
+  .next-btn .nb-hint{ font-size:10px; letter-spacing:1px; color:var(--ink-soft); }
+  .next-btn.gold{
+    background:linear-gradient(150deg,#f2e2ba,#e9d09e);
+    border-color:rgba(201,168,106,.6);
+    box-shadow:0 6px 16px rgba(201,168,106,.35);
+  }
+  .next-btn.gold .nb-name{ color:#8a6d3a; }
+  .next-btn.gold .nb-hint{ color:rgba(138,109,58,.7); }
+  .next-btn.full{
+    grid-column:1 / -1;
+    background:linear-gradient(150deg,#8b7bc8,#6d5ba6);
+    border-color:rgba(109,91,166,.5);
+    box-shadow:0 6px 18px rgba(109,91,166,.35);
+    flex-direction:row; justify-content:center; padding:15px 10px;
+  }
+  .next-btn.full .nb-ico{ color:#f7ecc6; }
+  .next-btn.full .nb-name{ color:#fff; }
+  .next-btn.full .nb-hint{ color:rgba(255,255,255,.8); }
+
+  /* ===== 图鉴 · 收集 ===== */
+  .sound-btn{
+    width:36px; height:36px; border-radius:50%; border:none; cursor:pointer; font-size:15px;
+    background:rgba(255,255,255,.7); color:var(--purple-deep);
+    box-shadow:0 3px 10px rgba(109,91,166,.12); line-height:1;
+  }
+  .sound-btn.off{ opacity:.4; }
+  .collect-head{ padding:2px 22px 16px; }
+  .collect-meta{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:9px; }
+  .collect-meta .cm-title{ font-size:12px; letter-spacing:3px; color:#8e7cae; }
+  .collect-meta .cm-count{ font-size:12px; letter-spacing:1px; color:var(--purple-deep); }
+  .collect-bar{ height:7px; border-radius:99px; background:rgba(201,189,232,.28); overflow:hidden; }
+  .collect-fill{
+    height:100%; border-radius:99px;
+    background:linear-gradient(90deg,#c9a86a,#ecd9a0 50%,#c9a86a);
+    box-shadow:0 0 10px rgba(220,190,120,.75);
+    transition:width .7s cubic-bezier(.3,1.2,.5,1);
+  }
+  .collect-done{
+    margin-top:12px; text-align:center; font-size:12px; letter-spacing:3px; color:#a5793d;
+    padding:9px 0; border-radius:999px;
+    background:linear-gradient(120deg,rgba(246,233,196,.75),rgba(240,214,170,.55));
+    border:1px solid rgba(216,182,132,.6);
+    animation:fadeInUp .7s ease both;
+  }
+  .filter-row{ display:flex; gap:10px; padding:10px 20px 18px; overflow-x:auto; }
+  .filter-row::-webkit-scrollbar{ display:none; }
+  .filter-row button{
+    flex:none; border:none; cursor:pointer; font-size:13px; letter-spacing:2px; padding:8px 18px;
+    border-radius:999px; background:rgba(255,255,255,.75); color:var(--ink-soft);
+    box-shadow:0 3px 8px rgba(125,100,170,.08);
+  }
+  .filter-row button.on{ background:linear-gradient(120deg,#9d8bd4,#b794cc); color:#fff; box-shadow:0 6px 14px rgba(125,100,180,.3); }
+  .gallery-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; padding:0 18px 50px; }
+  .g-item{ border:none; background:none; cursor:pointer; padding:0; }
+  .g-item .g-img{
+    width:100%; aspect-ratio:3/4.1; object-fit:cover; border-radius:12px;
+    box-shadow:0 6px 14px rgba(109,91,166,.18),
+      0 0 0 1.5px rgba(214,187,124,.9), 0 0 0 3px rgba(255,255,255,.9),
+      inset 0 0 12px rgba(90,60,30,.08);
+    transition:transform .2s;
+  }
+  .g-item:active .g-img{ transform:scale(.94); }
+  .g-item .g-name{ margin-top:7px; font-size:11.5px; color:var(--ink); letter-spacing:1px; text-align:center;
+    overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+  .g-item .g-no{ font-size:9px; color:var(--purple-soft); text-align:center; letter-spacing:1px; }
+  /* 未收集：卡背剪影 */
+  .g-item.locked{ cursor:default; }
+  .g-item .g-lock{
+    display:flex; align-items:center; justify-content:center;
+    font-size:26px; color:rgba(247,234,255,.85);
+    text-shadow:0 0 14px rgba(255,255,255,.7), 0 0 30px rgba(216,180,255,.5);
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255,255,255,.18), transparent 52%),
+      linear-gradient(160deg,#9d8ec4 0%,#7a6aa6 52%,#5c4d88 100%);
+    box-shadow:0 6px 14px rgba(90,70,130,.22), 0 0 0 1.5px rgba(255,255,255,.3);
+    position:relative;
+  }
+  .g-item .g-lock::before{
+    content:''; position:absolute; inset:5px; border-radius:8px;
+    border:1px solid rgba(255,255,255,.32);
+  }
+  .g-item .g-lock span{ position:relative; z-index:1; animation:twinkle 2.8s ease-in-out infinite; }
+  .g-item.locked .g-name{ color:#b3a8c6; letter-spacing:4px; }
+  .g-item.locked .g-no{ color:#b3a8c6; }
+  .g-item.new-flag .g-img{ animation:newGlow 1.6s ease-in-out 2; }
+  @keyframes newGlow{ 0%,100%{ box-shadow:0 6px 14px rgba(109,91,166,.18), 0 0 0 1.5px rgba(214,187,124,.9), 0 0 0 3px rgba(255,255,255,.9); }
+    50%{ box-shadow:0 6px 22px rgba(220,180,100,.55), 0 0 0 1.5px #ecd9a0, 0 0 0 4px rgba(246,233,196,.95), 0 0 22px rgba(230,200,120,.7); } }
+
+  /* ===== 集齐彩蛋 ===== */
+  .easter-mask{
+    position:fixed; inset:0; z-index:70; display:none; align-items:center; justify-content:center;
+    background:rgba(60,44,84,.6); backdrop-filter:blur(8px); padding:30px;
+  }
+  .easter-mask.show{ display:flex; }
+  .easter-box{
+    position:relative; width:100%; max-width:330px; text-align:center; padding:40px 30px 32px;
+    border-radius:26px;
+    background:linear-gradient(165deg,#fffdf6 0%,#f9efd9 55%,#f3e2f0 100%);
+    border:1.5px solid rgba(216,182,132,.8);
+    box-shadow:0 26px 70px rgba(40,24,60,.5);
+    animation:posterIn .5s cubic-bezier(.34,1.3,.5,1);
+    overflow:hidden;
+  }
+  .easter-box::before{
+    content:''; position:absolute; inset:10px; border-radius:18px;
+    border:1px solid rgba(216,182,132,.45); pointer-events:none;
+  }
+  .eb-mark{ font-size:40px; color:#c9a86a; text-shadow:0 0 22px rgba(236,217,160,.95); animation:twinkle 2.4s ease-in-out infinite; }
+  .easter-box h3{ margin-top:14px; font-size:24px; letter-spacing:10px; text-indent:10px; font-weight:500;
+    background:linear-gradient(120deg,#a5793d,#c9a86a 55%,#a87bc0);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .easter-box p{ margin-top:14px; font-size:13.5px; line-height:2.1; color:#7a6850; letter-spacing:1.5px; }
+  .easter-box .btn-primary{ margin-top:24px; max-width:none; padding:13px 0; font-size:14px; }
+  .eb-star{ position:absolute; color:#e0c074; opacity:.7; animation:twinkle 2.6s ease-in-out infinite; pointer-events:none; }
+  .eb-star.t1{ top:16px; left:20px; font-size:14px; } .eb-star.t2{ top:30px; right:24px; font-size:11px; animation-delay:.7s; }
+  .eb-star.t3{ bottom:24px; left:30px; font-size:12px; animation-delay:1.3s; } .eb-star.t4{ bottom:40px; right:26px; font-size:15px; animation-delay:1.9s; }
+
+  /* ===== 轻提示 ===== */
+  .toast{
+    position:fixed; bottom:64px; left:50%; z-index:80; max-width:80%;
+    transform:translateX(-50%) translateY(18px); opacity:0; pointer-events:none;
+    background:rgba(58,42,82,.92); color:#fff; font-size:13px; letter-spacing:1.5px;
+    padding:11px 24px; border-radius:999px; box-shadow:0 10px 26px rgba(40,24,60,.35);
+    transition:opacity .3s, transform .3s; text-align:center;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ===== 艺术字体全站应用 ===== */
+  .btn-primary, .home-links button, .mode-name, .group-meta .g-name,
+  .wm-name, .w-result-meta h3, .sp-pos, .ss-title,
+  .filter-row button,
+  .w-zi, .wb-zi, .cb-zi, .fan-zi, .dh-zi {
+    font-family: var(--font-art-bold);
+  }
+  .page-head h2, .detail-body h2, .wish-wrap h2{
+    font-family:var(--font-art-deep); font-weight:400; letter-spacing:6px;
+  }
+  .topbar-title{ font-family:var(--font-art); letter-spacing:5px; }
+  .btn-primary{ letter-spacing:6px; }
+  .ss-title{ letter-spacing:4px; }
+  .wm-name, .w-result-meta h3{ letter-spacing:4px; font-weight:400; }
+  .detail-body h2{ font-size:30px !important; }
+  .kw, .w-kw, .dh-kw{ letter-spacing:2px; }
+
+  /* ===== 祈愿广场 ===== */
+  #view-plaza{ padding-bottom:46px; }
+  .plaza-banner{
+    position:relative; margin:6px 18px 18px; padding:26px 24px 22px;
+    border-radius:22px; overflow:hidden; text-align:center;
+    background:
+      radial-gradient(circle at 82% 12%, rgba(236,217,160,.35), transparent 46%),
+      radial-gradient(circle at 12% 90%, rgba(214,196,244,.3), transparent 50%),
+      linear-gradient(150deg,#4a3578 0%,#6a4c92 55%,#8a5f94 100%);
+    box-shadow:0 14px 34px rgba(80,55,120,.3);
+  }
+  .plaza-banner::before{
+    content:'✦  ✧　　　✦　　　✧  ✦'; position:absolute; inset:0;
+    font-size:10px; letter-spacing:30px; line-height:60px; color:rgba(255,255,255,.18);
+    word-break:break-all; padding:14px;
+  }
+  .pb-title{
+    position:relative; font-family:var(--font-art-deep);
+    font-size:38px; letter-spacing:10px; text-indent:10px;
+    color:#f7ecc6; text-shadow:0 2px 16px rgba(236,217,160,.5);
+  }
+  .pb-desc{ position:relative; margin-top:8px; font-size:11.5px; letter-spacing:3px; color:rgba(238,228,255,.82); }
+  .pb-luck{
+    position:relative; display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    padding:7px 20px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(236,217,160,.55);
+    font-size:12px; letter-spacing:2px; color:#f3e6c0;
+  }
+  .pb-luck b{ font-family:var(--font-art); font-size:17px; font-weight:400; color:#f7e9b8; }
+
+  .pz-compose{
+    margin:0 18px 20px; padding:18px; border-radius:20px;
+    background:rgba(255,255,255,.86);
+    border:1px solid rgba(201,189,232,.5);
+    box-shadow:0 8px 22px rgba(125,100,170,.1);
+  }
+  .pz-textarea{
+    width:100%; min-height:74px; resize:none; border:none; outline:none;
+    font-family:var(--font-serif); font-size:14px; line-height:1.85; color:var(--ink);
+    background:transparent; letter-spacing:.5px;
+  }
+  .pz-textarea::placeholder{ color:#b4a8c8; }
+  .pz-row{ display:flex; align-items:center; justify-content:space-between; margin-top:12px; gap:10px; flex-wrap:wrap; }
+  .pz-tags{ display:flex; gap:8px; flex-wrap:wrap; }
+  .pz-tag{
+    padding:5px 14px; border-radius:999px; cursor:pointer; font-size:11.5px; letter-spacing:2px;
+    background:rgba(201,189,232,.18); color:#8a7aa4; border:1px solid transparent;
+    transition:all .2s;
+  }
+  .pz-tag.on{ color:#fff; border-color:transparent; }
+  .pz-tag.on[data-tag="pray"]{ background:linear-gradient(120deg,#d9b36a,#c99a4d); }
+  .pz-tag.on[data-tag="luck"]{ background:linear-gradient(120deg,#d99ab8,#c77fa3); }
+  .pz-tag.on[data-tag="diary"]{ background:linear-gradient(120deg,#a08bcb,#8367bb); }
+  .pz-tag.on[data-tag="vow"]{ background:linear-gradient(120deg,#8fb59a,#6e9a80); }
+  .pz-submit{
+    border:none; cursor:pointer; padding:9px 24px; border-radius:999px;
+    font-family:var(--font-art); font-size:14px; letter-spacing:4px; color:#fff;
+    background:linear-gradient(120deg,#b894d4,#9b7ec8);
+    box-shadow:0 6px 16px rgba(140,110,190,.35);
+    transition:transform .2s;
+  }
+  .pz-submit:active{ transform:scale(.94); }
+
+  .pz-feed{ display:flex; flex-direction:column; gap:14px; padding:0 18px; }
+  .pz-card{
+    padding:18px; border-radius:20px; background:rgba(255,255,255,.9);
+    border:1px solid rgba(225,214,240,.7);
+    box-shadow:0 6px 18px rgba(125,100,170,.08);
+    animation:fadeInUp .5s ease both;
+  }
+  @keyframes fadeInUp{ from{opacity:0; transform:translateY(14px)} to{opacity:1; transform:none} }
+  .pz-head{ display:flex; align-items:center; gap:11px; }
+  .pz-avatar{
+    width:40px; height:40px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-art); font-size:17px; color:#fff;
+    box-shadow:0 3px 10px rgba(109,91,166,.25);
+  }
+  .pz-meta{ flex:1; min-width:0; }
+  .pz-name{ font-size:13.5px; letter-spacing:1px; color:#5c4d78; }
+  .pz-time{ font-size:10.5px; color:#b0a4c4; margin-top:2px; letter-spacing:1px; }
+  .pz-badge{
+    font-size:10.5px; letter-spacing:2px; padding:4px 11px; border-radius:999px; color:#fff; flex:none;
+  }
+  .pz-badge[data-tag="pray"]{ background:linear-gradient(120deg,#d9b36a,#c99a4d); }
+  .pz-badge[data-tag="luck"]{ background:linear-gradient(120deg,#d99ab8,#c77fa3); }
+  .pz-badge[data-tag="diary"]{ background:linear-gradient(120deg,#a08bcb,#8367bb); }
+  .pz-badge[data-tag="vow"]{ background:linear-gradient(120deg,#8fb59a,#6e9a80); }
+  .pz-body{ margin:13px 2px 6px; font-size:14px; line-height:1.95; letter-spacing:.5px; color:#4d4460; white-space:pre-wrap; word-break:break-word; }
+  .pz-actions{ display:flex; gap:22px; margin-top:10px; padding-top:10px; border-top:1px dashed rgba(201,189,232,.55); }
+  .pz-act{
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+    font-size:12.5px; color:#9a8db4; letter-spacing:1px; background:none; border:none; padding:0;
+    transition:transform .15s;
+  }
+  .pz-act:active{ transform:scale(.88); }
+  .pz-act .pa-ic{ font-size:16px; line-height:1; }
+  .pz-act.liked{ color:#d06a8f; }
+  .pz-act.liked .pa-ic{ animation:likePop .45s ease; }
+  @keyframes likePop{ 0%{transform:scale(1)} 35%{transform:scale(1.45)} 60%{transform:scale(.9)} 100%{transform:scale(1)} }
+  .pz-comments{ margin-top:12px; padding:12px 14px; border-radius:14px; background:rgba(244,239,250,.8); display:none; }
+  .pz-comments.open{ display:block; animation:fadeIn .3s ease; }
+  .pz-citem{ font-size:12.5px; line-height:1.75; color:#5d5170; margin-bottom:8px; }
+  .pz-citem:last-child{ margin-bottom:0; }
+  .pz-citem b{ color:#7d5fa8; font-weight:500; margin-right:5px; }
+  .pz-cinput{
+    display:flex; gap:8px; margin-top:10px;
+  }
+  .pz-cinput input{
+    flex:1; min-width:0; border:none; outline:none; border-radius:999px;
+    padding:8px 16px; font-size:12.5px; font-family:var(--font-serif);
+    background:#fff; color:var(--ink); box-shadow:inset 0 0 0 1px rgba(201,189,232,.45);
+  }
+  .pz-cinput button{
+    border:none; cursor:pointer; border-radius:999px; padding:0 16px;
+    font-size:12px; letter-spacing:2px; color:#fff;
+    background:linear-gradient(120deg,#b894d4,#9b7ec8);
+  }
+  .pz-empty{ text-align:center; padding:50px 0; color:#b0a4c4; font-size:13px; letter-spacing:3px; }
+
+  /* ===== 关于 ===== */
+  #view-about{ padding-bottom:60px; }
+  .about-sec{ margin:18px 26px 0; padding:24px 22px; border-radius:18px;
+    background:rgba(255,255,255,.78); box-shadow:0 8px 20px rgba(125,100,170,.1); }
+  .about-sec h3{ font-size:15px; letter-spacing:4px; color:var(--purple-deep); font-weight:500; margin-bottom:12px; }
+  .about-sec p, .about-sec li{ font-size:13px; line-height:2; color:var(--ink); letter-spacing:.5px; }
+  .about-sec ul{ padding-left:18px; }
+  .about-disclaimer{ margin:18px 26px; font-size:11px; line-height:2; color:var(--ink-soft); letter-spacing:.5px;
+    padding:20px 22px; border-radius:18px; background:rgba(233,228,244,.55); }
+
+  /* ===== 殴打厄运 · 解压 ===== */
+  #view-punch{ min-height:100vh; padding-bottom:50px; overflow:hidden; }
+  .punch-banner{
+    position:relative; margin:6px 18px 18px; padding:24px 22px 18px;
+    border-radius:22px; overflow:hidden; text-align:center;
+    background:
+      radial-gradient(circle at 80% 10%, rgba(236,217,160,.32), transparent 46%),
+      radial-gradient(circle at 14% 92%, rgba(214,196,244,.28), transparent 50%),
+      linear-gradient(150deg,#3a2a5e 0%,#5a3a72 55%,#74427e 100%);
+    box-shadow:0 12px 30px rgba(70,40,110,.32);
+  }
+  .punch-banner::before{
+    content:'✧  ✦　　　✧　　　✦  ✧'; position:absolute; inset:0;
+    font-size:10px; letter-spacing:30px; line-height:60px; color:rgba(255,255,255,.16);
+    word-break:break-all; padding:14px;
+  }
+  .pb-punch-title{
+    position:relative; font-family:var(--font-art-deep);
+    font-size:38px; letter-spacing:10px; text-indent:10px;
+    color:#f7ecc6; text-shadow:0 2px 16px rgba(236,217,160,.5);
+  }
+  .pb-punch-desc{ position:relative; margin-top:8px; font-size:11.5px; letter-spacing:3px; color:rgba(238,228,255,.82); }
+  .pb-punch-stat{
+    position:relative; display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    padding:7px 20px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(236,217,160,.5);
+    color:#f4e7c0; font-size:12px; letter-spacing:2px;
+  }
+  .pb-punch-stat b{ font-family:var(--font-brush); font-size:19px; color:#ffe27a; }
+
+  .punch-combo{
+    text-align:center; margin:14px 0 4px; min-height:78px;
+    transition:opacity .2s;
+  }
+  .punch-combo-num{
+    font-family:var(--font-brush); font-size:52px; line-height:1;
+    background:linear-gradient(120deg,#7a5fae,#c9a86a 60%,#7a5fae);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter:drop-shadow(0 2px 12px rgba(180,140,80,.4));
+    display:inline-block;
+  }
+  .punch-combo-num.beat{ animation:comboBeat .28s ease-out; }
+  @keyframes comboBeat{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.22); filter:drop-shadow(0 2px 18px rgba(220,170,80,.65)); }
+    100%{ transform:scale(1); }
+  }
+  .punch-combo-label{ font-size:11px; letter-spacing:4px; color:var(--ink-soft); margin-top:4px; }
+  .punch-combo-best{ font-size:11px; color:var(--purple); margin-top:4px; letter-spacing:2px; }
+  .punch-combo-best b{ font-family:var(--font-brush); color:var(--purple-deep); font-size:14px; }
+
+  .punch-stage{
+    position:relative; width:calc(100% - 28px); margin:8px 14px 0;
+    height:46vh; min-height:300px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 70%, rgba(60,40,90,.08), transparent 60%),
+      radial-gradient(circle at 20% 30%, rgba(196,170,232,.22), transparent 50%);
+    border-radius:22px;
+    touch-action:none;
+  }
+  .punch-stage-hint{
+    position:absolute; top:14px; left:0; right:0; text-align:center;
+    font-size:11px; letter-spacing:3px; color:var(--ink-soft); opacity:.65;
+    pointer-events:none;
+  }
+  .punch-stage-msg{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:var(--font-brush); font-size:26px; letter-spacing:6px;
+    color:#f7ecc6; text-shadow:0 2px 18px rgba(236,217,160,.6);
+    pointer-events:none; opacity:0; transition:opacity .3s;
+    text-align:center; white-space:nowrap;
+  }
+  .punch-stage-msg.show{ opacity:1; animation:msgPop .6s ease-out; }
+  @keyframes msgPop{
+    0%{ transform:translate(-50%,-50%) scale(.5); opacity:0; }
+    25%{ transform:translate(-50%,-50%) scale(1.15); opacity:1; }
+    80%{ opacity:1; }
+    100%{ opacity:0; transform:translate(-50%,-50%) scale(1); }
+  }
+
+  .punch-target{
+    position:absolute; left:50%; top:52%;
+    width:150px; height:150px; transform:translate(-50%,-50%);
+    cursor:pointer; user-select:none; -webkit-user-select:none;
+    z-index:5; transition:transform .08s ease-out;
+    filter:drop-shadow(0 8px 16px rgba(40,20,70,.4));
+  }
+  .punch-target svg{ width:100%; height:100%; display:block; pointer-events:none; }
+  .punch-target.hit{ animation:punchHit .22s ease-out; }
+  @keyframes punchHit{
+    0%{ transform:translate(-50%,-50%) scale(1) rotate(0); }
+    25%{ transform:translate(-50%,-50%) scale(.82) rotate(-4deg); }
+    55%{ transform:translate(-50%,-50%) scale(1.14) rotate(3deg); }
+    100%{ transform:translate(-50%,-50%) scale(1) rotate(0); }
+  }
+  /* 举白旗投降阶段 */
+  .punch-flag{
+    position:absolute; left:50%; top:-40px; z-index:7;
+    transform:translateX(-50%) scale(0); transform-origin:bottom center;
+    font-size:36px; line-height:1; pointer-events:none;
+    filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));
+    transition:transform .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .punch-target.surrender .punch-flag{
+    transform:translateX(-50%) scale(1);
+    animation:flagWave .55s ease-in-out infinite;
+  }
+  @keyframes flagWave{
+    0%,100%{ transform:translateX(-50%) scale(1) rotate(-12deg); }
+    50%{ transform:translateX(-50%) scale(1.12) rotate(10deg); }
+  }
+  .punch-target.surrender svg{ animation:surrenderShake .28s ease-in-out infinite; }
+  @keyframes surrenderShake{
+    0%,100%{ transform:translateX(0) scale(.94); }
+    50%{ transform:translateX(4px) scale(.9); }
+  }
+  .punch-target.shatter{ animation:punchShatter .9s ease-in forwards; }
+  @keyframes punchShatter{
+    0%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+    25%{ transform:translate(-50%,-50%) scale(1.25) rotate(10deg); opacity:1; filter:drop-shadow(0 0 24px rgba(255,220,150,.8)) brightness(1.4); }
+    100%{ transform:translate(-50%,-50%) scale(.1) rotate(28deg); opacity:0; filter:drop-shadow(0 0 40px rgba(255,255,255,1)) brightness(2); }
+  }
+  .punch-target.born{ animation:punchBorn .55s ease-out; }
+  @keyframes punchBorn{
+    0%{ transform:translate(-50%,-50%) scale(0) rotate(-15deg); opacity:0; }
+    70%{ transform:translate(-50%,-50%) scale(1.1) rotate(3deg); opacity:1; }
+    100%{ transform:translate(-50%,-50%) scale(1) rotate(0); opacity:1; }
+  }
+
+  .punch-tag{
+    position:absolute; top:-22px; left:50%; transform:translateX(-50%);
+    font-size:11px; letter-spacing:3px; color:#8e6db0; white-space:nowrap;
+    background:rgba(255,255,255,.78); padding:3px 12px; border-radius:999px;
+    pointer-events:none; box-shadow:0 2px 8px rgba(125,100,170,.18);
+  }
+
+  .punch-float{
+    position:absolute; pointer-events:none;
+    font-family:var(--font-brush); font-size:24px;
+    color:#c9a86a; filter:drop-shadow(0 2px 6px rgba(200,170,100,.5));
+    animation:punchFloat .9s ease-out forwards;
+    z-index:20; white-space:nowrap;
+  }
+  @keyframes punchFloat{
+    0%{ opacity:0; transform:translate(-50%,0) scale(.5); }
+    25%{ opacity:1; transform:translate(-50%,-40px) scale(1.2); }
+    100%{ opacity:0; transform:translate(-50%,-90px) scale(1); }
+  }
+
+  .punch-ink{
+    position:absolute; width:14px; height:14px; border-radius:50%;
+    pointer-events:none; z-index:15;
+    animation:punchInk .75s ease-out forwards;
+  }
+  @keyframes punchInk{
+    0%{ opacity:.85; transform:translate(0,0) scale(1); }
+    100%{ opacity:0; transform:translate(var(--dx),var(--dy)) scale(.2); }
+  }
+
+  .punch-burst{ position:absolute; left:50%; top:52%; pointer-events:none; z-index:30; }
+  .punch-burst span{
+    position:absolute; left:0; top:0;
+    width:10px; height:10px; border-radius:50%;
+    background:radial-gradient(circle,#fff 20%,#c9a86a 70%,transparent);
+    box-shadow:0 0 10px rgba(255,220,150,.95);
+    animation:burstSpark 1.1s ease-out forwards;
+  }
+  @keyframes burstSpark{
+    0%{ opacity:0; transform:translate(0,0) scale(0); }
+    10%{ opacity:1; transform:translate(0,0) scale(1.5); }
+    100%{ opacity:0; transform:translate(var(--bx),var(--by)) scale(.2); }
+  }
+
+  .punch-msg{
+    text-align:center; margin:14px 22px 0; padding:14px 18px;
+    border-radius:18px; background:rgba(255,255,255,.7);
+    font-size:13px; letter-spacing:2px; line-height:1.85; color:var(--ink);
+    min-height:50px;
+    box-shadow:0 4px 12px rgba(125,100,170,.08);
+  }
+  .punch-msg .pm-line{
+    display:block; font-family:var(--font-brush); font-size:18px;
+    color:var(--purple-deep); letter-spacing:4px; margin-bottom:4px;
+  }
+
+  .punch-cta{ margin:14px auto 0; text-align:center; }
+  .punch-cta button{
+    padding:9px 22px; border-radius:999px;
+    border:1px solid var(--purple-soft);
+    background:rgba(255,255,255,.7);
+    color:var(--purple-deep); font-size:13px; letter-spacing:3px;
+    cursor:pointer; font-family:var(--font-serif);
+    margin:0 5px; transition:transform .15s;
+  }
+  .punch-cta button:active{ transform:scale(.94); }
+
+  @media(max-width:380px){
+    .punch-target{ width:130px; height:130px; }
+    .punch-combo-num{ font-size:46px; }
+    .pb-punch-title{ font-size:28px; letter-spacing:8px; }
+  }
+
+  /* 痛击厄运 · 留言墙 */
+  .punch-board{ margin:18px 14px 6px; }
+  .pb-title-row{ display:flex; justify-content:space-between; align-items:baseline; margin:0 4px 10px; }
+  .pb-title-row .pbt-name{ font-family:var(--font-brush); font-size:18px; letter-spacing:4px; color:var(--purple-deep); }
+  .pb-title-row .pbt-count{ font-size:11px; letter-spacing:1px; color:var(--ink-soft); }
+  .punch-compose{
+    background:rgba(255,255,255,.78); border-radius:16px;
+    padding:14px 14px 10px; box-shadow:0 6px 16px rgba(125,100,170,.1);
+    margin-bottom:14px;
+  }
+  .punch-compose textarea{
+    width:100%; font:inherit; font-size:13.5px; line-height:1.85;
+    color:var(--ink); letter-spacing:1px; resize:none;
+    border:1px solid var(--purple-soft); border-radius:12px; padding:10px 12px;
+    background:rgba(255,255,255,.6); outline:none;
+  }
+  .punch-compose textarea:focus{ border-color:var(--purple); box-shadow:0 0 0 3px rgba(139,123,200,.18); }
+  .punch-compose .pc-row{
+    display:flex; justify-content:space-between; align-items:center;
+    margin-top:8px; gap:10px;
+  }
+  .punch-compose .pc-hint{ font-size:11px; color:var(--ink-soft); letter-spacing:1px; }
+  .punch-compose .pc-submit{
+    padding:7px 16px; border-radius:999px; border:none; cursor:pointer;
+    background:linear-gradient(120deg,#7a5fae,#c9a86a); color:#fff;
+    font-family:var(--font-serif); font-size:12px; letter-spacing:3px;
+  }
+  .punch-compose .pc-submit:active{ transform:scale(.94); }
+  .punch-compose .pc-tag-pick{ display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
+  .punch-compose .pc-tag-pick span{
+    font-size:11px; letter-spacing:1px; padding:3px 10px; border-radius:999px;
+    background:rgba(201,189,232,.22); color:var(--ink-soft); cursor:pointer;
+    border:1px solid transparent; transition:all .15s;
+  }
+  .punch-compose .pc-tag-pick span.on{
+    background:linear-gradient(120deg,#7a5fae,#c9a86a); color:#fff;
+    border-color:transparent;
+  }
+
+  .punch-feed{ display:flex; flex-direction:column; gap:12px; }
+  .punch-card{
+    background:rgba(255,255,255,.78); border-radius:16px;
+    padding:14px 14px 10px; box-shadow:0 4px 12px rgba(125,100,170,.1);
+    animation:fadeInUp .5s ease both;
+  }
+  .punch-card-head{ display:flex; align-items:center; gap:10px; }
+  .punch-card-avatar{
+    width:30px; height:30px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:13px; font-family:var(--font-brush);
+  }
+  .punch-card-meta{ flex:1; min-width:0; }
+  .punch-card-name{ font-size:13px; color:var(--ink); letter-spacing:1px; }
+  .punch-card-time{ font-size:10.5px; color:var(--ink-soft); margin-top:1px; letter-spacing:1px; }
+  .punch-card-tag{
+    font-size:10.5px; letter-spacing:2px; flex:none;
+    padding:3px 10px; border-radius:999px;
+    background:rgba(201,189,232,.3); color:var(--purple-deep);
+  }
+  .punch-card-text{
+    margin:10px 4px 8px; font-size:13.5px; line-height:1.85;
+    color:var(--ink); letter-spacing:.5px;
+    font-family:var(--font-serif); word-break:break-word;
+  }
+  .punch-card-foot{ display:flex; align-items:center; gap:14px; padding:0 4px; }
+  .punch-like{
+    display:flex; align-items:center; gap:5px;
+    font-size:12px; color:var(--ink-soft); letter-spacing:1px;
+    cursor:pointer; background:none; border:none; padding:4px 0;
+    font-family:var(--font-serif);
+  }
+  .punch-like.on{ color:#c9708f; }
+  .punch-like .pl-icon{ font-size:14px; }
+  .punch-like.on .pl-icon{ animation:likePop .5s; }
+  .punch-empty{ text-align:center; padding:24px 0; color:#b0a4c4; font-size:12px; letter-spacing:3px; }
+
+  /* ===== 捕捉好运 ===== */
+  #view-catch{ min-height:100vh; padding-bottom:50px; overflow:hidden; }
+  .catch-banner{
+    position:relative; margin:6px 18px 18px; padding:24px 22px 18px;
+    border-radius:22px; overflow:hidden; text-align:center;
+    background:
+      radial-gradient(circle at 80% 10%, rgba(236,217,160,.34), transparent 46%),
+      radial-gradient(circle at 14% 92%, rgba(214,196,244,.3), transparent 50%),
+      linear-gradient(150deg,#2a3a5e 0%,#3a4a72 55%,#54427e 100%);
+    box-shadow:0 12px 30px rgba(40,60,110,.32);
+  }
+  .catch-banner::before{
+    content:'✧  ✦　　　☆　　　✦  ✧'; position:absolute; inset:0;
+    font-size:10px; letter-spacing:30px; line-height:60px; color:rgba(255,255,255,.18);
+    word-break:break-all; padding:14px;
+  }
+  .cb-title{
+    position:relative; font-family:var(--font-art-deep);
+    font-size:38px; letter-spacing:10px; text-indent:10px;
+    color:#f7ecc6; text-shadow:0 2px 16px rgba(236,217,160,.5);
+  }
+  .cb-desc{ position:relative; margin-top:8px; font-size:11.5px; letter-spacing:3px; color:rgba(238,228,255,.82); }
+  .cb-stat{
+    position:relative; display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    padding:7px 20px; border-radius:999px;
+    background:rgba(255,255,255,.12); border:1px solid rgba(236,217,160,.5);
+    color:#f4e7c0; font-size:12px; letter-spacing:2px;
+  }
+  .cb-stat b{ font-family:var(--font-brush); font-size:18px; color:#ffe27a; margin:0 2px; }
+
+  .catch-stage{
+    position:relative; width:calc(100% - 28px); margin:8px 14px 0;
+    height:48vh; min-height:320px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 20%, rgba(60,80,140,.08), transparent 60%),
+      radial-gradient(circle at 20% 30%, rgba(196,170,232,.22), transparent 50%),
+      linear-gradient(180deg, rgba(40,30,70,.08), rgba(80,60,110,.06));
+    border-radius:22px;
+    touch-action:none;
+  }
+  .catch-stage-hint{
+    position:absolute; top:14px; left:0; right:0; text-align:center;
+    font-size:11px; letter-spacing:3px; color:var(--ink-soft); opacity:.7;
+    pointer-events:none;
+  }
+  .catch-stage-msg{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    font-family:var(--font-brush); font-size:26px; letter-spacing:6px;
+    color:#f7ecc6; text-shadow:0 2px 18px rgba(236,217,160,.6);
+    pointer-events:none; opacity:0;
+    text-align:center; white-space:nowrap;
+  }
+  .catch-stage-msg.show{ animation:msgPop .7s ease-out; }
+
+  .catch-spark{
+    position:absolute; width:54px; height:54px; border-radius:50%;
+    background:radial-gradient(circle, #fff 8%, #ffe27a 38%, rgba(236,217,160,.5) 65%, transparent 75%);
+    box-shadow:0 0 32px rgba(255,220,150,.9), 0 0 60px rgba(255,200,100,.5);
+    cursor:pointer; z-index:10; transform:translate(-50%,-50%);
+    animation:catchAppear .2s ease-out, catchPulse .7s ease-in-out infinite alternate .2s;
+  }
+  .catch-spark::before{
+    content:''; position:absolute; left:50%; top:-42px; width:2px; height:42px;
+    transform:translateX(-50%); background:linear-gradient(180deg, transparent, rgba(255,220,150,.8));
+    border-radius:1px;
+  }
+  .catch-spark.hit{ animation:catchHit .5s ease-out forwards; }
+  @keyframes catchAppear{ from{ opacity:0; transform:translate(-50%,-50%) scale(.2); } to{ opacity:1; transform:translate(-50%,-50%) scale(1); } }
+  @keyframes catchPulse{
+    from{ box-shadow:0 0 28px rgba(255,220,150,.8), 0 0 50px rgba(255,200,100,.4); }
+    to{ box-shadow:0 0 48px rgba(255,220,150,1), 0 0 80px rgba(255,200,100,.65); }
+  }
+  @keyframes catchHit{
+    0%{ transform:translate(-50%,-50%) scale(1); opacity:1; }
+    30%{ transform:translate(-50%,-50%) scale(2.2); opacity:1; filter:brightness(1.4); }
+    100%{ transform:translate(-50%,-50%) scale(3); opacity:0; filter:brightness(2); }
+  }
+
+  .catch-burst{ position:absolute; pointer-events:none; z-index:20; }
+  .catch-burst span{
+    position:absolute; left:0; top:0;
+    width:10px; height:10px; border-radius:50%;
+    background:radial-gradient(circle,#fff 20%,#ffe27a 70%,transparent);
+    box-shadow:0 0 12px rgba(255,220,150,.95);
+    animation:burstSpark 1.1s ease-out forwards;
+  }
+
+  .catch-actions{ text-align:center; margin:18px 0 10px; }
+  .catch-actions button{
+    padding:11px 32px; border-radius:999px; border:none; cursor:pointer;
+    background:linear-gradient(120deg,#7a5fae,#c9a86a);
+    color:#fff; font-family:var(--font-serif); font-size:14px; letter-spacing:4px;
+    box-shadow:0 6px 16px rgba(125,95,174,.32);
+    transition:transform .15s;
+  }
+  .catch-actions button:active{ transform:scale(.96); }
+  .catch-actions button:disabled{ opacity:.5; cursor:default; }
+
+  .catch-msg{
+    text-align:center; margin:14px 22px 0; padding:14px 18px;
+    border-radius:18px; background:rgba(255,255,255,.7);
+    font-size:13px; letter-spacing:2px; line-height:1.85; color:var(--ink);
+    min-height:50px;
+    box-shadow:0 4px 12px rgba(125,100,170,.08);
+  }
+  .catch-msg .cm-line{
+    display:block; font-family:var(--font-brush); font-size:18px;
+    color:var(--purple-deep); letter-spacing:4px; margin-bottom:4px;
+  }
+  .catch-msg .cm-sub{ display:block; }
+
+  @media(max-width:380px){
+    .cb-title{ font-size:28px; letter-spacing:8px; }
+    .catch-spark{ width:48px; height:48px; }
+  }
+
+  /* ===== 好运宠物养成 ===== */
+  #view-pet{ min-height:100vh; padding-bottom:60px; }
+  .pet-banner{
+    position:relative; margin:6px 18px 22px; padding:28px 22px 22px;
+    border-radius:24px; overflow:hidden; text-align:center;
+    background:
+      radial-gradient(circle at 82% 12%, rgba(236,217,160,.35), transparent 46%),
+      radial-gradient(circle at 12% 90%, rgba(214,196,244,.3), transparent 50%),
+      linear-gradient(150deg,#3a2a5e 0%,#5d3e8e 55%,#8a5f94 100%);
+    box-shadow:0 14px 34px rgba(80,55,120,.3);
+  }
+  .pet-banner::before{
+    content:'✦  ✧　　　♡　　　✧  ✦'; position:absolute; inset:0;
+    font-size:10px; letter-spacing:30px; line-height:60px; color:rgba(255,255,255,.2);
+    word-break:break-all; padding:14px;
+  }
+  .pet-title{
+    position:relative; font-family:var(--font-art-deep);
+    font-size:38px; letter-spacing:10px; text-indent:10px;
+    color:#f7ecc6; text-shadow:0 2px 16px rgba(236,217,160,.5);
+  }
+  .pet-desc{ position:relative; margin-top:8px; font-size:11.5px; letter-spacing:3px; color:rgba(238,228,255,.82); }
+
+  /* 宠物舞台 */
+  .pet-stage{
+    position:relative; width:calc(100% - 36px); margin:0 18px 22px;
+    min-height:280px; border-radius:24px; overflow:hidden;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255,255,255,.16), transparent 60%),
+      radial-gradient(circle at 50% 110%, rgba(236,217,160,.2), transparent 55%),
+      linear-gradient(165deg,#4d3a78 0%,#2e2150 70%,#1b1236 100%);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.35), 0 8px 24px rgba(80,55,120,.25);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .pet-stage::before{
+    content:''; position:absolute; inset:0;
+    background-image:
+      radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,.6), transparent),
+      radial-gradient(1.5px 1.5px at 60% 20%, rgba(255,255,255,.5), transparent),
+      radial-gradient(2px 2px at 80% 60%, rgba(255,255,255,.55), transparent),
+      radial-gradient(1px 1px at 30% 70%, rgba(255,248,224,.7), transparent),
+      radial-gradient(1.5px 1.5px at 75% 85%, rgba(255,255,255,.5), transparent);
+    pointer-events:none;
+  }
+  .pet-aura{
+    position:absolute; top:50%; left:50%; width:240px; height:240px;
+    transform:translate(-50%,-50%); border-radius:50%;
+    background:radial-gradient(circle, rgba(236,217,160,.4) 0%, rgba(214,196,244,.18) 45%, transparent 70%);
+    animation:petAura 3.6s ease-in-out infinite;
+  }
+  @keyframes petAura{ 0%,100%{opacity:.5; transform:translate(-50%,-50%) scale(.92)} 50%{opacity:.9; transform:translate(-50%,-50%) scale(1.06)} }
+  .pet-creature{
+    position:relative; z-index:2; width:150px; height:150px;
+    display:flex; align-items:center; justify-content:center;
+    animation:petFloat 4s ease-in-out infinite;
+  }
+  @keyframes petFloat{ 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(-10px) rotate(1deg)} }
+  /* 蛋形 */
+  .pet-egg{
+    width:108px; height:138px; border-radius:50% 50% 48% 48%/60% 60% 40% 40%;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255,255,255,.55), transparent 50%),
+      radial-gradient(circle at 50% 80%, rgba(236,217,160,.35), transparent 60%),
+      linear-gradient(160deg,#e6d4f0 0%,#c9bde8 50%,#9d8bd4 100%);
+    box-shadow:0 14px 32px rgba(0,0,0,.45), inset 0 -10px 24px rgba(125,90,170,.3),
+      0 0 0 2px rgba(236,217,160,.55), 0 0 24px rgba(236,217,160,.4);
+    position:relative; overflow:hidden;
+  }
+  .pet-egg::before{
+    content:''; position:absolute; inset:14% 22%; border-radius:50%;
+    background:radial-gradient(circle at 40% 40%, rgba(255,255,255,.4), transparent 60%);
+  }
+  .pet-egg::after{
+    content:'✧'; position:absolute; top:36%; left:50%; transform:translateX(-50%);
+    font-size:22px; color:rgba(255,248,224,.85);
+    text-shadow:0 0 10px rgba(255,248,224,.9);
+    animation:petTwinkle 2.4s ease-in-out infinite;
+  }
+  @keyframes petTwinkle{ 0%,100%{opacity:.5; transform:translateX(-50%) scale(.9)} 50%{opacity:1; transform:translateX(-50%) scale(1.1)} }
+  /* 幼形 · 紫色小灵 */
+  .pet-young{
+    position:relative; width:120px; height:130px;
+  }
+  .pet-young .body{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:96px; height:88px; border-radius:50% 50% 48% 48%/55% 55% 45% 45%;
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), transparent 55%),
+      linear-gradient(160deg,#c9bde8 0%,#9d8bd4 55%,#6d5ba6 100%);
+    box-shadow:0 12px 26px rgba(0,0,0,.4), inset 0 -8px 18px rgba(80,55,120,.25);
+  }
+  .pet-young .ear{
+    position:absolute; top:8px; width:24px; height:36px; border-radius:50% 50% 30% 30%;
+    background:linear-gradient(160deg,#c9bde8,#8a6bc4);
+    box-shadow:0 4px 10px rgba(0,0,0,.3);
+  }
+  .pet-young .ear.l{ left:18px; transform:rotate(-14deg); }
+  .pet-young .ear.r{ right:18px; transform:rotate(14deg); }
+  .pet-young .face{
+    position:absolute; bottom:48px; left:50%; transform:translateX(-50%);
+    width:80px; height:42px; z-index:2;
+  }
+  .pet-young .eye{
+    position:absolute; top:6px; width:12px; height:14px; border-radius:50%;
+    background:#3a2552; box-shadow:inset -2px -2px 0 rgba(255,255,255,.4);
+  }
+  .pet-young .eye.l{ left:10px; }
+  .pet-young .eye.r{ right:10px; }
+  .pet-young .eye::after{
+    content:''; position:absolute; top:2px; left:3px; width:4px; height:4px;
+    border-radius:50%; background:#fff;
+  }
+  .pet-young .mouth{
+    position:absolute; bottom:4px; left:50%; transform:translateX(-50%);
+    width:18px; height:9px; border-radius:0 0 50% 50%;
+    border:1.5px solid #3a2552; border-top:none;
+  }
+  .pet-young .blush{
+    position:absolute; bottom:10px; width:10px; height:6px; border-radius:50%;
+    background:rgba(231,199,221,.65);
+  }
+  .pet-young .blush.l{ left:8px; }
+  .pet-young .blush.r{ right:8px; }
+  /* 成形 · 大耳朵精灵 */
+  .pet-adult{ position:relative; width:140px; height:160px; }
+  .pet-adult .body{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:112px; height:104px; border-radius:50% 50% 48% 48%/55% 55% 45% 45%;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255,255,255,.55), transparent 55%),
+      linear-gradient(160deg,#d9c5ed 0%,#ab9ade 50%,#6d5ba6 100%);
+    box-shadow:0 14px 30px rgba(0,0,0,.42), inset 0 -10px 20px rgba(80,55,120,.28),
+      0 0 0 2px rgba(236,217,160,.5), 0 0 22px rgba(236,217,160,.3);
+  }
+  .pet-adult .ear{
+    position:absolute; top:0; width:32px; height:54px; border-radius:50% 50% 30% 30%;
+    background:linear-gradient(160deg,#d9c5ed,#8a6bc4);
+    box-shadow:0 6px 12px rgba(0,0,0,.32);
+  }
+  .pet-adult .ear.l{ left:14px; transform:rotate(-12deg); }
+  .pet-adult .ear.r{ right:14px; transform:rotate(12deg); }
+  .pet-adult .ear::after{
+    content:''; position:absolute; top:8px; left:50%; transform:translateX(-50%);
+    width:14px; height:32px; border-radius:50% 50% 30% 30%;
+    background:linear-gradient(160deg,#f0d9a0,#d9b974); opacity:.75;
+  }
+  .pet-adult .face{ position:absolute; bottom:62px; left:50%; transform:translateX(-50%); width:96px; height:46px; z-index:2; }
+  .pet-adult .eye{ position:absolute; top:6px; width:14px; height:16px; border-radius:50%; background:#3a2552; box-shadow:inset -2px -2px 0 rgba(255,255,255,.45); }
+  .pet-adult .eye.l{ left:14px; } .pet-adult .eye.r{ right:14px; }
+  .pet-adult .eye::after{ content:''; position:absolute; top:2px; left:4px; width:5px; height:5px; border-radius:50%; background:#fff; }
+  .pet-adult .mouth{ position:absolute; bottom:6px; left:50%; transform:translateX(-50%); width:22px; height:11px; border-radius:0 0 50% 50%; border:1.5px solid #3a2552; border-top:none; }
+  .pet-adult .blush{ position:absolute; bottom:12px; width:11px; height:7px; border-radius:50%; background:rgba(231,199,221,.7); }
+  .pet-adult .blush.l{ left:10px; } .pet-adult .blush.r{ right:10px; }
+  /* 灵形 · 金光大精灵 */
+  .pet-spirit{ position:relative; width:160px; height:180px; }
+  .pet-spirit .halo{
+    position:absolute; top:-14px; left:50%; transform:translateX(-50%);
+    width:90px; height:18px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(247,236,198,.85), transparent 70%);
+    box-shadow:0 0 22px rgba(247,236,198,.7);
+    animation:petHalo 3s ease-in-out infinite;
+  }
+  @keyframes petHalo{ 0%,100%{opacity:.7; transform:translateX(-50%) scale(.95)} 50%{opacity:1; transform:translateX(-50%) scale(1.05)} }
+  .pet-spirit .body{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:128px; height:118px; border-radius:50% 50% 48% 48%/55% 55% 45% 45%;
+    background:
+      radial-gradient(circle at 35% 28%, rgba(255,255,255,.65), transparent 55%),
+      radial-gradient(circle at 50% 80%, rgba(247,236,198,.45), transparent 60%),
+      linear-gradient(160deg,#f0e3ff 0%,#c9bde8 45%,#8a6bc4 100%);
+    box-shadow:0 16px 36px rgba(0,0,0,.42), inset 0 -12px 24px rgba(125,90,170,.28),
+      0 0 0 2.5px rgba(247,236,198,.85), 0 0 30px rgba(247,236,198,.5);
+  }
+  .pet-spirit .wing{
+    position:absolute; bottom:40px; width:46px; height:80px;
+    background:linear-gradient(160deg, rgba(247,236,198,.85), rgba(201,189,232,.6));
+    border-radius:50% 50% 30% 30%; opacity:.85;
+    box-shadow:0 6px 16px rgba(0,0,0,.2);
+    animation:petWing 2.4s ease-in-out infinite;
+  }
+  @keyframes petWing{ 0%,100%{transform:rotate(0)} 50%{transform:rotate(-8deg)} }
+  .pet-spirit .wing.l{ left:-12px; transform-origin:bottom right; }
+  .pet-spirit .wing.r{ right:-12px; transform-origin:bottom left; transform:rotate(8deg); animation:petWingR 2.4s ease-in-out infinite; }
+  @keyframes petWingR{ 0%,100%{transform:rotate(8deg)} 50%{transform:rotate(0)} }
+  .pet-spirit .ear{
+    position:absolute; top:8px; width:36px; height:60px; border-radius:50% 50% 30% 30%;
+    background:linear-gradient(160deg,#f0e3ff,#ab9ade);
+  }
+  .pet-spirit .ear.l{ left:18px; transform:rotate(-12deg); }
+  .pet-spirit .ear.r{ right:18px; transform:rotate(12deg); }
+  .pet-spirit .ear::after{ content:''; position:absolute; top:10px; left:50%; transform:translateX(-50%); width:16px; height:36px; border-radius:50% 50% 30% 30%; background:linear-gradient(160deg,#fff6dc,#d9b974); opacity:.85; }
+  .pet-spirit .face{ position:absolute; bottom:70px; left:50%; transform:translateX(-50%); width:108px; height:52px; z-index:2; }
+  .pet-spirit .eye{ position:absolute; top:8px; width:16px; height:18px; border-radius:50%; background:#3a2552; box-shadow:inset -3px -3px 0 rgba(255,255,255,.5); }
+  .pet-spirit .eye.l{ left:16px; } .pet-spirit .eye.r{ right:16px; }
+  .pet-spirit .eye::after{ content:''; position:absolute; top:3px; left:4px; width:6px; height:6px; border-radius:50%; background:#fff; }
+  .pet-spirit .mouth{ position:absolute; bottom:8px; left:50%; transform:translateX(-50%); width:24px; height:12px; border-radius:0 0 50% 50%; border:2px solid #3a2552; border-top:none; }
+  .pet-spirit .blush{ position:absolute; bottom:14px; width:13px; height:8px; border-radius:50%; background:rgba(231,199,221,.75); }
+  .pet-spirit .blush.l{ left:12px; } .pet-spirit .blush.r{ right:12px; }
+
+  /* 宠物信息卡 */
+  .pet-info{
+    margin:0 18px 18px; padding:18px 20px; border-radius:20px;
+    background:rgba(255,255,255,.78); box-shadow:0 8px 22px rgba(125,100,170,.12);
+  }
+  .pet-name-row{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px; }
+  .pet-name-row .pn-name{ font-family:var(--font-art-deep); font-size:24px; letter-spacing:4px; color:var(--purple-deep); }
+  .pet-name-row .pn-stage{ font-size:11px; letter-spacing:3px; color:var(--gold); padding:3px 12px; border-radius:99px; background:rgba(201,168,106,.15); border:1px solid rgba(201,168,106,.4); }
+  .pet-stat{ margin-bottom:12px; }
+  .pet-stat:last-child{ margin-bottom:0; }
+  .pet-stat-label{ display:flex; justify-content:space-between; font-size:12px; letter-spacing:2px; color:var(--ink-soft); margin-bottom:5px; }
+  .pet-stat-label .ps-name{ color:var(--purple-deep); }
+  .pet-stat-label .ps-val{ font-family:var(--font-art); color:var(--gold); }
+  .pet-stat-bar{ height:9px; border-radius:99px; background:rgba(201,189,232,.28); overflow:hidden; }
+  .pet-stat-fill{ height:100%; border-radius:99px; transition:width .7s cubic-bezier(.3,1.2,.5,1); }
+  .pet-stat-fill.hunger{ background:linear-gradient(90deg,#e7a87a,#f0c898 50%,#e7a87a); box-shadow:0 0 10px rgba(231,168,122,.65); }
+  .pet-stat-fill.bond{ background:linear-gradient(90deg,#d99ab8,#f0b8d4 50%,#d99ab8); box-shadow:0 0 10px rgba(217,154,184,.65); }
+  .pet-stat-fill.exp{ background:linear-gradient(90deg,#c9a86a,#ecd9a0 50%,#c9a86a); box-shadow:0 0 10px rgba(220,190,120,.75); }
+  .pet-bonus{
+    margin-top:14px; padding:10px 14px; border-radius:14px;
+    background:linear-gradient(120deg,rgba(246,233,196,.6),rgba(240,214,170,.4));
+    border:1px solid rgba(216,182,132,.55);
+    font-size:12px; letter-spacing:2px; line-height:1.7; color:#a5793d;
+  }
+  .pet-bonus b{ font-family:var(--font-art); color:#8a5f2a; }
+  /* 行动按钮 */
+  .pet-actions{
+    display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:0 18px 16px;
+  }
+  .pet-actions button{
+    border:none; cursor:pointer; padding:14px 6px; border-radius:16px;
+    font-family:var(--font-art-bold); font-size:15px; letter-spacing:4px; text-indent:4px;
+    color:#fff; box-shadow:0 8px 20px rgba(125,100,170,.22);
+    transition:transform .2s, box-shadow .2s;
+  }
+  .pet-actions button:active{ transform:scale(.95); }
+  .pet-actions button:disabled{ opacity:.4; cursor:not-allowed; }
+  .pet-btn-feed{ background:linear-gradient(120deg,#b894d4,#8a6bc4); }
+  .pet-btn-pet{ background:linear-gradient(120deg,#d99ab8,#c0708f); }
+  .pet-btn-play{ background:linear-gradient(120deg,#a8c8e8,#7a9dd0); }
+  .pet-btn-talk{ background:linear-gradient(120deg,#e8c89a,#d4a06a); }
+  .pet-evolve{
+    display:block; margin:0 18px 22px; width:calc(100% - 36px);
+    padding:14px 6px; border:none; border-radius:16px; cursor:pointer;
+    font-family:var(--font-art-bold); font-size:15px; letter-spacing:5px; text-indent:5px;
+    color:#5a3a1a;
+    background:linear-gradient(120deg,#f7e9b8,#d9a94f 55%,#f7e9b8);
+    box-shadow:0 8px 22px rgba(217,169,79,.4);
+    transition:transform .2s;
+  }
+  .pet-evolve:active{ transform:scale(.96); }
+  .pet-evolve:disabled{ opacity:.4; cursor:not-allowed; }
+  .pet-log{
+    margin:0 18px; padding:14px 18px; border-radius:18px;
+    background:rgba(255,255,255,.7); box-shadow:0 4px 12px rgba(125,100,170,.08);
+    font-size:12.5px; letter-spacing:2px; line-height:1.85; color:var(--ink); min-height:48px;
+  }
+  .pet-log .pl-line{ display:block; font-family:var(--font-brush); font-size:17px; color:var(--purple-deep); letter-spacing:3px; margin-bottom:4px; }
+  .pet-hint{ text-align:center; font-size:11.5px; letter-spacing:3px; color:var(--ink-soft); margin-top:8px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 开屏 · 自制星夜动画 -->
+  <section id="view-splash" class="view active" onclick="enterHome()">
+    <canvas id="splashStars"></canvas>
+    <div class="splash-nebula n1"></div>
+    <div class="splash-nebula n2"></div>
+    <div class="splash-moon"></div>
+    <div class="splash-meteor"></div>
+    <div class="splash-meteor m2"></div>
+    <svg class="splash-const" viewBox="0 0 200 120" aria-hidden="true">
+      <polyline points="18,92 52,58 88,74 124,34 168,48" fill="none"/>
+      <circle class="cstar" cx="18" cy="92" r="2.6" fill="#fff3d6"/>
+      <circle class="cstar" cx="52" cy="58" r="2" fill="#ffeecb"/>
+      <circle class="cstar" cx="88" cy="74" r="2.4" fill="#fff3d6"/>
+      <circle class="cstar" cx="124" cy="34" r="3" fill="#fff8e0"/>
+      <circle class="cstar" cx="168" cy="48" r="2.2" fill="#ffeecb"/>
+    </svg>
+    <div id="petalLayer"></div>
+    <button class="sm-skip" onclick="event.stopPropagation();enterHome()">跳过 ›</button>
+    <div class="splash-stage">
+      <div class="sm-card-wrap">
+        <div class="sm-card sm-float">
+          <div class="sm-shine"></div>
+          <div class="sm-moon">☾</div>
+          <div class="sm-zi">愈见</div>
+          <div class="sm-en">YU JIAN</div>
+        </div>
+      </div>
+      <div class="sm-brand">
+        <div class="sm-title">愈见</div>
+        <div class="sm-sub">CARDS OF NATURE'S KISS</div>
+        <div class="sm-line"></div>
+      </div>
+    </div>
+    <div class="sm-enter"><span>轻触屏幕，进入卡牌世界</span></div>
+  </section>
+
+  <!-- 首页 -->
+  <section id="view-home" class="view">
+    <div class="home-badge">艺术疗愈占卜</div>
+    <div class="home-title">愈见卡牌</div>
+    <div class="home-en">HEALING ORACLE · 26 CARDS</div>
+    <div class="luck-badge" id="homeLuck" onclick="go('plaza')">
+      <span class="lb-icon">✦</span><span>我的运气值</span><b id="homeLuckVal">0</b><span class="lb-go">去祈福 ›</span>
+    </div>
+    <div class="home-card-wrap">
+      <span class="sparkle s1">✦</span><span class="sparkle s2">✧</span><span class="sparkle s3">✦</span>
+      <img class="home-card" src="images/card_01.jpg" alt="愈见卡背">
+      <div class="hc-frame"></div>
+      <div class="hc-shine"></div>
+    </div>
+    <p class="home-desc">在星辰与繁花之间<br>抽一张牌，听见内心的声音</p>
+    <button class="btn-primary" onclick="go('groups')">开始抽卡</button>
+    <div class="home-links">
+      <button onclick="go('gallery')"><span class="hl-ico">❖</span>卡牌图鉴</button>
+      <button onclick="go('plaza')"><span class="hl-ico">✦</span>祈愿广场</button>
+      <button onclick="go('punch')"><span class="hl-ico">✧</span>痛击厄运</button>
+      <button onclick="go('catch')"><span class="hl-ico">☆</span>捕捉好运</button>
+      <button onclick="go('pet')"><span class="hl-ico">♡</span>好运宠物</button>
+      <button onclick="go('about')"><span class="hl-ico">❀</span>关于</button>
+    </div>
+  </section>
+
+  <!-- 篇章选择 -->
+  <section id="view-groups" class="view">
+    <div class="topbar"><button class="back-btn" onclick="go('home')">‹</button><span class="topbar-title">选择心境</span><span></span></div>
+    <div class="page-head"><h2>此刻，你在哪里</h2><p>跟随直觉，选择一个篇章</p></div>
+    <div class="group-list" id="groupList"></div>
+  </section>
+
+  <!-- 祈愿 · 写下心事 -->
+  <section id="view-wish" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('groups')">‹</button>
+      <span class="topbar-title">写下心事</span><span></span>
+    </div>
+    <div class="wish-wrap">
+      <div class="wish-sparkle">✦</div>
+      <h2>先把心事，轻轻放下</h2>
+      <p class="wish-lead">抽牌之前，写下此刻萦绕你的烦恼或疑问<br>卡牌会静静聆听，并给你温柔的回应</p>
+      <div class="wish-box">
+        <textarea id="wishInput" maxlength="100" rows="5" placeholder="例如：最近总是感到焦虑，不知道自己的选择对不对……"></textarea>
+        <div class="wish-count"><span id="wishCount">0</span>/100</div>
+      </div>
+      <div class="wish-sugs">
+        <div class="ws-label">或者，从这些开始</div>
+        <div class="ws-list" id="wishSugList"></div>
+      </div>
+      <button class="btn-primary" onclick="submitWish()">带着心事抽一张</button>
+      <button class="wish-skip" onclick="skipWish()">不必书写，直接抽牌 ›</button>
+    </div>
+  </section>
+
+  <!-- 抽卡 -->
+  <section id="view-draw" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('wish')">‹</button>
+      <span class="topbar-title" id="drawGroupName"></span>
+      <button class="sound-btn" id="soundToggle" title="音效开关" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="d-header">
+      <div class="draw-worry" id="drawWorry" style="display:none">
+        <span class="dw-icon">♡</span><span class="dw-text" id="drawWorryText"></span>
+      </div>
+      <p class="d-phase-desc" id="drawPhaseDesc">选择一种占卜方式，让卡牌回应你的心事</p>
+    </div>
+
+    <!-- ① 选择方式 -->
+    <div class="w-stage" id="drawIdle">
+      <div class="w-modes">
+        <div class="w-mode on" data-mode="single" onclick="selectMode('single')">
+          <div class="wm-icon">✦</div>
+          <div class="wm-name">单张指引</div>
+          <div class="wm-desc">抽取一张牌，聆听此刻最需要的一句话</div>
+        </div>
+        <div class="w-mode" data-mode="spread" onclick="selectMode('spread')">
+          <div class="wm-icon">❖</div>
+          <div class="wm-name">三张牌阵</div>
+          <div class="wm-desc">过去 · 现在 · 未来，看清心事的来处与去向</div>
+        </div>
+      </div>
+      <button class="btn-primary w-start" onclick="startDraw()">开始洗牌</button>
+    </div>
+
+    <!-- ② 洗牌 -->
+    <div class="w-stage" id="drawShuffle" style="display:none">
+      <div class="w-shuffle">
+        <div class="ws-card a"><span class="cb-moon md">☾</span></div>
+        <div class="ws-card b"><span class="cb-moon md">☾</span></div>
+        <div class="ws-card c"><span class="cb-moon md">☾</span></div>
+        <div class="ws-card d"><span class="cb-moon md">☾</span></div>
+      </div>
+      <div class="w-rune">✧ 静心 ✧</div>
+    </div>
+
+    <!-- ③ 扇形选牌 -->
+    <div class="w-stage w-fan-stage" id="drawPicking" style="display:none">
+      <div class="w-fan" id="fanRow"></div>
+    </div>
+
+    <!-- ④ 揭晓 -->
+    <div class="w-stage" id="drawResult" style="display:none">
+      <div class="w-particles" id="particlesBox"></div>
+      <!-- 单张 -->
+      <div id="resultSingle" style="display:none">
+        <div class="w-cardflip" id="singleFlip" onclick="pokeCard()">
+          <div class="halo" id="singleHalo"></div>
+          <div class="w-face w-back"><div class="wb-heart">☾</div><div class="wb-zi">愈 见</div></div>
+          <div class="w-face w-front"><img id="singleImg" src="" alt=""></div>
+        </div>
+        <div class="w-result-meta">
+          <span class="w-orient" id="singleOrient"></span>
+          <h3 id="singleName"></h3>
+          <div class="w-en" id="singleEn"></div>
+        </div>
+        <div class="w-quick" id="singleKw"></div>
+        <div class="tap-hint">✧ 轻触卡牌，接住星光 ✧</div>
+        <div class="draw-actions">
+          <button class="btn-primary" onclick="openDetail(state.drawnId,true)">查看牌意解读</button>
+          <button class="btn-line" onclick="resetDraw()">重新洗牌</button>
+        </div>
+      </div>
+      <!-- 三张牌阵 -->
+      <div id="resultSpread" style="display:none">
+        <div class="w-spread" id="spreadRow"></div>
+        <div class="sp-summary" id="spSummary" style="display:none"></div>
+        <div class="draw-actions">
+          <button class="btn-line" onclick="resetDraw()">重新洗牌</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 详情 -->
+  <section id="view-detail" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">卡牌解读</span><span></span>
+    </div>
+    <div class="detail-pos" id="detailPos" style="display:none"></div>
+    <div class="detail-hero"><div class="dh-wrap"><img id="detailImg" src="" alt=""><span class="d-orient" id="detailOrient" style="display:none"></span></div></div>
+    <div class="detail-body">
+      <div class="detail-wish" id="detailWish" style="display:none">
+        <div class="dw2-title">♡ 你带来的心事</div>
+        <div class="dw2-text" id="detailWishText"></div>
+      </div>
+      <span class="d-tag" id="detailTag"></span>
+      <h2 id="detailName"></h2>
+      <div class="d-en" id="detailEn"></div>
+      <div class="d-orient-note" id="detailOrientNote" style="display:none"></div>
+      <div class="d-keywords" id="detailKeys"></div>
+      <div class="d-heal" id="detailHeal"></div>
+      <div class="d-action" id="detailAction">
+        <div class="da-title">✦ 今日行动指引</div>
+        <div class="da-text" id="detailActionText"></div>
+      </div>
+      <button class="btn-primary d-poster-btn" onclick="openPoster()">✦ 生成疗愈海报</button>
+    </div>
+    <div class="d-disclaimer">
+      本卡牌内容仅供艺术欣赏与情绪自助参考，不构成任何医疗、心理诊断或专业咨询建议。
+      如果你正经历持续的情绪困扰，请及时寻求专业心理工作者的帮助。请温柔地对待自己。
+    </div>
+  </section>
+
+  <!-- 抽卡后 · 下一步全屏弹窗 -->
+  <div class="next-overlay" id="nextOverlay" onclick="if(event.target===this)closeNextSheet()">
+    <div class="next-sheet">
+      <div class="next-head">
+        <div class="next-card-preview"><img id="nextCardImg" src="" alt=""></div>
+        <div class="next-title">抽 牌 完 成</div>
+        <div class="next-sub">把这份启示，变成温柔行动</div>
+        <button class="next-close" onclick="closeNextSheet()">✕</button>
+      </div>
+      <div class="next-grid">
+        <button class="next-btn full" onclick="closeNextSheet()">
+          <span class="nb-ico">❖</span>
+          <span class="nb-name">查看卡牌详情</span>
+          <span class="nb-hint">细读牌意与疗愈指引</span>
+        </button>
+        <button class="next-btn" onclick="closeNextSheet();go('punch')">
+          <span class="nb-ico">✧</span>
+          <span class="nb-name">痛击厄运</span>
+          <span class="nb-hint">把负能量打跑</span>
+        </button>
+        <button class="next-btn" onclick="closeNextSheet();go('catch')">
+          <span class="nb-ico">☆</span>
+          <span class="nb-name">捕捉好运</span>
+          <span class="nb-hint">试试10%的惊喜</span>
+        </button>
+        <button class="next-btn" onclick="closeNextSheet();go('plaza')">
+          <span class="nb-ico">✦</span>
+          <span class="nb-name">祈愿广场</span>
+          <span class="nb-hint">去祈福或还愿</span>
+        </button>
+        <button class="next-btn gold" onclick="closeNextSheet();go('pet')">
+          <span class="nb-ico">♡</span>
+          <span class="nb-name">看望宠物</span>
+          <span class="nb-hint">喂它一口好运气</span>
+        </button>
+        <button class="next-btn" onclick="closeNextSheet();go('home')">
+          <span class="nb-ico">❀</span>
+          <span class="nb-name">回到首页</span>
+          <span class="nb-hint">回星夜小筑</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 图鉴 -->
+  <section id="view-gallery" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">卡牌图鉴</span>
+      <button class="sound-btn" id="soundToggle2" title="音效开关" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="collect-head" id="collectHead"></div>
+    <div class="filter-row" id="filterRow"></div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </section>
+
+  <!-- 祈愿广场 -->
+  <section id="view-plaza" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">祈愿广场</span>
+      <button class="sound-btn" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="plaza-banner">
+      <div class="pb-title">祈愿广场</div>
+      <div class="pb-desc">把祈福、占卜与还愿，留在星光里</div>
+      <div class="pb-luck">✦ 我的运气值 <b id="plazaLuck">0</b></div>
+    </div>
+    <div class="pz-compose">
+      <textarea id="pzInput" class="pz-textarea" maxlength="200" placeholder="写下此刻的祈福、占卜日记，或愿望实现后来还愿…"></textarea>
+      <div class="pz-row">
+        <div class="pz-tags" id="pzTags">
+          <span class="pz-tag on" data-tag="pray">祈福</span>
+          <span class="pz-tag" data-tag="luck">求好运</span>
+          <span class="pz-tag" data-tag="diary">占卜日记</span>
+          <span class="pz-tag" data-tag="vow">还愿</span>
+        </div>
+        <button class="pz-submit" onclick="plazaPost()">放上星空</button>
+      </div>
+    </div>
+    <div class="pz-feed" id="plazaFeed"></div>
+  </section>
+
+  <section id="view-about" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">关于</span><span></span>
+    </div>
+    <div class="page-head"><h2>愈见卡牌</h2><p>一套献给内心小孩的艺术疗愈卡</p></div>
+    <div class="about-sec">
+      <h3>关于这套卡</h3>
+      <p>《愈见卡牌》以柔和梦幻的水彩美学，把情绪装进 26 张卡牌里：给予拥抱与栖于星光的紫色小熊、缓缓转动的命运之轮、十二位在神话与梦境中漫游的少女，以及十二个静静诉说的唯美意象。愿你在翻牌之间，与真实的自己温柔相遇。</p>
+    </div>
+    <div class="about-sec">
+      <h3>卡牌结构</h3>
+      <ul>
+        <li>核心主牌（3 张）：守护者、星栖小熊与命运之轮，被守护与照亮的时刻</li>
+        <li>少女与神话篇：跟随少女完成一场内心的冒险（11 张）</li>
+        <li>意象与物语篇：让自然万物给你答案（12 张）</li>
+      </ul>
+    </div>
+    <div class="about-sec">
+      <h3>如何使用</h3>
+      <ul>
+        <li>深呼吸三次，在心里默念你的问题</li>
+        <li>选择与当下心境共鸣的篇章</li>
+        <li>轻触卡牌，阅读讯息，并完成一个小小的行动指引</li>
+      </ul>
+    </div>
+    <div class="about-disclaimer">
+      <strong>免责声明</strong><br>
+      本卡牌所有文案与画面均为艺术创作与情绪表达，仅供休闲娱乐与自我关怀参考，不代表任何科学或医学结论，不能替代专业的心理咨询、诊断或治疗。若你正处于严重或持续的心理困扰中，请联系正规医疗机构或心理援助热线。请相信：你值得被爱，也值得被自己温柔以待。
+    </div>
+  </section>
+
+  <!-- 殴打厄运 · 解压 -->
+  <section id="view-punch" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">殴打厄运</span>
+      <button class="sound-btn" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="punch-banner">
+      <div class="pb-punch-title">痛击厄运</div>
+      <div class="pb-punch-desc">把焦虑、拖延、自我怀疑……通通打碎</div>
+      <div class="pb-punch-stat">今日已痛击 <b id="punchTodayCount">0</b> 次</div>
+    </div>
+    <div class="punch-combo">
+      <div class="punch-combo-num" id="punchCombo">0</div>
+      <div class="punch-combo-label">连击数</div>
+      <div class="punch-combo-best">最高连击 · <b id="punchBest">0</b></div>
+    </div>
+    <div class="punch-stage" id="punchStage">
+      <div class="punch-stage-hint" id="punchHint">连点小鬼，把它打散 ✦</div>
+      <div class="punch-stage-msg" id="punchStageMsg"></div>
+      <div class="punch-target born" id="punchTarget" onclick="punchHit(event)">
+        <span class="punch-tag" id="punchTag">焦虑</span>
+      </div>
+    </div>
+    <div class="punch-msg" id="punchMsg">
+      <span class="pm-line">来，狠狠戳它</span>
+      <span class="pm-sub">每一下，都把自己放轻一点</span>
+    </div>
+    <div class="punch-cta">
+      <button onclick="punchReset()">换一只厄运</button>
+      <button onclick="punchShare()">分享战绩</button>
+    </div>
+
+    <!-- 厄运留言墙 -->
+    <div class="punch-board">
+      <div class="pb-title-row">
+        <span class="pbt-name">厄运留言墙</span>
+        <span class="pbt-count" id="punchMsgCount">0 条</span>
+      </div>
+      <div class="punch-compose">
+        <textarea id="punchInput" maxlength="120" rows="3" placeholder="打散哪只厄运之后，想对自己或别人说点什么？"></textarea>
+        <div class="pc-tag-pick" id="punchTagPick"></div>
+        <div class="pc-row">
+          <span class="pc-hint" id="punchInputHint">写下被打散的心声，运气 +2</span>
+          <button class="pc-submit" onclick="punchPost()">留下心声</button>
+        </div>
+      </div>
+      <div class="punch-feed" id="punchFeed"></div>
+    </div>
+  </section>
+
+  <!-- 捕捉好运 -->
+  <section id="view-catch" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">捕捉好运</span>
+      <button class="sound-btn" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="catch-banner">
+      <div class="cb-title">捕捉好运</div>
+      <div class="cb-desc">流星稍纵即逝，看准时机，接住它</div>
+      <div class="cb-stat">今日已尝试 <b id="catchTryCount">0</b> 次 · 接住 <b id="catchWinCount">0</b> 次</div>
+    </div>
+    <div class="catch-stage" id="catchStage">
+      <div class="catch-stage-hint" id="catchHint">点击下方按钮，等流星出现时迅速点中</div>
+      <div class="catch-stage-msg" id="catchStageMsg"></div>
+    </div>
+    <div class="catch-actions">
+      <button id="catchBtn" onclick="catchStart()">召唤流星</button>
+    </div>
+    <div class="catch-msg" id="catchMsg">
+      <span class="cm-line">捕捉成功率 10%</span>
+      <span class="cm-sub">接住一次，运气 +5</span>
+    </div>
+  </section>
+
+  <!-- 好运宠物养成 -->
+  <section id="view-pet" class="view">
+    <div class="topbar">
+      <button class="back-btn" onclick="go('home')">‹</button>
+      <span class="topbar-title">好运宠物</span>
+      <button class="sound-btn" onclick="toggleSound()">♪</button>
+    </div>
+    <div class="pet-banner">
+      <div class="pet-title">好运宠物</div>
+      <div class="pet-desc">养一只专属小精灵，让它陪你抽牌、给你攒好运</div>
+    </div>
+    <div class="pet-stage" id="petStage">
+      <div class="pet-aura"></div>
+      <div class="pet-creature" id="petCreature"></div>
+    </div>
+    <div class="pet-info">
+      <div class="pet-name-row">
+        <span class="pn-name" id="petName">未孵化的蛋</span>
+        <span class="pn-stage" id="petStageLabel">第 1 阶段</span>
+      </div>
+      <div class="pet-stat">
+        <div class="pet-stat-label"><span class="ps-name">饱食度</span><span class="ps-val" id="petHungerVal">0</span></div>
+        <div class="pet-stat-bar"><div class="pet-stat-fill hunger" id="petHungerBar" style="width:0%"></div></div>
+      </div>
+      <div class="pet-stat">
+        <div class="pet-stat-label"><span class="ps-name">亲密度</span><span class="ps-val" id="petBondVal">0</span></div>
+        <div class="pet-stat-bar"><div class="pet-stat-fill bond" id="petBondBar" style="width:0%"></div></div>
+      </div>
+      <div class="pet-stat">
+        <div class="pet-stat-label"><span class="ps-name">成长经验</span><span class="ps-val" id="petExpVal">0</span></div>
+        <div class="pet-stat-bar"><div class="pet-stat-fill exp" id="petExpBar" style="width:0%"></div></div>
+      </div>
+      <div class="pet-bonus" id="petBonus"></div>
+    </div>
+    <div class="pet-actions">
+      <button class="pet-btn-feed" id="petFeedBtn" onclick="petFeed()">喂食 (耗 10 运气)</button>
+      <button class="pet-btn-pet" id="petPetBtn" onclick="petPet()">抚摸</button>
+      <button class="pet-btn-play" id="petPlayBtn" onclick="petPlay()">玩耍</button>
+      <button class="pet-btn-talk" id="petTalkBtn" onclick="petTalk()">讲心事</button>
+    </div>
+    <button class="pet-evolve" id="petEvolveBtn" onclick="petEvolve()" disabled>进化</button>
+    <div class="pet-log" id="petLog">
+      <span class="pl-line">来养一只好运精灵吧 ✦</span>
+      <span>它会在你的卡牌旅途中默默陪伴你、给你攒好运</span>
+    </div>
+    <div class="pet-hint">抚摸 / 讲心事 / 玩耍都能攒经验 · 抽卡 / 痛击厄运 / 捕捉好运时宠物也会一起成长 · 每日首次来访有问候礼</div>
+  </section>
+
+</div>
+
+<!-- 海报弹窗 -->
+<div class="pm-mask" id="posterModal" onclick="if(event.target===this)closePoster()">
+  <div class="pm-box">
+    <canvas id="posterCanvas" width="600" height="1100"></canvas>
+    <div class="pm-actions">
+      <a id="posterDownload" download="yujian-poster.png"><button class="btn-primary">保存图片</button></a>
+      <button class="btn-line" onclick="closePoster()">关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 集齐 26 张彩蛋 -->
+<div class="easter-mask" id="easterMask" onclick="if(event.target===this)closeEaster()">
+  <div class="easter-box">
+    <span class="eb-star t1">✦</span><span class="eb-star t2">✧</span>
+    <span class="eb-star t3">✧</span><span class="eb-star t4">✦</span>
+    <div class="eb-mark">❖</div>
+    <h3>星图圆满</h3>
+    <p>你已集齐全部 26 张牌<br>所有星光，都已与你相认<br>愿你带着这副完整的星图<br>温柔地走向每一个明天</p>
+    <button class="btn-primary" onclick="closeEaster()">收下这份圆满 ✦</button>
+  </div>
+</div>
+
+<!-- 轻提示 -->
+<div class="toast" id="toast"></div>
+
+<script src="cards-data.js"></script>
+<script>
+const GROUPS_META = {
+  core:   { cover: cards[24].image },
+  maiden: { cover: cards[1].image },
+  tale:   { cover: cards[12].image },
+  all:    { name:'随心抽', en:'Random Draw', desc:'不限篇章，让 26 张牌为你选择', cover: cards[20].image }
+};
+const state = { view:'splash', groupId:null, pool:[], drawnId:null, detailFrom:'home', filter:'all', worry:'',
+  mode:'single', phase:'idle', orient:null, pos:null };
+const routeStack = [];
+
+function $(id){ return document.getElementById(id); }
+
+/* ===== 音效（WebAudio 实时合成，无音频文件） ===== */
+const Sfx = {
+  ctx:null, on:true,
+  init(){
+    this.on = localStorage.getItem('yj_sound') !== 'off';
+    this.syncBtn();
+  },
+  ensure(){
+    if(!this.ctx){
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) this.ctx = new AC();
+    }
+    if(this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  },
+  syncBtn(){
+    document.querySelectorAll('.sound-btn').forEach(b=>{
+      b.textContent = this.on ? '♪' : '×';
+      b.classList.toggle('off', !this.on);
+      b.title = this.on ? '音效：开（点击关闭）' : '音效：关（点击开启）';
+    });
+  },
+  tone(freq, t0, dur, type, vol, glideTo){
+    const ac = this.ctx, o = ac.createOscillator(), g = ac.createGain();
+    o.type = type || 'sine';
+    o.frequency.setValueAtTime(freq, t0);
+    if(glideTo) o.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur);
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(vol, t0 + 0.012);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    o.connect(g); g.connect(ac.destination);
+    o.start(t0); o.stop(t0 + dur + 0.05);
+  },
+  noise(t0, dur, vol, freq, q, ftype){
+    const ac = this.ctx, n = Math.floor(ac.sampleRate * dur);
+    const buf = ac.createBuffer(1, n, ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<n;i++) d[i] = Math.random()*2 - 1;
+    const src = ac.createBufferSource(); src.buffer = buf;
+    const f = ac.createBiquadFilter(); f.type = ftype || 'bandpass';
+    f.frequency.value = freq; f.Q.value = q || 0.9;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(vol, t0 + 0.05);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+    src.connect(f); f.connect(g); g.connect(ac.destination);
+    src.start(t0); src.stop(t0 + dur);
+  },
+  tick(){ if(!this.on) return; this.ensure(); if(!this.ctx) return;
+    const t = this.ctx.currentTime; this.tone(880, t, 0.09, 'sine', 0.06); },
+  shuffleSnd(){ if(!this.on) return; this.ensure(); if(!this.ctx) return;
+    const t = this.ctx.currentTime;
+    for(let i=0;i<6;i++) this.noise(t + i*0.19, 0.2, 0.05, 1700 + Math.random()*1400, 0.7, 'highpass'); },
+  flip(){ if(!this.on) return; this.ensure(); if(!this.ctx) return;
+    const t = this.ctx.currentTime;
+    this.noise(t, 0.3, 0.08, 950, 0.8, 'bandpass');
+    this.tone(330, t, 0.22, 'triangle', 0.05, 175); },
+  chime(){ if(!this.on) return; this.ensure(); if(!this.ctx) return;
+    const t = this.ctx.currentTime;
+    [523.25, 659.25, 783.99, 1046.5].forEach((f,i)=>this.tone(f, t + i*0.09, 1.0, 'sine', 0.085));
+    this.noise(t, 0.5, 0.018, 6000, 0.6, 'highpass'); },
+  sparkle(){ if(!this.on) return; this.ensure(); if(!this.ctx) return;
+    const t = this.ctx.currentTime;
+    [1318.5, 1760, 2349.3].forEach((f,i)=>this.tone(f, t + i*0.05, 0.36, 'sine', 0.045)); }
+};
+function toggleSound(){
+  Sfx.on = !Sfx.on;
+  localStorage.setItem('yj_sound', Sfx.on ? 'on' : 'off');
+  Sfx.syncBtn();
+  if(Sfx.on){ Sfx.ensure(); Sfx.chime(); }
+}
+
+/* ===== 卡牌收集图鉴 ===== */
+const Collect = {
+  key:'yj_collected_v1',
+  data(){ try{ return JSON.parse(localStorage.getItem(this.key)) || {ids:[], celebrated:false}; }
+    catch(e){ return {ids:[], celebrated:false}; } },
+  // 记录抽到的牌；返回 'complete'（本次刚集齐）/ 'new'（有新牌）/ null
+  add(ids){
+    const d = this.data();
+    let added = false;
+    ids.forEach(id=>{ if(d.ids.indexOf(id) === -1){ d.ids.push(id); added = true; } });
+    if(!added) return null;
+    d.ids.sort((a,b)=>a-b);
+    let justCompleted = false;
+    if(d.ids.length >= cards.length && !d.celebrated){ d.celebrated = true; justCompleted = true; }
+    localStorage.setItem(this.key, JSON.stringify(d));
+    return justCompleted ? 'complete' : 'new';
+  },
+  has(id){ return this.data().ids.indexOf(id) !== -1; },
+  count(){ return this.data().ids.length; }
+};
+
+/* ===== 运气值 ===== */
+const Luck = {
+  key:'yj_luck_v1',
+  get(){
+    const v = parseInt(localStorage.getItem(this.key), 10);
+    return isNaN(v) ? 0 : v;
+  },
+  gain(n){
+    const v = this.get() + (n || 1);
+    localStorage.setItem(this.key, String(v));
+    this.render();
+    return v;
+  },
+  render(){
+    const v = this.get();
+    [ $('homeLuckVal'), $('plazaLuck') ].forEach(el=>{ if(el) el.textContent = v; });
+  }
+};
+function floatLuck(anchor, text){
+  const el = document.createElement('span');
+  el.className = 'luck-float';
+  el.textContent = text || '运气 +1';
+  const r = anchor.getBoundingClientRect();
+  el.style.left = (r.left + r.width/2) + 'px';
+  el.style.top = (r.top + r.height*0.28) + 'px';
+  document.body.appendChild(el);
+  setTimeout(()=>{ el.remove(); }, 1500);
+}
+Luck.render();
+
+/* ===== 轻提示 ===== */
+let toastTimer = null;
+function showToast(msg){
+  const t = $('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 1900);
+}
+
+/* ===== 集齐彩蛋 ===== */
+function showEaster(){
+  $('easterMask').classList.add('show');
+  Sfx.chime();
+  setTimeout(()=>Sfx.sparkle(), 500);
+}
+function closeEaster(){ $('easterMask').classList.remove('show'); }
+
+Sfx.init();
+
+function go(name, push=true){
+  if(push && state.view && state.view !== name) routeStack.push(state.view);
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+name).classList.add('active');
+  state.view = name;
+  window.scrollTo(0,0);
+  if(name==='groups') renderGroups();
+  if(name==='gallery') renderGallery();
+  if(name==='plaza') renderPlaza();
+  if(name==='home') Luck.render();
+  if(name==='wish') initWish();
+  if(name==='draw') initDraw();
+  if(name==='punch') initPunch();
+  if(name==='catch') initCatch();
+  if(name==='pet') initPet();
+}
+
+function backNav(){ const prev = routeStack.pop(); go(prev||'home',false); }
+
+/* ===== 祈愿广场 ===== */
+const PZ_TAGS = { pray:'祈福', luck:'求好运', diary:'占卜日记', vow:'还愿' };
+const PZ_GRADS = [
+  'linear-gradient(135deg,#b894d4,#8a6bc4)',
+  'linear-gradient(135deg,#d99ab8,#c0708f)',
+  'linear-gradient(135deg,#d9b36a,#b78a4e)',
+  'linear-gradient(135deg,#8fb5c9,#6a92b0)',
+  'linear-gradient(135deg,#9bb89e,#73997f)'
+];
+const PZ_NAME_A = ['星尘旅人','月下小鹿','追风的人','雾里看花','半盏清欢','银河拾荒','云朵制造机','晚风信使','白昼月亮','拾星者'];
+const PZ_NAME_B = ['白鹿','青柠','望月','知秋','南星','拾光','流萤','微醺','栖迟','松烟'];
+const PZ_SEED = [
+  { name:'半盏清欢', tag:'vow', text:'期末周抽到了「提灯夜游」，那天我第一次十一点前放下手机睡着。第二天面试超常发挥，拿到了心仪的实习。特地来还愿，谢谢那盏小小的灯。', likes:128, minAgo:24,
+    comments:[{name:'晚风信使',text:'提灯夜游也救过我的期末周，抱抱 ✦',minAgo:20},{name:'拾星者',text:'沾沾好运！',minAgo:12}] },
+  { name:'白昼月亮', tag:'diary', text:'二战考研倒计时 60 天，今天抽到命运之轮正位。原来转弯不一定是坏事，这一次我决定不再和去年的自己较劲了。', likes:96, minAgo:65 },
+  { name:'月下小鹿', tag:'pray', text:'求妈妈下周手术顺利，求她少疼一点。愿星光落在她的肩头，也落在每个为家人担心的人身上。', likes:256, minAgo:95,
+    comments:[{name:'云朵制造机',text:'一定会顺利的，阿姨加油 ✦',minAgo:80},{name:'星尘旅人',text:'抱抱，一起为你祈福',minAgo:60},{name:'栖迟·南星',text:'平安顺遂',minAgo:40}] },
+  { name:'晚风信使', tag:'diary', text:'每天抽一张当心情日记，第 47 天。\n今天是「沉睡花园」——允许自己什么都不做，花朵在开放前也需要冬眠。', likes:74, minAgo:160 },
+  { name:'拾星者', tag:'vow', text:'分手第 21 天，「人鱼之泪」让我痛痛快快哭了一场。哭完发现自己已经能一个人吃完一整碗面了。来还愿，也祝大家都能被温柔接住。', likes:183, minAgo:240,
+    comments:[{name:'半盏清欢',text:'能好好吃饭就是在好起来，加油',minAgo:200}] },
+  { name:'追风的人', tag:'luck', text:'求 offer 求 offer 求 offer！明天终面，抽到「独角兽的角」——相信美好，美好才会发生 ✦', likes:142, minAgo:300,
+    comments:[{name:'雾里看花',text:'独角兽超灵的！等你报喜',minAgo:280}] },
+  { name:'银河拾荒', tag:'diary', text:'和最好的朋友异地连线一起抽牌，我们居然都抽到了「守护者」。有些人虽不在身边，却一直用另一种方式抱着你。', likes:211, minAgo:1440 }
+];
+const pzOpen = new Set();
+
+const Plaza = {
+  key:'yj_plaza_posts_v1', nameKey:'yj_plaza_name_v1', tag:'pray',
+  init(){
+    if(localStorage.getItem(this.key)) return;
+    const now = Date.now();
+    const posts = PZ_SEED.map((p,i)=>({
+      id:'s'+i, name:p.name, tag:p.tag, text:p.text, likes:p.likes, liked:false, seed:true,
+      time: now - (p.minAgo||30)*60000,
+      comments: (p.comments||[]).map(c=>({ name:c.name, text:c.text, time: now-(c.minAgo||10)*60000 }))
+    }));
+    this.save(posts);
+  },
+  all(){ try{ return JSON.parse(localStorage.getItem(this.key)) || []; }catch(e){ return []; } },
+  save(list){ localStorage.setItem(this.key, JSON.stringify(list)); },
+  myName(){
+    let n = localStorage.getItem(this.nameKey);
+    if(!n){
+      n = PZ_NAME_A[Math.floor(Math.random()*PZ_NAME_A.length)] + '·' +
+          PZ_NAME_B[Math.floor(Math.random()*PZ_NAME_B.length)];
+      localStorage.setItem(this.nameKey, n);
+    }
+    return n;
+  },
+  post(text, tag){
+    const list = this.all();
+    list.unshift({ id:'u'+Date.now(), name:this.myName(), tag, text, time:Date.now(), likes:0, liked:false, mine:true, comments:[] });
+    this.save(list);
+  },
+  toggleLike(id){
+    const list = this.all();
+    const p = list.find(x=>x.id===id);
+    if(!p) return null;
+    p.liked = !p.liked;
+    p.likes = Math.max(0, p.likes + (p.liked?1:-1));
+    this.save(list);
+    return { liked:p.liked, likes:p.likes };
+  },
+  addComment(id, text){
+    const list = this.all();
+    const p = list.find(x=>x.id===id);
+    if(!p) return;
+    p.comments.push({ name:this.myName(), text, time:Date.now(), mine:true });
+    this.save(list);
+  }
+};
+
+function pzEsc(s){
+  return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function pzGrad(name){
+  let h = 0;
+  for(let i=0;i<name.length;i++) h = (h*31 + name.charCodeAt(i)) >>> 0;
+  return PZ_GRADS[h % PZ_GRADS.length];
+}
+function pzTime(t){
+  const d = Date.now() - t;
+  if(d < 60000) return '刚刚';
+  if(d < 3600000) return Math.floor(d/60000) + ' 分钟前';
+  if(d < 86400000) return Math.floor(d/3600000) + ' 小时前';
+  const dt = new Date(t);
+  return (dt.getMonth()+1) + '月' + dt.getDate() + '日';
+}
+function plazaCardHTML(p){
+  const open = pzOpen.has(p.id);
+  const cm = p.comments || [];
+  return `<div class="pz-card">
+    <div class="pz-head">
+      <div class="pz-avatar" style="background:${pzGrad(p.name)}">${pzEsc(p.name[0])}</div>
+      <div class="pz-meta">
+        <div class="pz-name">${pzEsc(p.name)}</div>
+        <div class="pz-time">${pzTime(p.time)}</div>
+      </div>
+      <span class="pz-badge" data-tag="${p.tag}">${PZ_TAGS[p.tag]||''}</span>
+    </div>
+    <div class="pz-body">${pzEsc(p.text)}</div>
+    <div class="pz-actions">
+      <button class="pz-act ${p.liked?'liked':''}" data-like="${p.id}" onclick="plazaLike('${p.id}')">
+        <span class="pa-ic">${p.liked?'♥':'♡'}</span><span class="pa-n">${p.likes}</span>
+      </button>
+      <button class="pz-act" onclick="plazaToggleComment('${p.id}')">
+        <span class="pa-ic">✉</span><span>${cm.length} 评论</span>
+      </button>
+      <button class="pz-act" onclick="plazaShare('${p.id}')">
+        <span class="pa-ic">⤴</span><span>分享</span>
+      </button>
+    </div>
+    <div class="pz-comments ${open?'open':''}" data-comments="${p.id}">
+      ${cm.length
+        ? cm.map(c=>`<div class="pz-citem"><b>${pzEsc(c.name)}</b>${pzEsc(c.text)}</div>`).join('')
+        : '<div class="pz-citem" style="color:#a89bbf">还没有评论，第一句温柔由你来说</div>'}
+      <div class="pz-cinput">
+        <input data-cinput="${p.id}" placeholder="说句温柔的话…"
+          onkeydown="if(event.key==='Enter')plazaSendComment('${p.id}')">
+        <button onclick="plazaSendComment('${p.id}')">发送</button>
+      </div>
+    </div>
+  </div>`;
+}
+function renderPlaza(){
+  Plaza.init();
+  Luck.render();
+  const list = Plaza.all().slice().sort((a,b)=>b.time-a.time);
+  $('plazaFeed').innerHTML = list.length
+    ? list.map(plazaCardHTML).join('')
+    : '<div class="pz-empty">星空还很安静，来写下第一份祈愿吧</div>';
+}
+function plazaSetTag(tag){
+  Plaza.tag = tag;
+  document.querySelectorAll('#pzTags .pz-tag').forEach(el=>{
+    el.classList.toggle('on', el.dataset.tag===tag);
+  });
+  Sfx.tick();
+}
+function plazaPost(){
+  const inp = $('pzInput');
+  const text = inp.value.trim();
+  if(!text){ showToast('先写下点什么吧 ✧'); return; }
+  Plaza.post(text, Plaza.tag);
+  inp.value = '';
+  Sfx.chime();
+  renderPlaza();
+  Luck.gain(2);
+  floatLuck(document.querySelector('.pz-submit'), '祈愿运气 +2');
+  showToast('愿望已放上星空 ✦');
+}
+function plazaLike(id){
+  const r = Plaza.toggleLike(id);
+  if(!r) return;
+  const btn = document.querySelector(`[data-like="${id}"]`);
+  if(btn){
+    btn.classList.toggle('liked', r.liked);
+    btn.querySelector('.pa-ic').textContent = r.liked ? '♥' : '♡';
+    btn.querySelector('.pa-n').textContent = r.likes;
+  }
+  if(r.liked) Sfx.sparkle();
+}
+function plazaToggleComment(id){
+  const box = document.querySelector(`[data-comments="${id}"]`);
+  if(!box) return;
+  box.classList.toggle('open');
+  pzOpen[box.classList.contains('open') ? 'add':'delete'](id);
+  if(box.classList.contains('open')){
+    const inp = box.querySelector('input');
+    if(inp) setTimeout(()=>inp.focus(), 60);
+  }
+}
+function plazaSendComment(id){
+  const inp = document.querySelector(`[data-cinput="${id}"]`);
+  if(!inp) return;
+  const text = inp.value.trim();
+  if(!text){ inp.focus(); return; }
+  Plaza.addComment(id, text);
+  inp.value = '';
+  pzOpen.add(id);
+  Sfx.tick();
+  renderPlaza();
+  const box = document.querySelector(`[data-comments="${id}"]`);
+  if(box) box.classList.add('open');
+}
+function plazaShare(id){
+  const p = Plaza.all().find(x=>x.id===id);
+  if(!p) return;
+  const txt = `【愈见卡牌 · 祈愿广场】${PZ_TAGS[p.tag]}｜${p.name}：${p.text}\n——来愈见卡牌，抽取属于你的温柔指引 ✦`;
+  if(navigator.share){
+    navigator.share({ title:'愈见卡牌 · 祈愿广场', text:txt }).catch(()=>{});
+    return;
+  }
+  const ta = document.createElement('textarea');
+  ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try{ ok = document.execCommand('copy'); }catch(e){}
+  ta.remove();
+  showToast(ok ? '已复制，去粘贴分享给朋友吧' : '当前浏览器不支持自动复制，长按内容试试');
+}
+document.addEventListener('DOMContentLoaded', ()=>{
+  const tags = $('pzTags');
+  if(tags) tags.addEventListener('click', e=>{
+    const t = e.target.closest('.pz-tag');
+    if(t) plazaSetTag(t.dataset.tag);
+  });
+});
+
+// —— 开屏 · 自制星夜 ——
+let splashDone = false;
+function enterHome(){
+  if(splashDone) return;
+  splashDone = true;
+  stopSplashStars();
+  go('home', false);
+}
+// canvas 闪烁星点
+let splashRaf = null;
+function initSplashStars(){
+  const cv = $('splashStars');
+  if(!cv) return;
+  // 生成飘落花瓣
+  const petalLayer = $('petalLayer');
+  if(petalLayer && petalLayer.children.length === 0){
+    const palette = ['#ffc6d9','#ffd9e6','#f0b8d4','#e8a0c0','#ffd4b8','#ffe8c0'];
+    for(let i=0; i<14; i++){
+      const p = document.createElement('div');
+      p.className = 'petal';
+      const size = 8 + Math.random()*10;
+      p.style.width = size+'px';
+      p.style.height = size+'px';
+      p.style.left = (Math.random()*100)+'%';
+      p.style.background = palette[i%palette.length];
+      p.style.opacity = 0.5 + Math.random()*0.4;
+      p.style.setProperty('--drift', (Math.random()*100-30)+'px');
+      p.style.animationDuration = (6+Math.random()*8)+'s';
+      p.style.animationDelay = (Math.random()*8)+'s';
+      petalLayer.appendChild(p);
+    }
+  }
+  const ctx = cv.getContext('2d');
+  let stars = [];
+  function resize(){
+    cv.width = cv.clientWidth * (devicePixelRatio || 1);
+    cv.height = cv.clientHeight * (devicePixelRatio || 1);
+    const n = Math.floor(cv.width * cv.height / 9000);
+    const palette = ['255,255,255','255,240,210','255,220,180','255,196,222','216,178,255','220,200,255'];
+    stars = Array.from({length:n}, ()=>{
+      const big = Math.random() < 0.12;
+      return {
+        x: Math.random()*cv.width,
+        y: Math.random()*cv.height,
+        r: ((big ? Math.random()*2 + 1.2 : Math.random()*1.1 + 0.4)) * (devicePixelRatio || 1) / 1.6,
+        p: Math.random()*Math.PI*2,
+        s: 0.012 + Math.random()*0.03,
+        hue: palette[Math.floor(Math.random()*palette.length)],
+        drift: (Math.random()-0.5) * 0.15
+      };
+    });
+  }
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    stars.forEach(st=>{
+      st.p += st.s;
+      st.x += st.drift;
+      if(st.x < -4) st.x = cv.width + 4;
+      if(st.x > cv.width + 4) st.x = -4;
+      const a = 0.3 + Math.abs(Math.sin(st.p))*0.7;
+      ctx.beginPath();
+      ctx.arc(st.x, st.y, st.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${st.hue},${a})`;
+      ctx.shadowColor = `rgba(${st.hue},${a})`;
+      ctx.shadowBlur = st.r > 1.5 ? 10 : 5;
+      ctx.fill();
+    });
+    splashRaf = requestAnimationFrame(draw);
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  draw();
+}
+function stopSplashStars(){
+  if(splashRaf){ cancelAnimationFrame(splashRaf); splashRaf = null; }
+}
+initSplashStars();
+setTimeout(()=>{ if(state.view==='splash') enterHome(); }, 8000);
+
+// —— 篇章 ——
+function renderGroups(){
+  const ids = ['all','core','maiden','tale'];
+  $('groupList').innerHTML = ids.map(id=>{
+    const g = id==='all' ? GROUPS_META.all : Object.assign({}, groups[id], GROUPS_META[id]);
+    const count = id==='all' ? cards.length : cards.filter(c=>c.group===id).length;
+    return `<button class="group-card" onclick="chooseGroup('${id}')">
+      <img src="${g.cover}" alt="">
+      <div class="group-meta">
+        <div class="g-name">${g.name}</div>
+        <div class="g-en">${g.en||''}</div>
+        <div class="g-desc">${g.desc}</div>
+        <span class="g-count">${count} 张牌</span>
+      </div>
+      <span class="group-go">›</span>
+    </button>`;
+  }).join('');
+}
+function chooseGroup(id){
+  state.groupId = id;
+  state.pool = id==='all' ? cards.slice() : cards.filter(c=>c.group===id);
+  go('wish');
+}
+
+// —— 祈愿 · 写下心事 ——
+const WISH_EXAMPLES = ['最近总觉得很累，提不起劲','在一段关系里感到不安','不知道眼前的选择对不对','想和自己好好相处'];
+function initWish(){
+  const list = $('wishSugList');
+  if(!list.children.length){
+    list.innerHTML = WISH_EXAMPLES.map(t=>
+      `<button onclick="setWish(${JSON.stringify(t).replace(/"/g,'&quot;')})">${t}</button>`).join('');
+  }
+  $('wishInput').value = state.worry || '';
+  updateWishCount();
+}
+function updateWishCount(){ $('wishCount').textContent = $('wishInput').value.length; }
+function setWish(t){ $('wishInput').value = t; updateWishCount(); }
+$('wishInput').addEventListener('input', updateWishCount);
+function submitWish(){
+  state.worry = $('wishInput').value.trim();
+  go('draw');
+}
+function skipWish(){
+  state.worry = '';
+  go('draw');
+}
+
+// —— 抽卡仪式 ——
+let fanCards = [], pickedCount = 0, spreadCards = [], drawTimers = [];
+
+function initDraw(){
+  const g = state.groupId==='all' ? GROUPS_META.all : groups[state.groupId];
+  $('drawGroupName').textContent = g ? g.name : '';
+  if(state.worry){
+    $('drawWorry').style.display = 'flex';
+    $('drawWorryText').textContent = state.worry;
+  }else{
+    $('drawWorry').style.display = 'none';
+  }
+  resetDraw(true);
+}
+
+function showPhase(phase){
+  state.phase = phase;
+  ['Idle','Shuffle','Picking','Result'].forEach(p=>{
+    $('draw'+p).style.display = p.toLowerCase()===phase ? 'flex' : 'none';
+  });
+  const desc = {
+    idle: '选择一种占卜方式，让卡牌回应你的心事',
+    shuffle: '正在静心洗牌……把注意力放回呼吸上',
+    picking: state.mode==='spread'
+      ? `凭直觉依次选择 ${POSITIONS.map(p=>p.name).join(' · ')} 三张牌（已选 ${pickedCount}/3）`
+      : '凭直觉，选择一张与你呼应的牌',
+    result: state.mode==='spread' ? '三张牌已经就位，逐一翻开吧' : '讯息已抵达 ✦'
+  };
+  $('drawPhaseDesc').textContent = desc[phase];
+}
+
+function selectMode(mode){
+  if(state.phase!=='idle') return;
+  state.mode = mode;
+  Sfx.tick();
+  document.querySelectorAll('.w-mode').forEach(el=>{
+    el.classList.toggle('on', el.dataset.mode===mode);
+  });
+}
+
+function startDraw(){
+  Sfx.ensure();
+  Sfx.shuffleSnd();
+  showPhase('shuffle');
+  drawTimers.push(setTimeout(()=>{
+    const pool = state.pool.slice();
+    for(let i=pool.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [pool[i],pool[j]]=[pool[j],pool[i]];
+    }
+    fanCards = pool.slice(0,7).map(c=>({ card:c, orient: Math.random()<0.5?0:1 }));
+    pickedCount = 0;
+    spreadCards = [];
+    renderFan();
+    showPhase('picking');
+  }, 1300));
+}
+
+function renderFan(){
+  $('fanRow').innerHTML = fanCards.map((f,i)=>`
+    <button class="fan-card ${f.picked?'picked':''}" data-i="${i}" onclick="pickFan(${i})"
+      style="--fx:${(i-3)*46}px; --fr:${(i-3)*6}deg">
+      <div class="fc-back"><span class="cb-moon md">☾</span></div>
+      <div class="fc-glow"></div>
+    </button>`).join('');
+}
+
+function pickFan(i){
+  if(state.phase!=='picking' || fanCards[i].picked) return;
+  fanCards[i].picked = true;
+  pickedCount++;
+  Sfx.tick();
+  if(navigator.vibrate) navigator.vibrate(30);
+
+  if(state.mode==='single'){
+    renderFan();
+    const f = fanCards[i];
+    drawTimers.push(setTimeout(()=>revealSingle(f), 650));
+  }else{
+    const pos = POSITIONS[spreadCards.length];
+    spreadCards.push(Object.assign({}, fanCards[i], { pos }));
+    renderFan();
+    $('drawPhaseDesc').textContent =
+      `凭直觉依次选择 ${POSITIONS.map(p=>p.name).join(' · ')} 三张牌（已选 ${Math.min(pickedCount,3)}/3）`;
+    if(pickedCount>=3){
+      drawTimers.push(setTimeout(revealSpread, 750));
+    }
+  }
+}
+
+function revealSingle(f){
+  state.drawnId = f.card.id;
+  state.orient = f.orient;
+  state.pos = null;
+  showPhase('result');
+  $('resultSingle').style.display = 'flex';
+  $('resultSpread').style.display = 'none';
+  $('singleImg').src = f.card.image;
+  $('singleImg').classList.toggle('is-rev', f.orient===1);
+  const rev = reversed[f.card.id] || {};
+  $('singleOrient').textContent = f.orient===1 ? '逆位' : '正位';
+  $('singleOrient').className = 'w-orient ' + (f.orient===1?'rev':'up');
+  $('singleName').textContent = f.card.name;
+  $('singleEn').textContent = f.card.en;
+  $('singleKw').textContent = (f.orient===1 && reversed[f.card.id] ? reversed[f.card.id].kw : f.card.keywords).slice(0,3).join(' · ');
+  burstParticles();
+  const flip = $('singleFlip');
+  const halo = $('singleHalo');
+  flip.classList.remove('flipped','floaty','poked');
+  if(halo) halo.classList.remove('go');
+  void flip.offsetWidth;
+  drawTimers.push(setTimeout(()=>{
+    flip.classList.add('flipped');
+    Sfx.flip();
+    drawTimers.push(setTimeout(()=>{
+      if(halo) halo.classList.add('go');
+      flip.classList.add('floaty');
+      Sfx.chime();
+      Luck.gain(1);
+      floatLuck(flip, '运气 +1');
+      // 好运宠物加成
+      try{ if(Pet.data().stage>=1){ Pet.drawBonus(); setTimeout(()=>floatLuck(flip,'宠物 +1'),420); } }catch(_){}
+      try{ Pet.gainExp(6, 'draw'); }catch(_){}
+    }, 620));
+  }, 120));
+
+  // 收入图鉴
+  const collectResult = Collect.add([f.card.id]);
+  if(collectResult === 'complete'){
+    drawTimers.push(setTimeout(showEaster, 1900));
+  }
+}
+
+function pokeCard(){
+  if(state.phase!=='result' || state.mode!=='single') return;
+  const flip = $('singleFlip');
+  if(!flip) return;
+  flip.classList.remove('poked'); void flip.offsetWidth; flip.classList.add('poked');
+  drawTimers.push(setTimeout(()=>flip.classList.remove('poked'), 600));
+  burstParticles(9);
+  Sfx.sparkle();
+}
+
+function revealSpread(){
+  showPhase('result');
+  $('resultSingle').style.display = 'none';
+  $('resultSpread').style.display = 'block';
+  burstParticles();
+  $('spreadRow').innerHTML = spreadCards.map((f,i)=>`
+    <div class="sp-item">
+      <div class="sp-pos">${f.pos.name}</div>
+      <div class="sp-hint">${f.pos.hint}</div>
+      <div class="sp-card" onclick="flipSpread(this, ${i})">
+        <div class="sp-inner" id="spInner${i}">
+          <div class="sp-face sp-back"><span class="cb-moon sm">☾</span></div>
+          <div class="sp-face sp-front">
+            <img src="${f.card.image}" alt="" class="${f.orient===1?'is-rev':''}">
+          </div>
+        </div>
+        <span class="sp-badge ${f.orient===1?'rev':'up'}">${f.orient===1?'逆':'正'}</span>
+        <span class="sp-halo" id="spHalo${i}"></span>
+      </div>
+      <button class="sp-detail" onclick="openSpreadDetail(${i})">查看解读 ›</button>
+    </div>`).join('');
+  drawTimers.push(setTimeout(()=>{
+    spreadCards.forEach((f,i)=>{
+      drawTimers.push(setTimeout(()=>{
+        const el = $('spInner'+i);
+        if(el) el.classList.add('flipped');
+        const h = $('spHalo'+i);
+        if(h){ h.classList.remove('go'); void h.offsetWidth; h.classList.add('go'); }
+        Sfx.flip();
+        Luck.gain(1);
+        if(el) floatLuck(el, '运气 +1');
+        // 好运宠物加成
+        try{ if(Pet.data().stage>=1){ Pet.drawBonus(); setTimeout(()=>floatLuck(el,'宠物 +1'),420); } }catch(_){}
+        try{ Pet.gainExp(6, 'draw'); }catch(_){}
+      }, i*480));
+    });
+    drawTimers.push(setTimeout(()=>{ showSpreadSummary(); Sfx.chime(); }, spreadCards.length*480+200));
+  }, 400));
+
+  // 三张全部收入图鉴
+  const collectResult = Collect.add(spreadCards.map(f=>f.card.id));
+  if(collectResult === 'complete'){
+    drawTimers.push(setTimeout(showEaster, spreadCards.length*480 + 1300));
+  }
+}
+
+const SS_SUMMARIES = [
+  '试着看见藏在脆弱背后，属于你的力量。',
+  '不必强求事事圆满，缺憾本就是生活的一部分。',
+  '守住内心边界，别持续消耗自己去成全他人。',
+  '不必畏惧告别，结束是为新生腾出空间。',
+  '请相信直觉，你的心底一直藏着答案。',
+  '放下对完美的幻想，去拥抱真实的自己。',
+  '不必急于奔赴目标，看清内心再做选择。',
+  '情绪没有好坏，允许感受自然流动。',
+  '卸下沉重的期待，你可以轻松一点前行。',
+  '停止反复自我怀疑，你的闪光点值得被看见。',
+  '学会区分幻想与现实，别被想象困住脚步。',
+  '成长常常伴随着离别，这是必经的旅程。',
+  '不必独自扛下所有，你也可以选择依靠。',
+  '把温柔优先留给自己，再去照亮别人。',
+  '旧的故事终会翻篇，新的风景正在等候。',
+  '不必追赶他人节奏，走属于自己的道路。',
+  '接纳此刻的迷茫，它也是成长的一部分。',
+  '勇敢表达真实想法，不必刻意迎合所有人。',
+  '那些沉淀的经历，终将化作你的底气。',
+  '不必执着于结果，好好感受当下就足够。',
+  '放下不属于你的执念，内心才能获得轻盈。',
+  '微小的微光汇聚起来，也足以照亮前路。',
+  '允许自己犯错，试错也是了解自我的方式。',
+  '向内安顿好自己，外界的纷扰便难以动摇你。',
+  '这组牌在提示你：你远比自己想象的，更有勇气跨过难关。',
+  '是内心在提醒你：停止反复内耗，允许事情自然流转。'
+];
+
+function showSpreadSummary(){
+  const kw = (it) => {
+    const list = it.orient === 1 && REVERSED[it.card.id] ? REVERSED[it.card.id].kw : it.card.keywords;
+    return list.slice(0,2).join('、');
+  };
+  const seg = (i, verb) => `「${spreadCards[i].pos.name}·${spreadCards[i].card.name}」${verb}${kw(spreadCards[i])}`;
+  const analysis = `${seg(0,'沉淀着')}，${seg(1,'映照着')}，${seg(2,'指向')}。`;
+  const links = ['三张牌交汇成一句话：','它们共同指向：','牌面轻声对你说：'];
+  const text = analysis + links[Math.floor(Math.random()*links.length)] + SS_SUMMARIES[Math.floor(Math.random()*SS_SUMMARIES.length)];
+  const el = $('spSummary');
+  el.innerHTML = `<div class="ss-title">✦ 综合解读</div><div class="ss-text">${text}</div>`;
+  el.style.display = 'block';
+}
+
+function flipSpread(el, i){
+  if(el.classList.contains('flipped')) return;
+  el.classList.add('flipped');
+  Sfx.flip();
+  const h = (i!=null) ? $('spHalo'+i) : null;
+  if(h){ h.classList.remove('go'); void h.offsetWidth; h.classList.add('go'); }
+}
+
+function openSpreadDetail(i){
+  const f = spreadCards[i];
+  state.drawnId = f.card.id;
+  state.orient = f.orient;
+  state.pos = f.pos.key;
+  openDetail(f.card.id, true);
+}
+
+function burstParticles(n){
+  const box = $('particlesBox');
+  const chars = ['✦','✧','✷'];
+  box.innerHTML = Array.from({length:n||16},(_,i)=>{
+    const left = 6 + Math.random()*88;
+    const delay = (Math.random()*0.9).toFixed(2);
+    const dur = (2.2+Math.random()*1.6).toFixed(2);
+    const size = 10+Math.floor(Math.random()*12);
+    return `<span class="w-p" style="left:${left}%;animation-delay:${delay}s;animation-duration:${dur}s;font-size:${size}px">${chars[i%3]}</span>`;
+  }).join('');
+}
+
+function resetDraw(silent){
+  drawTimers.forEach(clearTimeout);
+  drawTimers = [];
+  fanCards = []; pickedCount = 0; spreadCards = [];
+  state.drawnId = null; state.orient = null; state.pos = null;
+  $('fanRow').innerHTML = '';
+  $('particlesBox').innerHTML = '';
+  const ss = $('spSummary');
+  if(ss){ ss.style.display='none'; ss.innerHTML=''; }
+  if(!silent) showPhase('idle');
+  else showPhase('idle');
+}
+
+// —— 详情 ——
+function openDetail(id, withWish){
+  const c = cards.find(x=>x.id===id);
+  if(!c) return;
+  const fromDraw = withWish !== false;
+  const isRev = fromDraw && state.orient===1;
+  const pos = fromDraw ? POSITIONS.find(p=>p.key===state.pos) : null;
+  const rev = reversed[id] || {};
+
+  $('detailImg').src = c.image;
+  $('detailImg').classList.toggle('is-rev', isRev);
+  const orientBadge = $('detailOrient');
+  orientBadge.style.display = fromDraw ? 'block' : 'none';
+  orientBadge.textContent = isRev ? '逆位' : '正位';
+  orientBadge.className = 'd-orient ' + (isRev?'rev':'up');
+
+  const posEl = $('detailPos');
+  if(pos){
+    posEl.style.display = 'flex';
+    posEl.innerHTML = `<span class="dp-name">${pos.name}</span><span class="dp-hint">${pos.hint}</span>`;
+  }else{
+    posEl.style.display = 'none';
+  }
+
+  if(withWish !== false && state.worry){
+    $('detailWish').style.display = 'block';
+    $('detailWishText').textContent = state.worry;
+  }else{
+    $('detailWish').style.display = 'none';
+  }
+  $('detailTag').textContent = groups[c.group].name;
+  $('detailName').textContent = c.name;
+  $('detailEn').textContent = c.en;
+  const note = $('detailOrientNote');
+  if(fromDraw){
+    note.style.display = 'block';
+    note.textContent = isRev
+      ? '逆位 · 能量暂时向内收回，这张牌邀请你看见被忽略的另一面'
+      : '正位 · 卡牌的能量正温柔地流向你';
+    note.className = 'd-orient-note ' + (isRev?'rev':'up');
+  }else{
+    note.style.display = 'none';
+  }
+  const kws = isRev && rev.kw ? rev.kw : c.keywords;
+  $('detailKeys').innerHTML = kws.map(k=>`<span>${k}</span>`).join('');
+  $('detailHeal').textContent = isRev && rev.heal ? rev.heal : c.healing;
+  if(c.action){
+    $('detailAction').style.display='block';
+    $('detailActionText').textContent = c.action;
+  }else{
+    $('detailAction').style.display='none';
+  }
+  go('detail');
+  // 从抽卡流程进入 → 弹出「下一步」全屏弹窗
+  if(fromDraw) setTimeout(()=>openNextSheet(c), 380);
+}
+
+// —— 抽卡后下一步弹窗 ——
+function openNextSheet(card){
+  const ov = $('nextOverlay');
+  if(!ov) return;
+  if(card && $('nextCardImg')) $('nextCardImg').src = card.image;
+  ov.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeNextSheet(){
+  const ov = $('nextOverlay');
+  if(!ov) return;
+  ov.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// —— 海报 ——
+function posterRoundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function openPoster(){
+  const c = cards.find(x=>x.id===state.drawnId);
+  if(!c) return;
+  const isRev = state.orient===1;
+  const pos = POSITIONS.find(p=>p.key===state.pos);
+  const rev = reversed[c.id] || {};
+  const d = new Date();
+  const dateStr = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+  const payload = {
+    card:c, isRev, pos, dateStr,
+    groupName: groups[c.group].name,
+    keywords: isRev&&rev.kw ? rev.kw : c.keywords,
+    healing: isRev&&rev.heal ? rev.heal : c.healing,
+    worry: state.worry || ''
+  };
+  $('posterModal').classList.add('show');
+  const canvas = $('posterCanvas');
+  const img = new Image();
+  img.src = c.image;
+  // 等待艺术字体与卡面都就绪后再绘制
+  Promise.all([
+    img.decode().catch(()=>{}),
+    Promise.all([
+      document.fonts.load('44px "Ma Shan Zheng"'),
+      document.fonts.load('18px "ZCOOL XiaoWei"'),
+      document.fonts.load('23px "Noto Serif SC"')
+    ]).catch(()=>{})
+  ]).then(()=> drawPoster(canvas, canvas.getContext('2d'), img, payload));
+}
+
+// 海报角花（烫金卷草）
+function posterCorner(ctx, x, y, rot){
+  ctx.save();
+  ctx.translate(x, y); ctx.rotate(rot);
+  ctx.strokeStyle='rgba(236,217,160,.92)'; ctx.fillStyle='rgba(243,226,176,.95)';
+  ctx.lineCap='round';
+  ctx.lineWidth=1.8;
+  ctx.beginPath(); ctx.moveTo(2,54); ctx.bezierCurveTo(2,22,22,2,54,2); ctx.stroke();
+  ctx.lineWidth=1.1; ctx.strokeStyle='rgba(243,226,176,.55)';
+  ctx.beginPath(); ctx.moveTo(12,42); ctx.bezierCurveTo(24,42,42,26,42,12); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(2,64); ctx.lineTo(6,72); ctx.lineTo(2,80); ctx.lineTo(-2,72); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(64,2); ctx.lineTo(72,6); ctx.lineTo(80,2); ctx.lineTo(72,-2); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.arc(12,12,2.3,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+}
+// 金色渐变文字
+function posterGoldText(ctx, text, x, y, font, size){
+  ctx.save();
+  ctx.font = font;
+  ctx.textAlign='center';
+  const g = ctx.createLinearGradient(0, y-size, 0, y);
+  g.addColorStop(0,'#fdf3d2'); g.addColorStop(0.45,'#ecd9a0'); g.addColorStop(0.7,'#c9a86a'); g.addColorStop(1,'#f7ecc6');
+  ctx.fillStyle = g;
+  ctx.shadowColor='rgba(220,180,100,.5)'; ctx.shadowBlur=14;
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+// 海报文字换行
+function posterWrap(ctx, text, maxW){
+  const lines=[]; let line='';
+  for(const ch of text){
+    if(ctx.measureText(line+ch).width > maxW){ lines.push(line); line=ch; }
+    else line += ch;
+  }
+  lines.push(line);
+  return lines;
+}
+
+function drawPoster(canvas, ctx, p2, p){
+  const W=600, H=1100;
+  const img = p2;
+  ctx.clearRect(0,0,W,H);
+
+  // —— 深空夜幕底 ——
+  const bg = ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,'#221740'); bg.addColorStop(0.45,'#382a5c'); bg.addColorStop(1,'#4d3368');
+  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+  // 暖光晕
+  let rg = ctx.createRadialGradient(W/2,120,20, W/2,120,330);
+  rg.addColorStop(0,'rgba(236,217,160,.22)'); rg.addColorStop(1,'rgba(236,217,160,0)');
+  ctx.fillStyle=rg; ctx.fillRect(0,0,W,420);
+  rg = ctx.createRadialGradient(W/2,H+40,40, W/2,H+40,420);
+  rg.addColorStop(0,'rgba(206,140,190,.2)'); rg.addColorStop(1,'rgba(206,140,190,0)');
+  ctx.fillStyle=rg; ctx.fillRect(0,H-460,W,460);
+
+  // —— 满铺碎金星辰（固定种子） ——
+  let sd=20261012;
+  const rnd=()=>{ sd=(sd*1103515245+12345)&0x7fffffff; return sd/0x7fffffff; };
+  for(let i=0;i<140;i++){
+    const x=rnd()*W, y=rnd()*H, r=.5+rnd()*1.5, a=.18+rnd()*.7;
+    const warm = rnd()<.7 ? '255,246,220' : '226,210,250';
+    ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2);
+    ctx.fillStyle=`rgba(${warm},${a})`;
+    ctx.fill();
+  }
+  ctx.textAlign='center';
+  [[72,118,20],[532,170,15],[86,620,14],[520,600,18],[64,892,15],[540,918,13]].forEach(s=>{
+    ctx.font=s[2]+'px serif'; ctx.fillStyle='rgba(236,217,160,.55)';
+    ctx.fillText(rnd()<.5?'✦':'✧', s[0], s[1]);
+  });
+
+  // —— 烫金双线框 + 四角角花 ——
+  ctx.strokeStyle='rgba(236,217,160,.85)'; ctx.lineWidth=1.6;
+  posterRoundRect(ctx,22,22,W-44,H-44,16); ctx.stroke();
+  ctx.strokeStyle='rgba(236,217,160,.4)'; ctx.lineWidth=1;
+  posterRoundRect(ctx,31,31,W-62,H-62,12); ctx.stroke();
+  posterCorner(ctx,40,40,0);
+  posterCorner(ctx,W-40,40,Math.PI/2);
+  posterCorner(ctx,W-40,H-40,Math.PI);
+  posterCorner(ctx,40,H-40,Math.PI*1.5);
+
+  // —— 品牌 ——
+  posterGoldText(ctx,'愈见卡牌', W/2, 80, '44px "Ma Shan Zheng", "STKaiti", serif', 44);
+  ctx.fillStyle='rgba(236,217,160,.72)'; ctx.font='12px Georgia, serif';
+  ctx.fillText('Y U   J I A N   ·   H E A L I N G   O R A C L E', W/2, 106);
+  ctx.strokeStyle='rgba(236,217,160,.55)'; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(W/2-104,122); ctx.lineTo(W/2-16,122);
+  ctx.moveTo(W/2+16,122); ctx.lineTo(W/2+104,122); ctx.stroke();
+  ctx.fillStyle='#ecd9a0'; ctx.font='12px serif'; ctx.fillText('✦', W/2, 126);
+
+  let sub = `${p.dateStr}　·　${p.groupName}`;
+  if(p.pos) sub += `　·　${p.pos.name}`;
+  sub += `　·　${p.isRev?'逆位':'正位'}`;
+  ctx.fillStyle='rgba(224,212,242,.9)'; ctx.font='18px "Noto Serif SC", serif'; ctx.fillText(sub, W/2, 156);
+
+  // —— 卡面 + 金边发光 ——
+  const cw=296, ch=395, cx=(W-cw)/2, cy=182;
+  ctx.save();
+  ctx.shadowColor='rgba(236,217,160,.55)'; ctx.shadowBlur=34; ctx.shadowOffsetY=0;
+  ctx.fillStyle='#ecd9a0'; posterRoundRect(ctx,cx-5,cy-5,cw+10,ch+10,16); ctx.fill();
+  ctx.restore();
+  ctx.save(); posterRoundRect(ctx,cx,cy,cw,ch,13); ctx.clip();
+  if(p.isRev){
+    ctx.translate(cx+cw/2, cy+ch/2); ctx.rotate(Math.PI);
+    ctx.drawImage(img, -cw/2, -ch/2, cw, ch);
+  }else{
+    ctx.drawImage(img,cx,cy,cw,ch);
+  }
+  // 卡面暗角
+  const vg = ctx.createRadialGradient(cx+cw/2,cy+ch/2,ch*0.32, cx+cw/2,cy+ch/2,ch*0.72);
+  vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(40,20,60,.3)');
+  ctx.fillStyle=vg; ctx.fillRect(cx,cy,cw,ch);
+  ctx.restore();
+  ctx.strokeStyle='rgba(253,243,210,.95)'; ctx.lineWidth=2;
+  posterRoundRect(ctx,cx,cy,cw,ch,13); ctx.stroke();
+  ctx.strokeStyle='rgba(201,168,106,.9)'; ctx.lineWidth=1;
+  posterRoundRect(ctx,cx-5,cy-5,cw+10,ch+10,16); ctx.stroke();
+
+  // —— 牌名 ——
+  posterGoldText(ctx,p.card.name, W/2, 632, '42px "Ma Shan Zheng", "STKaiti", serif', 42);
+  ctx.fillStyle='rgba(236,217,160,.78)'; ctx.font='italic 15px Georgia, serif';
+  ctx.fillText(p.card.en, W/2, 660);
+
+  // —— 关键词金胶囊 ——
+  ctx.font='19px "ZCOOL XiaoWei", "STKaiti", serif';
+  const gap=14;
+  const chipTexts = p.keywords.map(k=>` ${k} `);
+  const widths = chipTexts.map(t=>ctx.measureText(t).width+30);
+  const totalChip = widths.reduce((s,w)=>s+w,0)+gap*(chipTexts.length-1);
+  let chipX=(W-totalChip)/2;
+  const chipY=678;
+  ctx.textBaseline='middle';
+  chipTexts.forEach((t,i)=>{
+    const tw=widths[i];
+    ctx.fillStyle='rgba(236,217,160,.12)';
+    posterRoundRect(ctx,chipX,chipY,tw,38,19); ctx.fill();
+    ctx.strokeStyle='rgba(236,217,160,.55)'; ctx.lineWidth=1;
+    posterRoundRect(ctx,chipX,chipY,tw,38,19); ctx.stroke();
+    ctx.fillStyle='#ecd9a0';
+    ctx.fillText(t, chipX+tw/2, chipY+19);
+    chipX += tw+gap;
+  });
+  ctx.textBaseline='alphabetic';
+
+  // —— 疗愈文案玻璃卡 ——
+  const boxX=56, boxW=W-112;
+  ctx.font='23px "Noto Serif SC", "Songti SC", serif';
+  const lines = posterWrap(ctx, p.healing, boxW-76);
+  let worryLines=[];
+  if(p.worry){
+    ctx.font='19px "Noto Serif SC", serif';
+    worryLines = posterWrap(ctx, p.worry, boxW-96);
+  }
+  const extraH = p.worry ? 26+worryLines.length*30+22 : 0;
+  const boxY=736;
+  const boxH=40+lines.length*37+16+extraH;
+  ctx.save();
+  ctx.shadowColor='rgba(10,4,30,.5)'; ctx.shadowBlur=26; ctx.shadowOffsetY=8;
+  ctx.fillStyle='rgba(26,17,46,.62)';
+  posterRoundRect(ctx,boxX,boxY,boxW,boxH,22); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle='rgba(236,217,160,.5)'; ctx.lineWidth=1.2;
+  posterRoundRect(ctx,boxX,boxY,boxW,boxH,22); ctx.stroke();
+  ctx.strokeStyle='rgba(236,217,160,.22)';
+  posterRoundRect(ctx,boxX+8,boxY+8,boxW-16,boxH-16,16); ctx.stroke();
+
+  ctx.textAlign='left';
+  ctx.font='34px Georgia, serif'; ctx.fillStyle='rgba(236,217,160,.8)';
+  ctx.fillText('“', boxX+22, boxY+46);
+  ctx.fillStyle='rgba(248,242,255,.96)';
+  ctx.font='23px "Noto Serif SC", "Songti SC", serif';
+  let ty=boxY+52;
+  lines.forEach(l=>{ ctx.fillText(l, boxX+38, ty); ty+=37; });
+  ctx.textAlign='right'; ctx.font='34px Georgia, serif'; ctx.fillStyle='rgba(236,217,160,.8)';
+  ctx.fillText('”', boxX+boxW-20, ty-6);
+
+  if(p.worry){
+    const wy=ty+8;
+    ctx.setLineDash([6,5]); ctx.strokeStyle='rgba(236,217,160,.45)'; ctx.lineWidth=1;
+    posterRoundRect(ctx,boxX+20,wy,boxW-40,boxH-(wy-boxY)-14,14); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.textAlign='left';
+    ctx.font='18px "ZCOOL XiaoWei", "STKaiti", serif'; ctx.fillStyle='#e5c98f';
+    ctx.fillText('♡ 我的心事', boxX+38, wy+28);
+    ctx.fillStyle='rgba(228,218,242,.9)'; ctx.font='19px "Noto Serif SC", serif';
+    let wty=wy+58;
+    worryLines.forEach(l=>{ ctx.fillText(l, boxX+38, wty); wty+=30; });
+  }
+
+  // —— 底部星月光标 ——
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(236,217,160,.8)'; ctx.font='16px serif';
+  ctx.fillText('☾　　✦　　☽', W/2, H-62);
+  ctx.fillStyle='rgba(224,212,242,.72)'; ctx.font='17px "Noto Serif SC", serif';
+  ctx.fillText('保存图片 · 把这份温柔分享给重要的人', W/2, H-36);
+
+  $('posterDownload').href = canvas.toDataURL('image/png');
+}
+
+function closePoster(){ $('posterModal').classList.remove('show'); }
+
+// —— 图鉴 · 收集 ——
+function renderGallery(){
+  const tabs = [['all','全部'],['core','核心主牌'],['maiden','少女与神话'],['tale','意象与物语']];
+  $('filterRow').innerHTML = tabs.map(([k,v])=>
+    `<button class="${state.filter===k?'on':''}" onclick="setFilter('${k}')">${v}</button>`).join('');
+  const list = state.filter==='all' ? cards : cards.filter(c=>c.group===state.filter);
+  const total = cards.length, count = Collect.count(), pct = Math.round(count/total*100);
+  $('collectHead').innerHTML = `
+    <div class="collect-meta">
+      <span class="cm-title">✦ 我的星图收集</span>
+      <span class="cm-count">${count} / ${total}　${pct}%</span>
+    </div>
+    <div class="collect-bar"><div class="collect-fill" style="width:${pct}%"></div></div>
+    ${count===total ? '<div class="collect-done">❖ 星图圆满 · 全部 26 张牌已与你相认</div>' : ''}`;
+  $('galleryGrid').innerHTML = list.map(c=>{
+    const no = 'NO.'+String(c.id).padStart(2,'0');
+    if(!Collect.has(c.id)){
+      return `<button class="g-item locked" onclick="lockedTap()">
+         <div class="g-img g-lock"><span>☾</span></div>
+         <div class="g-no">${no}</div>
+         <div class="g-name">？？？</div>
+       </button>`;
+    }
+    return `<button class="g-item" onclick="openDetail(${c.id},false)">
+       <img class="g-img" src="${c.image}" alt="${c.name}" loading="lazy">
+       <div class="g-no">${no}</div>
+       <div class="g-name">${c.name}</div>
+     </button>`;
+  }).join('');
+}
+function lockedTap(){ showToast('这张牌还在等你 ✧ 去抽卡遇见它吧'); }
+function setFilter(k){ state.filter=k; Sfx.tick(); renderGallery(); }
+
+/* ===== 殴打厄运 · 解压 ===== */
+const PUNCH_NAMES = ['焦虑','拖延','自我怀疑','完美主义','内耗','比较','恐惧','嫉妒','委屈','羞愧','迷茫','执念'];
+const PUNCH_COLORS = ['#2a2a3a','#3a2548','#2d3a4a','#422a2a','#2a3a2a','#3a2a3a','#2a2d3a','#3a2a3a','#2a2a3d','#3d2a2d','#2a3a3a','#332a3d'];
+const PUNCH_HIT_WORDS = ['啪！','哐！','砰！','咚！','哐当！','噗！','咔！','嗙！','哐啷！','咣！'];
+const PUNCH_HIT_LINES = [
+  '痛痛快快地发泄吧，没人会看见',
+  '每一下，都在让自己更轻一点',
+  '嘿，它在变小，你在长大',
+  '允许自己生气，也允许自己被温柔接住',
+  '你打碎的，是困住你的那部分',
+  '不必原谅厄运，先把它打跑',
+  '连击的节奏，是你心跳的回响',
+  '它没那么可怕，它怕你的勇气'
+];
+const PUNCH_SHATTER_LINES = [
+  '厄运已散，好运正在路上 ✦',
+  '散作星辰，落回你掌心',
+  '你看，它没那么可怕了',
+  '此刻，风把你吹得很轻',
+  '碎了的厄运，会开出花',
+  '嘿，你赢了这一回合',
+  '恭喜，又把自己接住了一次'
+];
+const PUNCH_SURRENDER_LINES = [
+  '停停停，我投降！🏳️',
+  '好好好，你赢了……',
+  '救命，我认错还不行吗',
+  '厄运举白旗了！',
+  '别打了别打了，我走还不行吗',
+  '你的勇气把它吓破胆了'
+];
+
+const Punch = {
+  key:'yj_punch_v1',
+  data(){
+    const today = new Date().toDateString();
+    try{
+      const d = JSON.parse(localStorage.getItem(this.key));
+      if(!d || d.date !== today) return this._fresh(today);
+      return d;
+    }catch(e){ return this._fresh(today); }
+  },
+  _fresh(date){ return { date, todayCount:0, bestCombo:0 }; },
+  save(d){ localStorage.setItem(this.key, JSON.stringify(d)); },
+  addHit(){
+    const d = this.data();
+    d.todayCount++;
+    this.save(d);
+    return d;
+  },
+  bumpBest(combo){
+    const d = this.data();
+    if(combo > d.bestCombo){ d.bestCombo = combo; this.save(d); }
+    return d.bestCombo;
+  },
+  renderStats(){
+    const d = this.data();
+    if($('punchTodayCount')) $('punchTodayCount').textContent = d.todayCount;
+    if($('punchBest')) $('punchBest').textContent = d.bestCombo;
+  }
+};
+
+let punchCombo = 0;
+let punchComboTimer = null;
+let punchCurIdx = 0;
+let punchThresholdIdx = 0;
+const PUNCH_THRESHOLDS = [10, 30, 60, 100, 150];
+
+function punchGhostSVG(name, hit){
+  const idx = PUNCH_NAMES.indexOf(name);
+  const fill = PUNCH_COLORS[idx % PUNCH_COLORS.length];
+  const stroke = 'rgba(255,255,255,.12)';
+  // 不规则墨块 path
+  const blob = 'M40 18 C58 8 78 14 86 30 C100 38 96 58 88 68 C100 76 92 96 76 92 C68 102 50 102 38 92 C22 96 12 78 22 66 C8 56 14 36 26 30 C30 22 34 22 40 18 Z';
+  // 表情：平常 vs 被击打
+  let eyes, mouth;
+  if(hit){
+    // 惊恐 X 眼 + 张大嘴
+    eyes = `<g stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round">
+      <path d="M42 40 L52 50 M52 40 L42 50"/>
+      <path d="M82 40 L92 50 M92 40 L82 50"/>
+    </g>`;
+    mouth = `<ellipse cx="68" cy="74" rx="9" ry="11" fill="#3a1830"/>` +
+            `<path d="M60 72 L68 80 L76 72" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  }else{
+    // 邪邪眯眼 + 獠牙
+    eyes = `<g fill="#fff"><circle cx="48" cy="46" r="5"/><circle cx="88" cy="46" r="5"/></g>
+            <g fill="#0a0a16"><circle cx="50" cy="48" r="2.2"/><circle cx="90" cy="48" r="2.2"/></g>`;
+    mouth = `<path d="M56 70 Q68 82 80 70" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/>` +
+            `<path d="M64 72 L64 78 M72 72 L72 78" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>`;
+  }
+  return `<svg viewBox="0 0 140 120" xmlns="http://www.w3.org/2000/svg">
+    <path d="${blob}" fill="${fill}" stroke="${stroke}" stroke-width="2"/>
+    <ellipse cx="68" cy="28" rx="22" ry="6" fill="rgba(255,255,255,.07)"/>
+    ${eyes}
+    ${mouth}
+  </svg>`;
+}
+
+function punchRenderTarget(hit){
+  const name = PUNCH_NAMES[punchCurIdx];
+  const t = $('punchTarget');
+  if(!t) return;
+  t.innerHTML = `<span class="punch-tag" id="punchTag">${name}</span>` + punchGhostSVG(name, hit);
+}
+
+function initPunch(){
+  Punch.renderStats();
+  punchCombo = 0;
+  punchThresholdIdx = 0;
+  punchCurIdx = Math.floor(Math.random()*PUNCH_NAMES.length);
+  punchRenderTarget(false);
+  if($('punchCombo')) $('punchCombo').textContent = '0';
+  if($('punchHint')) $('punchHint').style.opacity = '.65';
+  const msg = $('punchMsg');
+  if(msg) msg.innerHTML = '<span class="pm-line">来，狠狠戳它</span><span class="pm-sub">每一下，都把自己放轻一点</span>';
+  punchComposeTag = PUNCH_NAMES[punchCurIdx];
+  punchRenderTagPick();
+  punchUpdateInputHint();
+  PunchMsg.init();
+  punchRenderFeed();
+}
+
+function punchHit(e){
+  e.preventDefault();
+  const stage = $('punchStage');
+  const target = $('punchTarget');
+  if(!stage || !target || target.classList.contains('shatter')) return;
+
+  punchCombo++;
+  const d = Punch.addHit();
+  Punch.bumpBest(punchCombo);
+  if($('punchTodayCount')) $('punchTodayCount').textContent = d.todayCount;
+  if($('punchBest')) $('punchBest').textContent = d.bestCombo;
+  if($('punchCombo')){
+    $('punchCombo').textContent = punchCombo;
+    $('punchCombo').classList.remove('beat');
+    void $('punchCombo').offsetWidth;
+    $('punchCombo').classList.add('beat');
+  }
+  if($('punchHint')) $('punchHint').style.opacity = '0';
+
+  // 命中视觉：抖动 + 表情切换 + 墨水溅射 + 飘字
+  target.classList.remove('hit'); void target.offsetWidth; target.classList.add('hit');
+  target.innerHTML = `<span class="punch-tag" id="punchTag">${PUNCH_NAMES[punchCurIdx]}</span>` + punchGhostSVG(PUNCH_NAMES[punchCurIdx], true);
+
+  // 命中点位置（基于点击位置）
+  const rect = stage.getBoundingClientRect();
+  const cx = (e.touches && e.touches[0] ? e.touches[0].clientX : e.clientX) - rect.left;
+  const cy = (e.touches && e.touches[0] ? e.touches[0].clientY : e.clientY) - rect.top;
+  punchInkSplat(stage, cx, cy, PUNCH_COLORS[punchCurIdx]);
+  punchFloat(stage, cx, cy, PUNCH_HIT_WORDS[Math.floor(Math.random()*PUNCH_HIT_WORDS.length)]);
+
+  // 命中音效（每隔几次换音色）
+  try{ Sfx.tick(); }catch(_){}
+  if(punchCombo % 5 === 0){ try{ Sfx.sparkle(); }catch(_){} }
+
+  // 阈值：先举白旗投降，再碎掉
+  if(punchThresholdIdx < PUNCH_THRESHOLDS.length && punchCombo >= PUNCH_THRESHOLDS[punchThresholdIdx]){
+    punchThresholdIdx++;
+    punchSurrender();
+    return;
+  }
+
+  // 连击断档重置（1.8s 不点重置连击数）
+  clearTimeout(punchComboTimer);
+  punchComboTimer = setTimeout(()=>{
+    punchCombo = 0;
+    if($('punchCombo')) $('punchCombo').textContent = '0';
+    if($('punchHint')) $('punchHint').style.opacity = '.65';
+  }, 1800);
+
+  // 每 7 连击切换一句鼓励
+  if(punchCombo % 7 === 0){
+    const line = PUNCH_HIT_LINES[Math.floor(Math.random()*PUNCH_HIT_LINES.length)];
+    if($('punchMsg')) $('punchMsg').innerHTML = `<span class="pm-line">${line}</span>`;
+  }
+}
+
+function punchInkSplat(stage, x, y, color){
+  const n = 8;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    s.className = 'punch-ink';
+    s.style.left = x + 'px';
+    s.style.top = y + 'px';
+    s.style.background = color;
+    const ang = (Math.PI*2*i/n) + (Math.random()-.5)*0.5;
+    const dist = 36 + Math.random()*44;
+    s.style.setProperty('--dx', Math.cos(ang)*dist + 'px');
+    s.style.setProperty('--dy', Math.sin(ang)*dist + 'px');
+    s.style.width = (8 + Math.random()*10) + 'px';
+    s.style.height = s.style.width;
+    stage.appendChild(s);
+    setTimeout(()=>s.remove(), 800);
+  }
+}
+
+function punchFloat(stage, x, y, text){
+  const el = document.createElement('span');
+  el.className = 'punch-float';
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = (y - 10) + 'px';
+  stage.appendChild(el);
+  setTimeout(()=>el.remove(), 900);
+}
+
+function punchSurrender(){
+  const target = $('punchTarget');
+  const stage = $('punchStage');
+  if(!target || !stage) return;
+
+  target.classList.remove('hit');
+  target.classList.add('surrender');
+
+  // 厄运头上举白旗
+  if(!target.querySelector('.punch-flag')){
+    const f = document.createElement('div');
+    f.className = 'punch-flag';
+    f.textContent = '🏳️';
+    target.appendChild(f);
+  }
+
+  // 投降语录
+  const sLine = PUNCH_SURRENDER_LINES[Math.floor(Math.random()*PUNCH_SURRENDER_LINES.length)];
+  const sm = $('punchStageMsg');
+  if(sm){ sm.textContent = sLine; sm.classList.remove('show'); void sm.offsetWidth; sm.classList.add('show'); }
+  try{ Sfx.tick(); setTimeout(()=>Sfx.tick(), 120); }catch(_){}
+
+  // 780ms 后投降失败 → 碎掉
+  setTimeout(()=>{
+    target.classList.remove('surrender');
+    const flag = target.querySelector('.punch-flag');
+    if(flag) flag.remove();
+    punchShatter(true);
+  }, 780);
+}
+
+function punchShatter(threshold){
+  const target = $('punchTarget');
+  const stage = $('punchStage');
+  if(!target || !stage) return;
+
+  target.classList.remove('hit');
+  target.classList.add('shatter');
+
+  // 阈值爆裂：金色粒子环绕四溅
+  const burst = document.createElement('div');
+  burst.className = 'punch-burst';
+  const n = 22;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    const ang = (Math.PI*2*i/n) + (Math.random()-.3)*0.4;
+    const dist = 90 + Math.random()*120;
+    s.style.setProperty('--bx', Math.cos(ang)*dist + 'px');
+    s.style.setProperty('--by', Math.sin(ang)*dist + 'px');
+    s.style.animationDelay = (Math.random()*0.12) + 's';
+    burst.appendChild(s);
+  }
+  stage.appendChild(burst);
+  setTimeout(()=>burst.remove(), 1500);
+
+  // 中央祝词
+  const sm = $('punchStageMsg');
+  const line = PUNCH_SHATTER_LINES[Math.floor(Math.random()*PUNCH_SHATTER_LINES.length)];
+  if(sm){ sm.textContent = line; sm.classList.remove('show'); void sm.offsetWidth; sm.classList.add('show'); }
+
+  // 阈值达成奖励：运气 +3
+  try{ Luck.gain(3); floatLuck(target, '厄运散！运气 +3'); }catch(_){}
+  try{ Pet.gainExp(8, 'punch'); }catch(_){}
+  try{ Sfx.chime(); setTimeout(()=>Sfx.sparkle(), 280); }catch(_){}
+
+  // 提示文案
+  if($('punchMsg')) $('punchMsg').innerHTML = `<span class="pm-line">${line}</span><span class="pm-sub">已为你奖励 3 点运气值 ✦</span>`;
+
+  // 1 秒后重生新厄运
+  setTimeout(()=>punchReborn(), 950);
+}
+
+function punchReborn(){
+  const target = $('punchTarget');
+  if(!target) return;
+  // 换一只厄运
+  let next = punchCurIdx;
+  while(next === punchCurIdx) next = Math.floor(Math.random()*PUNCH_NAMES.length);
+  punchCurIdx = next;
+  target.classList.remove('shatter');
+  target.classList.remove('surrender');
+  target.classList.add('born');
+  punchRenderTarget(false);
+  // 重置连击，进入下一回合
+  punchCombo = 0;
+  if($('punchCombo')) $('punchCombo').textContent = '0';
+  if($('punchHint')) $('punchHint').style.opacity = '.65';
+  // 同步留言标签
+  punchComposeTag = PUNCH_NAMES[punchCurIdx];
+  punchRenderTagPick();
+  punchUpdateInputHint();
+}
+
+function punchReset(){
+  // 主动换一只厄运（不计入爆裂奖励）
+  const target = $('punchTarget');
+  if(!target) return;
+  if(target.classList.contains('shatter')) return;
+  punchReborn();
+  try{ Sfx.tick(); }catch(_){}
+  if($('punchStageMsg')) $('punchStageMsg').classList.remove('show');
+  if($('punchMsg')) $('punchMsg').innerHTML = '<span class="pm-line">换一只，继续打</span><span class="pm-sub">每一只厄运都有自己的软处</span>';
+}
+
+function punchShare(){
+  const d = Punch.data();
+  const text = `今日已在「愈见卡牌·痛击厄运」打散 ${d.todayCount} 次厄运，最高连击 ${d.bestCombo} ✦ 痛快！来一起把焦虑、内耗、自我怀疑通通打碎。`;
+  if(navigator.share){
+    navigator.share({ title:'愈见卡牌 · 痛击厄运', text }).catch(()=>{});
+  }else if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=>showToast('战绩已复制 ✦')).catch(()=>showToast(text));
+  }else{
+    showToast(text);
+  }
+}
+
+/* ===== 痛击厄运 · 留言墙 ===== */
+const PMSG_SEED = [
+  { name:'星尘旅人', tag:'焦虑', text:'连点 30 下，把要交不出稿的焦虑全打碎了。今晚终于敢打开空白文档。', likes:42, minAgo:35 },
+  { name:'月下小鹿', tag:'拖延', text:'原来"拖延"这只小鬼这么欠揍，打了一通感觉整个人都轻了 10 斤。', likes:67, minAgo:120 },
+  { name:'雾里看花', tag:'内耗', text:'每天和"内耗"打架，今天第一次把它打散，运气 +3。被自己接住的感觉真好。', likes:88, minAgo:200 },
+  { name:'半盏清欢', tag:'自我怀疑', text:'打散自我怀疑那一下，听见自己说"你其实没那么糟"。来还愿，谢谢这只小鬼。', likes:115, minAgo:340 },
+  { name:'银河拾荒', tag:'完美主义', text:'完美主义打散了，作业交了一个 70 分版本。世界没塌，居然还得了表扬。', likes:54, minAgo:520 },
+  { name:'晚风信使', tag:'委屈', text:'打散"委屈"的时候眼泪掉下来了，但屏幕上的小鬼没了，我也轻了一点。', likes:96, minAgo:780 }
+];
+const PunchMsg = {
+  key:'yj_punch_msg_v1',
+  init(){
+    if(localStorage.getItem(this.key)) return;
+    const now = Date.now();
+    const list = PMSG_SEED.map((p,i)=>({
+      id:'s'+i, name:p.name, tag:p.tag, text:p.text, likes:p.likes, liked:false, seed:true,
+      time: now - (p.minAgo||30)*60000
+    }));
+    this.save(list);
+  },
+  all(){ try{ return JSON.parse(localStorage.getItem(this.key)) || []; }catch(e){ return []; } },
+  save(list){ localStorage.setItem(this.key, JSON.stringify(list)); },
+  myName(){ return (typeof Plaza!=='undefined' && Plaza.myName) ? Plaza.myName() : '匿名星尘'; },
+  post(text, tag){
+    const list = this.all();
+    list.unshift({ id:'u'+Date.now(), name:this.myName(), tag, text, time:Date.now(), likes:0, liked:false, mine:true });
+    this.save(list);
+  },
+  toggleLike(id){
+    const list = this.all();
+    const p = list.find(x=>x.id===id);
+    if(!p) return null;
+    p.liked = !p.liked;
+    p.likes = Math.max(0, p.likes + (p.liked?1:-1));
+    this.save(list);
+    return { liked:p.liked, likes:p.likes };
+  }
+};
+let punchComposeTag = '焦虑';
+const PUNCH_TAG_PRESETS = ['焦虑','拖延','自我怀疑','完美主义','内耗','比较','恐惧','嫉妒','委屈','羞愧','迷茫','执念'];
+
+function punchRenderTagPick(){
+  const wrap = $('punchTagPick');
+  if(!wrap) return;
+  wrap.innerHTML = PUNCH_TAG_PRESETS.map(t=>{
+    const on = (t === punchComposeTag) ? ' on' : '';
+    return `<span class="${on}" onclick="punchPickTag('${t}')">${t}</span>`;
+  }).join('');
+}
+function punchPickTag(t){
+  punchComposeTag = t;
+  Sfx.tick();
+  punchRenderTagPick();
+  punchUpdateInputHint();
+}
+function punchUpdateInputHint(){
+  if($('punchInputHint')){
+    $('punchInputHint').textContent = '打散的厄运：' + punchComposeTag + ' · 留言运气 +2';
+  }
+}
+function punchRenderFeed(){
+  const feed = $('punchFeed');
+  if(!feed) return;
+  const list = PunchMsg.all();
+  if($('punchMsgCount')) $('punchMsgCount').textContent = list.length + ' 条';
+  if(!list.length){
+    feed.innerHTML = '<div class="punch-empty">还没有人留言，做第一个吐露心声的人 ✦</div>';
+    return;
+  }
+  feed.innerHTML = list.map(p=>{
+    const grad = (typeof pzGrad === 'function') ? pzGrad(p.name) : 'linear-gradient(135deg,#b894d4,#8a6bc4)';
+    const esc = (typeof pzEsc === 'function') ? pzEsc : (s=>s);
+    const timeStr = (typeof pzTime === 'function') ? pzTime(p.time) : '';
+    return `<div class="punch-card">
+      <div class="punch-card-head">
+        <div class="punch-card-avatar" style="background:${grad}">${esc(p.name[0])}</div>
+        <div class="punch-card-meta">
+          <div class="punch-card-name">${esc(p.name)}${p.mine?' · 我':''}</div>
+          <div class="punch-card-time">${timeStr}</div>
+        </div>
+        <span class="punch-card-tag">${esc(p.tag)}</span>
+      </div>
+      <div class="punch-card-text">${esc(p.text)}</div>
+      <div class="punch-card-foot">
+        <button class="punch-like ${p.liked?'on':''}" onclick="punchLike('${p.id}')">
+          <span class="pl-icon">${p.liked?'♥':'♡'}</span><span>${p.likes}</span>
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function punchPost(){
+  const inp = $('punchInput');
+  if(!inp) return;
+  let text = (inp.value || '').trim();
+  if(!text){ showToast('先写一句再留下吧 ✦'); return; }
+  if(text.length > 120) text = text.slice(0, 120);
+  PunchMsg.post(text, punchComposeTag);
+  inp.value = '';
+  try{ Sfx.tick(); }catch(_){}
+  punchRenderFeed();
+  const btn = inp.parentElement.querySelector('.pc-submit');
+  if(btn) floatLuck(btn, '吐露运气 +2');
+  try{ Luck.gain(2); }catch(_){}
+  showToast('心声已留在星光里 ✦');
+}
+function punchLike(id){
+  const r = PunchMsg.toggleLike(id);
+  if(!r) return;
+  if(r.liked){ try{ Sfx.sparkle(); }catch(_){} }
+  punchRenderFeed();
+}
+
+/* ===== 捕捉好运 ===== */
+const CATCH_WIN_LINES = [
+  '流星落入掌心 ✦',
+  '好运被你接住',
+  '一颗星辰为你停留',
+  '此刻，宇宙偏爱你',
+  '接住了，它会化作好运'
+];
+const CATCH_SLIP_LINES = [
+  '差一点点，它溜走了',
+  '流星从指缝滑过',
+  '再试一次，专注一些',
+  '它狡猾地躲开了'
+];
+const CATCH_MISS_LINES = [
+  '错过了一颗流星',
+  '流星稍纵即逝',
+  '它的尾巴扫过了你的指尖',
+  '没接住，下一颗更亮'
+];
+
+const Catch = {
+  key:'yj_catch_v1',
+  data(){
+    const today = new Date().toDateString();
+    try{
+      const d = JSON.parse(localStorage.getItem(this.key));
+      if(!d || d.date !== today) return this._fresh(today);
+      return d;
+    }catch(e){ return this._fresh(today); }
+  },
+  _fresh(date){ return { date, tries:0, wins:0 }; },
+  save(d){ localStorage.setItem(this.key, JSON.stringify(d)); },
+  addTry(win){
+    const d = this.data();
+    d.tries++;
+    if(win) d.wins++;
+    this.save(d);
+    return d;
+  },
+  renderStats(){
+    const d = this.data();
+    if($('catchTryCount')) $('catchTryCount').textContent = d.tries;
+    if($('catchWinCount')) $('catchWinCount').textContent = d.wins;
+  }
+};
+
+let catchActive = false;
+let catchCooldown = false;
+let catchTimeout = null;
+let catchLifetime = null;
+
+function initCatch(){
+  Catch.renderStats();
+  catchReset();
+}
+
+function catchReset(){
+  catchActive = false;
+  clearTimeout(catchTimeout);
+  clearTimeout(catchLifetime);
+  if($('catchStageMsg')) $('catchStageMsg').classList.remove('show');
+  if($('catchHint')) $('catchHint').style.opacity = '.7';
+  const stage = $('catchStage');
+  if(stage) stage.querySelectorAll('.catch-spark,.catch-burst').forEach(e=>e.remove());
+  const btn = $('catchBtn');
+  if(btn){ btn.disabled = false; btn.textContent = '召唤流星'; }
+  if($('catchMsg')) $('catchMsg').innerHTML = '<span class="cm-line">捕捉成功率 10%</span><span class="cm-sub">接住一次，运气 +5</span>';
+}
+
+function catchStart(){
+  if(catchActive || catchCooldown) return;
+  const stage = $('catchStage');
+  const btn = $('catchBtn');
+  if(!stage || !btn) return;
+  btn.disabled = true;
+  btn.textContent = '听…';
+  if($('catchHint')) $('catchHint').style.opacity = '0';
+  if($('catchStageMsg')) $('catchStageMsg').classList.remove('show');
+  catchActive = true;
+  // 0.6~1.6s 后流星出现
+  const delay = 600 + Math.random()*1000;
+  catchTimeout = setTimeout(spawnCatchSpark, delay);
+}
+
+function spawnCatchSpark(){
+  const stage = $('catchStage');
+  if(!stage) return;
+  // 10% 成功概率
+  const willWin = Math.random() < 0.10;
+  const rect = stage.getBoundingClientRect();
+  const w = rect.width, h = rect.height;
+  const x = 70 + Math.random()*(w-140);
+  const y = h*0.20 + Math.random()*(h*0.55);
+  const spark = document.createElement('div');
+  spark.className = 'catch-spark';
+  spark.style.left = x + 'px';
+  spark.style.top = y + 'px';
+  spark.dataset.win = willWin ? '1' : '0';
+  spark.onclick = catchClickSpark;
+  stage.appendChild(spark);
+  // 流星存活 1.2s
+  catchLifetime = setTimeout(()=>{
+    if(spark.parentNode){
+      spark.remove();
+      catchEndMiss();
+    }
+  }, 1200);
+}
+
+function catchClickSpark(e){
+  e.stopPropagation();
+  const spark = e.currentTarget;
+  const willWin = spark.dataset.win === '1';
+  const r = spark.getBoundingClientRect();
+  const stageRect = $('catchStage').getBoundingClientRect();
+  const x = r.left + r.width/2 - stageRect.left;
+  const y = r.top + r.height/2 - stageRect.top;
+  spark.classList.add('hit');
+  clearTimeout(catchLifetime);
+  setTimeout(()=>spark.remove(), 500);
+  if(willWin) catchEndWin(x, y);
+  else catchEndSlip(x, y);
+}
+
+function catchEndWin(x, y){
+  const d = Catch.addTry(true);
+  Catch.renderStats();
+  catchBurst(x, y);
+  const line = CATCH_WIN_LINES[Math.floor(Math.random()*CATCH_WIN_LINES.length)];
+  if($('catchStageMsg')){
+    $('catchStageMsg').textContent = line;
+    $('catchStageMsg').classList.remove('show');
+    void $('catchStageMsg').offsetWidth;
+    $('catchStageMsg').classList.add('show');
+  }
+  if($('catchMsg')) $('catchMsg').innerHTML = `<span class="cm-line">${line}</span><span class="cm-sub">运气 +5 已发放 ✦</span>`;
+  try{ Luck.gain(5); floatLuck($('catchBtn'), '好运 +5'); }catch(_){}
+  try{ Pet.gainExp(10, 'catch'); }catch(_){}
+  try{ Sfx.chime(); setTimeout(()=>Sfx.sparkle(), 280); }catch(_){}
+  catchCooldown = true;
+  setTimeout(()=>{ catchCooldown = false; catchReset(); }, 1900);
+}
+
+function catchEndSlip(x, y){
+  const d = Catch.addTry(false);
+  Catch.renderStats();
+  // 失败时放一团黯淡的灰雾
+  catchBurst(x, y, true);
+  const line = CATCH_SLIP_LINES[Math.floor(Math.random()*CATCH_SLIP_LINES.length)];
+  if($('catchStageMsg')){
+    $('catchStageMsg').textContent = line;
+    $('catchStageMsg').classList.remove('show');
+    void $('catchStageMsg').offsetWidth;
+    $('catchStageMsg').classList.add('show');
+  }
+  if($('catchMsg')) $('catchMsg').innerHTML = `<span class="cm-line">${line}</span><span class="cm-sub">捕捉成功率仅 10%，再来一次</span>`;
+  try{ Sfx.tick(); }catch(_){}
+  catchCooldown = true;
+  setTimeout(()=>{ catchCooldown = false; catchReset(); }, 1400);
+}
+
+function catchEndMiss(){
+  const d = Catch.addTry(false);
+  Catch.renderStats();
+  const line = CATCH_MISS_LINES[Math.floor(Math.random()*CATCH_MISS_LINES.length)];
+  if($('catchStageMsg')){
+    $('catchStageMsg').textContent = line;
+    $('catchStageMsg').classList.remove('show');
+    void $('catchStageMsg').offsetWidth;
+    $('catchStageMsg').classList.add('show');
+  }
+  if($('catchMsg')) $('catchMsg').innerHTML = `<span class="cm-line">${line}</span><span class="cm-sub">下一颗或许就是好运</span>`;
+  try{ Sfx.tick(); }catch(_){}
+  catchCooldown = true;
+  setTimeout(()=>{ catchCooldown = false; catchReset(); }, 1400);
+}
+
+function catchBurst(x, y, dim){
+  const stage = $('catchStage');
+  if(!stage) return;
+  const burst = document.createElement('div');
+  burst.className = 'catch-burst';
+  burst.style.left = x + 'px';
+  burst.style.top = y + 'px';
+  const n = 24;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('span');
+    const ang = (Math.PI*2*i/n) + (Math.random()-.3)*0.4;
+    const dist = 60 + Math.random()*100;
+    s.style.setProperty('--bx', Math.cos(ang)*dist + 'px');
+    s.style.setProperty('--by', Math.sin(ang)*dist + 'px');
+    s.style.animationDelay = (Math.random()*0.12) + 's';
+    if(dim){
+      s.style.background = 'radial-gradient(circle, rgba(180,170,200,.6) 20%, rgba(140,130,160,.3) 70%, transparent)';
+      s.style.boxShadow = '0 0 8px rgba(180,170,200,.4)';
+    }
+    burst.appendChild(s);
+  }
+  stage.appendChild(burst);
+  setTimeout(()=>burst.remove(), 1500);
+}
+
+/* ===== 好运宠物养成 ===== */
+const PET_STAGES = [
+  { name:'未孵化的蛋', en:'EGG', evolveExp:50, bonus:'暂无加成 · 多摸摸它，让它快快孵化' },
+  { name:'紫焰小灵', en:'SPARK', evolveExp:200, bonus:'抽卡时 <b>运气 +1</b>（每张牌）' },
+  { name:'金角精灵', en:'AURORA', evolveExp:500, bonus:'抽卡时 <b>金边概率 +5%</b> · 运气 +1' },
+  { name:'星灵神兽', en:'SERAPH', evolveExp:Infinity, bonus:'每日首次进入 <b>运气 +3</b> · 抽卡 <b>金边 +5%</b> · 运气 +1' }
+];
+const PET_FEED_LINES = [
+  '它小口小口地吃着，眼睛眯成了一条缝',
+  '吃饱了它蹭蹭你的手心',
+  '它的福气又攒了一点点 ✦',
+  '它好像更精神了一些',
+  '它发出满足的咕噜声'
+];
+const PET_PET_LINES = [
+  '它眯起眼睛，把头往你掌心靠了靠',
+  '它蹭了蹭你的指尖',
+  '它的光晕亮了些许 ✧',
+  '它好像在笑',
+  '它轻轻摇了摇身子'
+];
+const PET_PLAY_LINES = [
+  '它欢快地转了个圈，差点摔倒',
+  '你抛出星星，它稳稳接住 ✦',
+  '它追着自己的尾巴跑了起来',
+  '它蹦起来，蹭了蹭你的手',
+  '它玩得好开心，眼睛亮晶晶的'
+];
+const PET_TALK_LINES = [
+  '它歪着头，安静地听你说话',
+  '它轻轻嗯了一声，好像在回应你',
+  '它把耳朵贴过来，生怕漏掉一个字',
+  '听完它蹭了蹭你，像在说"我懂"',
+  '它的眼神软软的，像在抱抱你'
+];
+const PET_EVOLVE_LINES = [
+  '一道星光闪过，它蜕变了 ✦',
+  '它的光晕骤然绽放，原来这就是它的真貌',
+  '恭喜，它进入了新的阶段'
+];
+
+const Pet = {
+  key:'yj_pet_v1',
+  data(){
+    try{
+      const d = JSON.parse(localStorage.getItem(this.key));
+      if(!d || typeof d !== 'object') return this._fresh();
+      // 兼容字段缺失
+      return Object.assign(this._fresh(), d);
+    }catch(e){ return this._fresh(); }
+  },
+  _fresh(){ return { stage:0, hunger:50, bond:0, exp:0, lastPet:0, lastFeed:0, lastDaily:'', lastGreet:'' }; },
+  save(d){ localStorage.setItem(this.key, JSON.stringify(d)); },
+  stageInfo(){ return PET_STAGES[this.data().stage]; },
+  // 抽卡时调用：给运气加成
+  drawBonus(){
+    try{
+      const d = this.data();
+      if(d.stage >= 1) Luck.gain(1);
+    }catch(_){}
+  },
+  // 金边概率加成（0~1）
+  goldBonus(){
+    try{
+      const d = this.data();
+      return d.stage >= 2 ? 0.05 : 0;
+    }catch(_){ return 0; }
+  },
+  // 每日运气加成
+  checkDaily(){
+    const d = this.data();
+    const today = new Date().toDateString();
+    if(d.stage >= 3 && d.lastDaily !== today){
+      d.lastDaily = today;
+      this.save(d);
+      Luck.gain(3);
+      return true;
+    }
+    return false;
+  },
+  // 每日问候经验（每天首次进宠物页）
+  checkGreeting(){
+    const d = this.data();
+    const today = new Date().toDateString();
+    if(d.lastGreet === today) return false;
+    d.lastGreet = today;
+    d.exp += 15;
+    d.bond = Math.min(100, d.bond + 5);
+    this.save(d);
+    return true;
+  },
+  // 外部联动加经验（抽卡/痛击/捕捉/发帖）
+  gainExp(n, reason){
+    const d = this.data();
+    if(d.stage >= 3) return false; // 满级不涨经验
+    d.exp += n;
+    this.save(d);
+    return true;
+  }
+};
+
+function petCreatureHTML(stage){
+  if(stage===0) return '<div class="pet-egg"></div>';
+  const face = `<div class="face">
+      <div class="eye l"></div><div class="eye r"></div>
+      <div class="mouth"></div>
+      <div class="blush l"></div><div class="blush r"></div>
+    </div>`;
+  if(stage===1) return `<div class="pet-young">
+    <div class="body"></div>
+    <div class="ear l"></div><div class="ear r"></div>
+    ${face}
+  </div>`;
+  if(stage===2) return `<div class="pet-adult">
+    <div class="body"></div>
+    <div class="ear l"></div><div class="ear r"></div>
+    ${face}
+  </div>`;
+  return `<div class="pet-spirit">
+    <div class="halo"></div>
+    <div class="wing l"></div><div class="wing r"></div>
+    <div class="body"></div>
+    <div class="ear l"></div><div class="ear r"></div>
+    ${face}
+  </div>`;
+}
+
+let petCooldown = false;
+function initPet(){
+  try{ Pet.checkDaily(); }catch(_){}
+  // 每日首次问候 +15 经验
+  try{
+    if(Pet.checkGreeting()){
+      setTimeout(()=>{
+        const anchor = $('petPetBtn');
+        if(anchor) floatLuck(anchor, '每日问候 · 经验 +15');
+        if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">它等了你一整天，见到你眼睛都亮了 ✦</span><span>每日问候 · 经验 +15 · 亲密度 +5</span>`;
+        renderPet();
+      }, 500);
+    }
+  }catch(_){}
+  renderPet();
+}
+
+function renderPet(){
+  const d = Pet.data();
+  const stage = PET_STAGES[d.stage];
+  if($('petCreature')) $('petCreature').innerHTML = petCreatureHTML(d.stage);
+  if($('petName')) $('petName').textContent = stage.name;
+  if($('petStageLabel')) $('petStageLabel').textContent = '第 '+(d.stage+1)+' 阶段 · '+stage.en;
+  if($('petHungerVal')) $('petHungerVal').textContent = d.hunger+'/100';
+  if($('petHungerBar')) $('petHungerBar').style.width = d.hunger+'%';
+  if($('petBondVal')) $('petBondVal').textContent = d.bond+'/100';
+  if($('petBondBar')) $('petBondBar').style.width = d.bond+'%';
+  if($('petExpVal')){
+    $('petExpVal').textContent = stage.evolveExp===Infinity
+      ? d.exp+' (满级)'
+      : d.exp+'/'+stage.evolveExp;
+  }
+  if($('petExpBar')){
+    const pct = stage.evolveExp===Infinity ? 100 : Math.min(100, Math.round(d.exp/stage.evolveExp*100));
+    $('petExpBar').style.width = pct+'%';
+  }
+  if($('petBonus')) $('petBonus').innerHTML = '✦ 当前加成：'+stage.bonus;
+  if($('petEvolveBtn')){
+    const canEvolve = d.stage < 3 && d.exp >= stage.evolveExp;
+    $('petEvolveBtn').disabled = !canEvolve;
+    $('petEvolveBtn').textContent = d.stage >= 3 ? '已满级 · 星灵神兽' : '进化至下一阶段';
+  }
+  if($('petFeedBtn')){
+    $('petFeedBtn').disabled = d.stage >= 3 || d.hunger >= 100;
+    $('petFeedBtn').textContent = d.hunger >= 100 ? '它吃饱啦' : '喂食 (耗 10 运气)';
+  }
+  if($('petPlayBtn')){
+    $('petPlayBtn').disabled = d.stage === 0 || d.hunger < 20;
+    $('petPlayBtn').textContent = d.stage === 0 ? '孵化后解锁' : (d.hunger < 20 ? '它太饿了' : '玩耍');
+  }
+}
+
+function petFeed(){
+  if(petCooldown) return;
+  petCooldown = true;
+  setTimeout(()=>{ petCooldown=false; }, 450);
+  const d = Pet.data();
+  if(d.stage >= 3){ showToast('它已经满级啦'); return; }
+  if(Luck.get() < 10){ showToast('运气值不够，先去抽卡或捕捉好运吧'); return; }
+  if(d.hunger >= 100){ showToast('它已经吃饱啦'); return; }
+  Luck.gain(-10);
+  d.hunger = Math.min(100, d.hunger + 20);
+  d.exp += 10;
+  d.bond = Math.min(100, d.bond + 2);
+  d.lastFeed = Date.now();
+  Pet.save(d);
+  const anchor = $('petFeedBtn');
+  if(anchor) floatLuck(anchor, '运气 -10');
+  setTimeout(()=>{ if(anchor) floatLuck(anchor, '经验 +10'); }, 280);
+  const line = PET_FEED_LINES[Math.floor(Math.random()*PET_FEED_LINES.length)];
+  if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">${line}</span><span>喂食消耗 10 运气 · 经验 +10 · 饱食度 +20</span>`;
+  try{ Sfx.chime(); }catch(_){}
+  renderPet();
+}
+
+function petPet(){
+  if(petCooldown) return;
+  petCooldown = true;
+  setTimeout(()=>{ petCooldown=false; }, 450);
+  const d = Pet.data();
+  d.bond = Math.min(100, d.bond + 5);
+  d.exp += 5;
+  d.lastPet = Date.now();
+  Pet.save(d);
+  const anchor = $('petPetBtn');
+  if(anchor) floatLuck(anchor, '亲密度 +5');
+  setTimeout(()=>{ if(anchor) floatLuck(anchor, '经验 +5'); }, 280);
+  const line = PET_PET_LINES[Math.floor(Math.random()*PET_PET_LINES.length)];
+  if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">${line}</span><span>抚摸 · 亲密度 +5 · 经验 +5</span>`;
+  try{ Sfx.sparkle(); }catch(_){}
+  renderPet();
+}
+
+function petPlay(){
+  if(petCooldown) return;
+  petCooldown = true;
+  setTimeout(()=>{ petCooldown=false; }, 450);
+  const d = Pet.data();
+  if(d.stage === 0){ showToast('它还没孵化，先多摸摸蛋吧'); return; }
+  if(d.hunger < 20){ showToast('它太饿了，先喂点东西吧'); return; }
+  d.hunger = Math.max(0, d.hunger - 10);
+  d.exp += 12;
+  d.bond = Math.min(100, d.bond + 3);
+  Pet.save(d);
+  const anchor = $('petPlayBtn');
+  if(anchor) floatLuck(anchor, '经验 +12');
+  setTimeout(()=>{ if(anchor) floatLuck(anchor, '亲密度 +3'); }, 280);
+  const line = PET_PLAY_LINES[Math.floor(Math.random()*PET_PLAY_LINES.length)];
+  if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">${line}</span><span>玩耍 · 经验 +12 · 亲密度 +3 · 饱食度 -10</span>`;
+  try{ Sfx.chime(); }catch(_){}
+  renderPet();
+}
+
+function petTalk(){
+  if(petCooldown) return;
+  petCooldown = true;
+  setTimeout(()=>{ petCooldown=false; }, 450);
+  const d = Pet.data();
+  d.exp += 6;
+  d.bond = Math.min(100, d.bond + 8);
+  Pet.save(d);
+  const anchor = $('petTalkBtn');
+  if(anchor) floatLuck(anchor, '亲密度 +8');
+  setTimeout(()=>{ if(anchor) floatLuck(anchor, '经验 +6'); }, 280);
+  const line = PET_TALK_LINES[Math.floor(Math.random()*PET_TALK_LINES.length)];
+  if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">${line}</span><span>讲心事 · 经验 +6 · 亲密度 +8</span>`;
+  try{ Sfx.sparkle(); }catch(_){}
+  renderPet();
+}
+
+function petEvolve(){
+  const d = Pet.data();
+  const stage = PET_STAGES[d.stage];
+  if(d.stage >= 3){ showToast('它已经是最高阶段了'); return; }
+  if(d.exp < stage.evolveExp){ showToast('经验还不够 ✦'); return; }
+  d.stage += 1;
+  d.exp = 0;
+  d.hunger = Math.max(40, d.hunger);
+  d.bond = Math.max(40, d.bond);
+  Pet.save(d);
+  const line = PET_EVOLVE_LINES[Math.floor(Math.random()*PET_EVOLVE_LINES.length)];
+  const nextName = PET_STAGES[d.stage].name;
+  if($('petLog')) $('petLog').innerHTML = `<span class="pl-line">${line}</span><span>恭喜，它已进化为 ${nextName}</span>`;
+  try{ Sfx.chime(); }catch(_){}
+  // 满级后立即触发每日加成
+  if(d.stage >= 3) Pet.checkDaily();
+  renderPet();
+}
+</script>
+</body>
+</html>
