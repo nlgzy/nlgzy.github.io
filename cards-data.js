@@ -1,6 +1,6 @@
 ﻿// 愈见卡牌 · 数据（共 26 张）
 // group: core 核心主牌 | maiden 少女与神话 | tale 意象与物语
-// image: 01/02/13 在主包 /images/（首页与篇章页预览用），其余 23 张在分包 /cardsPkg/images/，出图后按编号覆盖同名文件
+// image: 01/02/13 在主包 /（首页与篇章页预览用），其余 23 张在分包 /cardsPkg/，出图后按编号覆盖同名文件
 const cards = [
   // ——— 核心主牌（小熊与命运之轮）———
   {
@@ -8,7 +8,7 @@ const cards = [
     keywords: ['守护', '安全感', '被爱'],
     healing: '你不必一个人扛下所有，总有一份温柔的力量，默默守在你看不见的地方。',
     action: '给自己一个大大的拥抱，或者抱紧一个抱枕，深呼吸三次。',
-    image: 'images/card_01.jpg'
+    image: 'card_01.jpg'
   },
 
   // ——— 少女与神话篇 ———
@@ -17,77 +17,77 @@ const cards = [
     keywords: ['自省', '迷茫', '寻找真我'],
     healing: '你看到的自己并不完整，那些裂痕，是光照进来的地方。',
     action: '写下三个你喜欢的自己身上的优点，贴在镜子上。',
-    image: 'images/card_02.jpg'
+    image: 'card_02.jpg'
   },
   {
     id: 3, name: '提灯夜游', en: 'The Lantern', group: 'maiden',
     keywords: ['希望', '探索', '微小的勇气'],
     healing: '哪怕周围漆黑一片，你手里的光也足够照亮脚下的路。',
     action: '今晚早点睡，睡前点一盏小夜灯，告诉自己“我很安全”。',
-    image: 'images/card_03.jpg'
+    image: 'card_03.jpg'
   },
   {
     id: 4, name: '人鱼之泪', en: 'The Tears', group: 'maiden',
     keywords: ['释放', '悲伤', '净化'],
     healing: '哭泣不是软弱，是灵魂在下雨，雨后会有彩虹。',
     action: '看一部感人的电影，痛痛快快哭一场，把情绪排出去。',
-    image: 'images/card_04.jpg'
+    image: 'card_04.jpg'
   },
   {
     id: 5, name: '荆棘王冠', en: 'The Crown', group: 'maiden',
     keywords: ['忍耐', '成长', '痛苦的意义'],
     healing: '现在的疼痛，是在为你加冕。你在经历一场华丽的蜕变。',
     action: '做一件虽然困难但对你有益的小事（比如运动10分钟）。',
-    image: 'images/card_05.jpg'
+    image: 'card_05.jpg'
   },
   {
     id: 6, name: '风之信使', en: 'The Wind', group: 'maiden',
     keywords: ['自由', '消息', '打破束缚'],
     healing: '烦恼像风一样，抓不住也留不下，让它吹过去吧。',
     action: '去户外走走，或者打开窗户，让风吹进房间。',
-    image: 'images/card_06.jpg'
+    image: 'card_06.jpg'
   },
   {
     id: 7, name: '沉睡花园', en: 'The Sleep', group: 'maiden',
     keywords: ['休息', '停滞', '充电'],
     healing: '什么都不做也没关系，花朵在开放前，也需要漫长的冬眠。',
     action: '放下手机，发呆15分钟，或者睡个午觉。',
-    image: 'images/card_07.jpg'
+    image: 'card_07.jpg'
   },
   {
     id: 8, name: '编织命运', en: 'The Weaver', group: 'maiden',
     keywords: ['创造', '规划', '掌控力'],
     healing: '生活是一团乱麻，但你手里有针线，可以把它织成画。',
     action: '整理一下桌面，或者列一个明天的“小小愿望清单”。',
-    image: 'images/card_08.jpg'
+    image: 'card_08.jpg'
   },
   {
     id: 9, name: '深海潜水员', en: 'The Deep', group: 'maiden',
     keywords: ['潜意识', '深层情绪', '孤独'],
     healing: '潜入心底深处去看看，那里虽然安静，但藏着巨大的温柔。',
     action: '洗一个热水澡，想象水流带走了所有的疲惫。',
-    image: 'images/card_09.jpg'
+    image: 'card_09.jpg'
   },
   {
     id: 10, name: '火焰舞者', en: 'The Fire', group: 'maiden',
     keywords: ['激情', '愤怒', '生命力'],
     healing: '燃烧吧！无论是爱还是怒火，都是你活着的证明。',
     action: '听一首节奏感强的歌，跟着节奏抖动身体。',
-    image: 'images/card_10.jpg'
+    image: 'card_10.jpg'
   },
   {
     id: 11, name: '时间观测者', en: 'The Time', group: 'maiden',
     keywords: ['焦虑', '等待', '时机'],
     healing: '别急着要答案，时间会把最好的礼物在最后才拆开。',
     action: '把担心的事情写在纸上，折成飞机扔进垃圾桶。',
-    image: 'images/card_11.jpg'
+    image: 'card_11.jpg'
   },
   {
     id: 12, name: '双子星', en: 'The Twins', group: 'maiden',
     keywords: ['矛盾', '选择', '平衡'],
     healing: '接受自己的两面性，快乐和悲伤都是你的一部分。',
     action: '做一个决定，无论选哪个，都告诉自己“这是最好的安排”。',
-    image: 'images/card_12.jpg'
+    image: 'card_12.jpg'
   },
 
   // ——— 意象与物语篇 ———
@@ -96,84 +96,84 @@ const cards = [
     keywords: ['纯真', '奇迹', '信念'],
     healing: '相信美好，美好才会发生。你的纯真就是你的魔法。',
     action: '',
-    image: 'images/card_13.jpg'
+    image: 'card_13.jpg'
   },
   {
     id: 14, name: '枯萎玫瑰', en: 'Withered Rose', group: 'tale',
     keywords: ['怀念', '永恒', '放手'],
     healing: '有些东西离开了，但记忆把它变成了永恒的艺术品。',
     action: '',
-    image: 'images/card_14.jpg'
+    image: 'card_14.jpg'
   },
   {
     id: 15, name: '破茧', en: 'Cocoon', group: 'tale',
     keywords: ['转变', '挣扎', '新生'],
     healing: '现在的束缚只是暂时的，你马上就要飞起来了。',
     action: '',
-    image: 'images/card_15.jpg'
+    image: 'card_15.jpg'
   },
   {
     id: 16, name: '悬浮岛屿', en: 'Floating Island', group: 'tale',
     keywords: ['逃避', '独立空间', '想象力'],
     healing: '如果现实太累，就在心里建一座小岛躲一躲。',
     action: '',
-    image: 'images/card_16.jpg'
+    image: 'card_16.jpg'
   },
   {
     id: 17, name: '水晶鞋', en: 'Glass Slipper', group: 'tale',
     keywords: ['遗憾', '错过', '新的可能'],
     healing: '没赶上的那班车，也许是为了让你遇见路边的花。',
     action: '',
-    image: 'images/card_17.jpg'
+    image: 'card_17.jpg'
   },
   {
     id: 18, name: '捕梦网', en: 'Dreamcatcher', group: 'tale',
     keywords: ['守护', '过滤', '好梦'],
     healing: '噩梦会被网住消散，留下的只有甜美的梦。',
     action: '',
-    image: 'images/card_18.jpg'
+    image: 'card_18.jpg'
   },
   {
     id: 19, name: '断翼天使', en: 'Broken Wing', group: 'tale',
     keywords: ['受伤', '治愈', '不完美'],
     healing: '即使受了伤，你依然拥有爱与被爱的能力。',
     action: '',
-    image: 'images/card_19.jpg'
+    image: 'card_19.jpg'
   },
   {
     id: 20, name: '钥匙孔', en: 'Keyhole', group: 'tale',
     keywords: ['机会', '秘密', '突破口'],
     healing: '门没有锁，试着推一下，外面有你想要的风景。',
     action: '',
-    image: 'images/card_20.jpg'
+    image: 'card_20.jpg'
   },
   {
     id: 21, name: '暴雨屋檐', en: 'Rainy Eaves', group: 'tale',
     keywords: ['庇护', '安全感', '旁观'],
     healing: '外面的风雨再大，只要心有屋檐，就能安然无恙。',
     action: '',
-    image: 'images/card_21.jpg'
+    image: 'card_21.jpg'
   },
   {
     id: 22, name: '星空列车', en: 'Star Train', group: 'tale',
     keywords: ['旅程', '过渡', '未来'],
     healing: '人生是一趟列车，有人上车有人下车，风景一直在变。',
     action: '',
-    image: 'images/card_22.jpg'
+    image: 'card_22.jpg'
   },
   {
     id: 23, name: '沙漏反转', en: 'Hourglass', group: 'tale',
     keywords: ['逆转', '奇迹', '打破常规'],
     healing: '谁说事情只能这样发展？你可以创造属于你的奇迹。',
     action: '',
-    image: 'images/card_23.jpg'
+    image: 'card_23.jpg'
   },
   {
     id: 24, name: '晨曦露珠', en: 'Morning Dew', group: 'tale',
     keywords: ['开始', '清新', '微小希望'],
     healing: '每一天都是新的，像露珠一样晶莹剔透地开始吧。',
     action: '',
-    image: 'images/card_24.jpg'
+    image: 'card_24.jpg'
   },
 
   // ——— 核心主牌 · 续 ———
@@ -182,14 +182,14 @@ const cards = [
     keywords: ['休息', '星光', '被守护'],
     healing: '星光会落在你的肩头，休息的时候，也不会失去光亮。',
     action: '今晚给自己留出一段不被打扰的时间，安心休息，哪怕只是发一会儿呆。',
-    image: 'images/card_25.jpg'
+    image: 'card_25.jpg'
   },
   {
     id: 26, name: '命运之轮', en: 'Wheel of Fortune', group: 'core',
     keywords: ['转折', '变化', '顺应'],
     healing: '潮汐有涨有落，所有转弯，都是去往新风景的路途。',
     action: '回想一次曾经的“转弯”带来的意外收获，把它写下来，轻轻念给自己听。',
-    image: 'images/card_26.jpg'
+    image: 'card_26.jpg'
   }
 ]
 
